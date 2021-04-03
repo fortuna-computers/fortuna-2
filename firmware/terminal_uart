@@ -1,0 +1,7 @@
+#!/bin/sh
+
+echo 'Press Ctrl+A and then Shift+K to exit.'
+echo "Type 'h' for help."
+sleep 1
+# screen -S z80 /dev/ttyAMA0 76800
+screen -S z80 /dev/ttyAMA0 38400
