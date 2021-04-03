@@ -1,6 +1,6 @@
 #include "tests.h"
 
-#ifdef DEBUG
+#ifdef RUN_TESTS
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,6 +64,7 @@ void run_tests()
         printf_P(PSTR("%02X "), buffer[i]);
     bool success = ram_write_buffer();
     putchar('\n');
+    printf_P(PSTR("Buffer checksum: %04X\n"), ram_buffer_checksum());
 
     // read buffer
     printf_P(PSTR("Reading buffer... "));
@@ -71,20 +72,19 @@ void run_tests()
         buffer[i] = 0;
     ram_read_buffer();
     srandom(next_seed);
-    size_t last_incorrect = 0;
     for (size_t i = 0; i < 512; ++i) {
         uint8_t expected = random();
         printf_P(PSTR("%s%02X " RESET), (buffer[i] == expected) ? GRN : RED, buffer[i]);
+	/*
         if (buffer[i] != expected) {
             printf_P(PSTR("[%X] "), i);
-            last_incorrect = i;
         }
+        */
     }
     putchar('\n');
     if (!success)
         printf_P(PSTR(RED "Writing failed!\n" RESET));
-
-    printf_P(PSTR("[%X] = %02X\n"), last_incorrect, ram_read_byte(last_incorrect));
+    printf_P(PSTR("Buffer checksum: %04X\n"), ram_buffer_checksum());
 
     for(;;);
 }

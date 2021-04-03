@@ -17,12 +17,12 @@ void io_init();
 #define OUTPUT_PORTS    \
     P(RST,    B, 0)     \
     P(BUSREQ, B, 1)     \
-    P(CLK,    B, 2)     \
+    P(MREQ,   B, 2)     \
     P(SDCS,   B, 4)     \
     P(MOSI,   B, 5)     \
     P(SCK,    B, 7)     \
     P(INT,    D, 2)     \
-    P(MREQ,   D, 5)     \
+    P(CLK,    D, 5)     \
     P(WR,     D, 6)     \
     P(RD,     D, 7)
 

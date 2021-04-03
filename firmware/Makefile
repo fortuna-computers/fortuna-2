@@ -1,5 +1,5 @@
 PROJECT=mini-z80
-OBJECTS=main.o serial.o io.o z80.o ram.o tests.o
+OBJECTS=main.o serial.o io.o z80.o ram.o tests.o boot.o
 AVRDUDE_FLAGS=-p atmega16 -C ./avrdude_gpio.conf -c pi_1 -B 0.5 -V
 FUSES=-U lfuse:w:0xff:m -U hfuse:w:0xd9:m    # external crystal
 MCU=atmega16
@@ -7,7 +7,7 @@ F_CPU=16500000UL
 
 CC=avr-gcc
 CPPFLAGS=-std=c11 -Wall -Wextra -Os -DF_CPU=${F_CPU} -mmcu=${MCU} -ffunction-sections -fdata-sections -I../common
-CPPFLAGS+=-DRUN_TESTS
+# CPPFLAGS+=-DRUN_TESTS
 CPPFLAGS+=-DDEBUG
 
 all: ${PROJECT}.hex
@@ -20,11 +20,17 @@ ${PROJECT}.elf: ${OBJECTS}
 	$(CC) -mmcu=${MCU} -o $@ $^ -Wl,--gc-sections
 	avr-size -C --mcu=${MCU} ${PROJECT}.elf	
 
+boot.c: z80/boot.rom
+	xxd -i $^ > $@
+
+z80/boot.rom: z80/boot.z80
+	vasmz80_oldstyle -Fbin -o $@ $^
+
 test-connection:
 	sudo avrdude ${AVRDUDE_FLAGS}
 
 clean:
-	rm -f *.elf *.o *.hex test-disasm test-simulator
+	rm -f boot.c *.elf *.o *.hex z80/*.rom
 
 upload: ${PROJECT}.hex
 	sudo avrdude ${AVRDUDE_FLAGS} -U flash:w:$<:i

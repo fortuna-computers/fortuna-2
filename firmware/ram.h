@@ -14,4 +14,8 @@ void    ram_write_byte(uint16_t addr, uint8_t byte);
 bool    ram_write_buffer();
 void    ram_read_buffer();
 
+uint16_t ram_buffer_checksum();
+
+void    ram_initialize_boot_sector(uint8_t* data, uint16_t size);
+
 #endif

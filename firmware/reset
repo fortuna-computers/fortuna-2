@@ -10,6 +10,6 @@ GPIO.output(12, GPIO.LOW)
 time.sleep(0.1)
 GPIO.output(12, GPIO.HIGH)
 time.sleep(0.5)
-print("DMA is reset.")
+print("Microcontroller is reset.")
 
 GPIO.cleanup()

@@ -20,16 +20,16 @@ int main()
 
     printf_P(PSTR("\e[1;1H\e[2JMini-Z80 initialized.\n"));
 
-#ifdef DEBUG
+#ifdef RUN_TESTS
     run_tests();
 #endif
 
-    printf_P(PSTR("? "));
-    while (1) {
-        putchar(getchar());
-        
-        // printf("%02X ", getchar());
-    }
+    extern unsigned int z80_boot_rom_len;
+    extern unsigned char z80_boot_rom[];
+    ram_initialize_boot_sector(z80_boot_rom, z80_boot_rom_len);
+
+    z80_powerup();
+    z80_set_speed(T_10KHZ);
 
     for (;;);
 }
