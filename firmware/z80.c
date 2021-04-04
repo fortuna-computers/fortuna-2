@@ -14,6 +14,7 @@ void z80_init()
     set_BUSREQ(1);
     set_CLK(0);
     set_INT(1);
+    set_SCK_WAIT(1);
 }
 
 void z80_powerup()
@@ -27,6 +28,7 @@ void z80_powerup()
     set_RD_as_high_impedance();
     set_INT(1);
     set_BUSREQ(1);
+    set_SCK_WAIT(1);
 
     set_RST(1);
 }
@@ -37,9 +39,28 @@ void z80_cycle()
     set_CLK(0);
 }
 
-void z80_iorq()
+static void z80_out(uint8_t port, uint8_t data)
 {
-    printf_P(PSTR("IORQ!\n"));
+    switch (port) {
+        case I_TERMINAL:
+            putchar(data);
+            break;
+    }
+}
+
+void z80_iorq(bool wr, bool rd)
+{
+    uint8_t port = get_addr();
+#ifdef DEBUG
+    printf_P(PSTR("IORQ port 0x%02X! (WR: %d)\n"), port, wr);
+#endif
+    if (wr == 0) {
+        uint8_t data = get_data();
+#ifdef DEBUG
+        printf_P(PSTR("OUTPUT request in port 0x%02X with data 0x%02X.\n"), port, data);
+#endif
+        z80_out(port, data);
+    }
 }
 
 void z80_set_speed(Z80_Speed speed)
@@ -57,8 +78,20 @@ void z80_set_speed(Z80_Speed speed)
         case T_10KHZ:
             ICR1 = 1600-1;
             break;
+        case T_100KHZ:
+            ICR1 = 165-1;
+            break;
+        case T_450KHZ:
+            ICR1 = 37-1;
+            break;
         case T_1MHZ:
-            ICR1 = 16-1;
+            ICR1 = 21-1;
+            break;
+        case T_1_5MHZ:
+            ICR1 = 12-1;
+            break;
+        case T_2MHZ:
+            ICR1 = 8-1;
             break;
         case T_4MHZ:
             ICR1 = 4-1;

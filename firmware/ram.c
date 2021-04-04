@@ -14,6 +14,9 @@ uint8_t buffer[512] = {0};
 
 void ram_init()
 {
+    set_MREQ_as_output();
+    set_WR_as_output();
+    set_RD_as_output();
     set_MREQ(1);
     set_WR(1);
     set_RD(1);

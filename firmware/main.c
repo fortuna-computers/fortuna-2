@@ -12,7 +12,7 @@
 #include "step.h"
 #include "tests.h"
 
-static const Z80_Speed z80_speed = T_100HZ;
+static const Z80_Speed z80_speed = T_1MHZ;
 
 int main()
 {
@@ -57,6 +57,14 @@ int main()
 ISR(INT1_vect)   // execute on IORQ
 {
     TCCR1B = 0;                // stop Z80 cycles
-    z80_iorq();
+    // set_SCK_WAIT(0);
+    volatile bool wr = get_WR();
+    volatile bool rd = get_RD();
+    cli();
+
+    z80_iorq(wr, rd);
+    
+    sei();
+    // set_SCK_WAIT(1);
     z80_set_speed(z80_speed);  // reactivate Z80 cycles
 }

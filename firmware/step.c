@@ -25,7 +25,7 @@ static const char* bit(bool value)
     if (value)
         return GRN "1" RESET;
     else
-        return RED "1" RESET;
+        return RED "0" RESET;
 }
 
 void step()
