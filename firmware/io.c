@@ -53,6 +53,9 @@ OUTPUT_PORTS
     }
 INPUT_PORTS
 IO_PORTS
+#ifdef STEP
+  OUTPUT_PORTS
+#endif
 #undef P
 
 //

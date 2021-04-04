@@ -49,6 +49,9 @@ OUTPUT_PORTS
     bool get_ ## name();              \
     void set_ ## name ## _as_input(); \
     void set_ ## name ## _as_pullup();
+#ifdef STEP
+  OUTPUT_PORTS
+#endif
 IO_PORTS
 INPUT_PORTS
 #undef P

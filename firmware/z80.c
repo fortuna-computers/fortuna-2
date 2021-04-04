@@ -21,6 +21,13 @@ void z80_powerup()
     set_RST(0);
     for (int i = 0; i < 50; ++i)
         z80_cycle();
+
+    set_MREQ_as_high_impedance();
+    set_WR_as_high_impedance();
+    set_RD_as_high_impedance();
+    set_INT(1);
+    set_BUSREQ(1);
+
     set_RST(1);
 }
 
@@ -44,6 +51,9 @@ void z80_set_speed(Z80_Speed speed)
 		case T_STOPPED:
 			TCCR1B = 0;
             return;
+        case T_100HZ:
+            ICR1 = 20625-1;
+            break;
         case T_10KHZ:
             ICR1 = 1600-1;
             break;
@@ -59,5 +69,8 @@ void z80_set_speed(Z80_Speed speed)
 	OCR1B = (int) (ICR1 * 0.50);
 	TCNT1=0x0;
 
-	TCCR1B |= 1; // Prescale=1, Enable Timer Clock
+    if (speed == T_100HZ)
+        TCCR1B |= 2; // Prescale=8, Enable Timer Clock
+    else
+        TCCR1B |= 1; // Prescale=1, Enable Timer Clock
 }
