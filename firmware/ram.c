@@ -87,12 +87,16 @@ void ram_initialize_boot_sector(uint8_t* data, uint16_t size)
 {
     for (size_t i = 0; i < 512; ++i)
         buffer[i] = (i < size) ? data[i] : 0;
-    if (!ram_write_buffer())
+    if (!ram_write_buffer()) {
         printf_P(PSTR("Memory error initializing boot sector.\n"));
+        for (;;);
+    }
     uint16_t chk1 = ram_buffer_checksum();
     ram_read_buffer();
     uint16_t chk2 = ram_buffer_checksum();
-    printf_P(PSTR("Boot sector loaded with %d bytes: (%04X) (%04X).\n"), size, chk1, chk2);
-    if (chk1 != chk2)
+    printf_P(PSTR("Boot sector loaded with %d bytes. %04X %04X\n"), size, chk1, chk2);
+    if (chk1 != chk2) {
         printf_P(PSTR("Memory error initializing boot sector: invalid checksum.\n"));
+        for (;;);
+    }
 }

@@ -12,6 +12,8 @@
 #include "step.h"
 #include "tests.h"
 
+static const Z80_Speed z80_speed = T_100HZ;
+
 int main()
 {
     // microcontroller initialization
@@ -41,21 +43,20 @@ int main()
 
     // run
 #ifndef STEP
-    z80_set_speed(T_100HZ);
-    //for (;;)
-    //    z80_cycle();
+    z80_set_speed(z80_speed);
+    for (;;);
 #else
     step_init();
     for (;;) {
         step();
     }
 #endif
-
-    for (;;);
 }
 
 
 ISR(INT1_vect)   // execute on IORQ
 {
+    TCCR1B = 0;                // stop Z80 cycles
     z80_iorq();
+    z80_set_speed(z80_speed);  // reactivate Z80 cycles
 }

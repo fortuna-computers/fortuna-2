@@ -1,5 +1,5 @@
     nop
-    ld a, 42h
+    ld a, 'H'
     out (0h), a
 hang:
     jp hang
