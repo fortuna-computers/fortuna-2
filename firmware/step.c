@@ -11,6 +11,8 @@
 #include "serial.h"
 #include "z80.h"
 
+extern uint16_t last_pressed_key;
+
 void step_init()
 {
     putchar('\n');
@@ -30,17 +32,23 @@ static const char* bit(bool value)
 
 void step()
 {
-    getchar();
-    z80_cycle();
-    char addr[5] = "----",
-         data[3] = "--";
-    if (get_MREQ() == 0 || get_IORQ() == 0) {
-        sprintf(addr, "%04X", get_addr());
-        sprintf(data, "%02X", get_data());
+    switch (getchar()) {
+        case 'k':
+            last_pressed_key = 'k';
+            z80_interrupt(0xcf);
+            break;
+        default:
+            z80_cycle();
+            char addr[5] = "----",
+                 data[3] = "--";
+            if (get_MREQ() == 0 || get_IORQ() == 0) {
+                sprintf(addr, "%04X", get_addr());
+                sprintf(data, "%02X", get_data());
+            }
+            printf_P(PSTR("%s  %s     %s   %s  %s   %s    %s     %s     %s    %s \n"),
+                    addr, data, bit(get_MREQ()), bit(get_WR()), bit(get_RD()), bit(get_IORQ()),
+                    bit(get_INT()), bit(get_BUSREQ()), bit(get_BUSACK()), bit(get_RST()));
     }
-    printf_P(PSTR("%s  %s     %s   %s  %s   %s    %s     %s     %s    %s \n"),
-            addr, data, bit(get_MREQ()), bit(get_WR()), bit(get_RD()), bit(get_IORQ()),
-            bit(get_INT()), bit(get_BUSREQ()), bit(get_BUSACK()), bit(get_RST()));
 }
 
 #endif

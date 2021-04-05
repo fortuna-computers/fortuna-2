@@ -12,9 +12,9 @@
 #include "step.h"
 #include "tests.h"
 
-static const Z80_Speed z80_speed = T_800KHZ;
+static const Z80_Speed z80_speed = T_550KHZ;
 
-uint16_t last_pressed_key = 0x0;
+volatile uint16_t last_pressed_key = 0x0;
 
 int main()
 {
@@ -44,11 +44,11 @@ int main()
     MCUCR = (1 << ISC11);   //   on falling edge
     sei();
 
+#ifndef STEP
     // enable interrupt for keypress
     UCSRB |= (1 << RXEN) | (1 << RXCIE);
 
     // run
-#ifndef STEP
     z80_set_speed(z80_speed);
     for (;;);
 #else
@@ -77,8 +77,6 @@ ISR(INT1_vect)   // interrupt: execute on IORQ
 
 ISR(USART_RXC_vect)   // interrupt: execute on keypress
 {
-    cli();
     last_pressed_key = serial_recv();
     z80_interrupt(0xcf);
-    sei();
 }

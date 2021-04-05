@@ -1,7 +1,27 @@
 TERMINAL equ 0x1
+ISR      equ 0x8
 
-    nop
-    in a, (TERMINAL)
+    ;
+    ; initialization
+    ;
+    im  0
+    ei
+    jp  skip_interrupt_routine
+
+    ; 
+    ; keyboard handling routine
+    ;
+    org ISR
+    di
+    in  a, (TERMINAL)
     out (TERMINAL), a
+    ei
+    reti
+    
+    ;
+    ; regular code
+    ;
+skip_interrupt_routine
+    nop
 hang:
     jp hang
