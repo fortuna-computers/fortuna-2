@@ -1,7 +1,7 @@
+TERMINAL equ 0x1
+
     nop
-    ld a, 'H'
-    out (1h), a
-    ld a, 'W'
-    out (1h), a
+    in a, (TERMINAL)
+    out (TERMINAL), a
 hang:
     jp hang

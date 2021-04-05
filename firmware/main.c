@@ -12,12 +12,15 @@
 #include "step.h"
 #include "tests.h"
 
-static const Z80_Speed z80_speed = T_1MHZ;
+static const Z80_Speed z80_speed = T_800KHZ;
+
+uint16_t last_pressed_key = 0x0;
 
 int main()
 {
-    // microcontroller initialization
     _delay_ms(100);
+
+    // microcontroller initialization
     serial_init();
     io_init();
     z80_init();
@@ -36,10 +39,13 @@ int main()
 
     z80_powerup();
 
-    // enable interrupts
+    // enable interrupt for IORQ
     GICR = (1 << INT1);     // enable interrupt on INT1 (IORQ)  
     MCUCR = (1 << ISC11);   //   on falling edge
     sei();
+
+    // enable interrupt for keypress
+    UCSRB |= (1 << RXEN) | (1 << RXCIE);
 
     // run
 #ifndef STEP
@@ -54,12 +60,12 @@ int main()
 }
 
 
-ISR(INT1_vect)   // execute on IORQ
+ISR(INT1_vect)   // interrupt: execute on IORQ
 {
     TCCR1B = 0;                // stop Z80 cycles
     // set_SCK_WAIT(0);
-    volatile bool wr = get_WR();
-    volatile bool rd = get_RD();
+    bool rd = get_RD();
+    bool wr = get_WR();
     cli();
 
     z80_iorq(wr, rd);
@@ -67,4 +73,12 @@ ISR(INT1_vect)   // execute on IORQ
     sei();
     // set_SCK_WAIT(1);
     z80_set_speed(z80_speed);  // reactivate Z80 cycles
+}
+
+ISR(USART_RXC_vect)   // interrupt: execute on keypress
+{
+    cli();
+    last_pressed_key = serial_recv();
+    z80_interrupt(0xcf);
+    sei();
 }

@@ -8,6 +8,8 @@
 
 #define WAIT     _delay_us(1)
 
+extern uint16_t last_pressed_key;
+
 void z80_init()
 {
     set_RST(0);
@@ -48,19 +50,48 @@ static void z80_out(uint8_t port, uint8_t data)
     }
 }
 
+static uint8_t z80_in(uint8_t port)
+{
+    switch (port) {
+        case I_TERMINAL: {
+            uint8_t key = last_pressed_key;
+            last_pressed_key = 0;
+            return key;
+        }
+    }
+    return 0;
+}
+
 void z80_iorq(bool wr, bool rd)
 {
     uint8_t port = get_addr();
 #ifdef DEBUG
-    printf_P(PSTR("IORQ port 0x%02X! (WR: %d)\n"), port, wr);
+    printf_P(PSTR("IORQ port %02X! (WR: %d, RD: %d)\n"), port, wr, rd);
 #endif
     if (wr == 0) {
         uint8_t data = get_data();
 #ifdef DEBUG
-        printf_P(PSTR("OUTPUT request in port 0x%02X with data 0x%02X.\n"), port, data);
+        printf_P(PSTR("OUTPUT request in port %02X with data %02X.\n"), port, data);
 #endif
         z80_out(port, data);
+    } else if (rd == 0) {
+        uint8_t data = z80_in(port);
+#ifdef DEBUG
+        printf_P(PSTR("INPUT request from port %02X (data: %02X).\n"), port, data);
+#endif
+        set_data_as_output();
+        set_data(data);
+        z80_cycle();
+        set_data_as_input();
     }
+}
+
+void z80_interrupt(uint8_t code)
+{
+#ifdef DEBUG
+    printf_P(PSTR("Interrupt!\n"));
+#endif
+    // TODO
 }
 
 void z80_set_speed(Z80_Speed speed)
@@ -84,8 +115,11 @@ void z80_set_speed(Z80_Speed speed)
         case T_450KHZ:
             ICR1 = 37-1;
             break;
-        case T_1MHZ:
+        case T_800KHZ:
             ICR1 = 21-1;
+            break;
+        case T_1MHZ:
+            ICR1 = 16-1;
             break;
         case T_1_5MHZ:
             ICR1 = 12-1;
