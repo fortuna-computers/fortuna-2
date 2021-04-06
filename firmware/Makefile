@@ -1,5 +1,5 @@
 PROJECT=mini-z80
-OBJECTS=main.o serial.o io.o z80.o ram.o tests.o boot.o spi.o step.o
+OBJECTS=main.o serial.o io.o z80.o ram.o tests.o boot.o spi.o sdcard.o step.o
 AVRDUDE_FLAGS=-p atmega16 -C ./avrdude_gpio.conf -c pi_1 -B 0.5 -V
 FUSES=-U lfuse:w:0xff:m -U hfuse:w:0xd9:m    # external crystal
 MCU=atmega16

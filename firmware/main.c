@@ -9,6 +9,7 @@
 #include "serial.h"
 #include "z80.h"
 #include "ram.h"
+#include "sdcard.h"
 #include "spi.h"
 #include "step.h"
 #include "tests.h"
@@ -35,6 +36,13 @@ int main()
     // computer initialization
     printf_P(PSTR("\e[1;1H\e[2JMini-Z80 initialized.\n"));
 
+    // initialize SD card
+    bool ok = sdcard_initialize();
+    printf_P(PSTR("SDCard %sinitialized. %02X %02X\n"), 
+            ok ? "" : "not ",
+            sdcard_last_stage(), sdcard_last_response());
+
+    // boot
     extern unsigned int z80_boot_rom_len;
     extern unsigned char z80_boot_rom[];
     ram_initialize_boot_sector(z80_boot_rom, z80_boot_rom_len);
