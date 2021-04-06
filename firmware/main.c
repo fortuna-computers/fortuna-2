@@ -9,6 +9,7 @@
 #include "serial.h"
 #include "z80.h"
 #include "ram.h"
+#include "spi.h"
 #include "step.h"
 #include "tests.h"
 
@@ -25,6 +26,7 @@ int main()
     io_init();
     z80_init();
     ram_init();
+    spi_init();
 
 #ifdef RUN_TESTS
     run_tests();
