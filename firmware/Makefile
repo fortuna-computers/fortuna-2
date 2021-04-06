@@ -8,7 +8,7 @@ F_CPU=16500000UL
 CC=avr-gcc
 CPPFLAGS=-std=c11 -Wall -Wextra -Os -DF_CPU=${F_CPU} -mmcu=${MCU} -ffunction-sections -fdata-sections -I../common
 # CPPFLAGS+=-DRUN_TESTS  # execute tests on initialization
-# CPPFLAGS+=-DDEBUG      # print debugging information during execution
+CPPFLAGS+=-DDEBUG      # print debugging information during execution
 # CPPFLAGS+=-DSTEP       # wait for a keypress before each step
 
 all: ${PROJECT}.hex
@@ -25,7 +25,7 @@ boot.c: z80/boot.rom
 	xxd -i $^ > $@
 
 z80/boot.rom: z80/boot.z80
-	vasmz80_oldstyle -Fbin -o $@ $^
+	vasmz80_oldstyle -chklabels -Llisting.txt -autoexp -Fbin -o $@ $^
 
 test-connection:
 	sudo avrdude ${AVRDUDE_FLAGS}

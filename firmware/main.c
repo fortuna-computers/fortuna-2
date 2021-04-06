@@ -45,14 +45,18 @@ int main()
     // boot
     extern unsigned int z80_boot_rom_len;
     extern unsigned char z80_boot_rom[];
-    ram_initialize_boot_sector(z80_boot_rom, z80_boot_rom_len);
-
     z80_powerup();
+    z80_release_bus();
+    ram_initialize_boot_sector(z80_boot_rom, z80_boot_rom_len);
+    z80_request_bus();
 
     // enable interrupt for IORQ
     GICR = (1 << INT1);     // enable interrupt on INT1 (IORQ)  
     MCUCR = (1 << ISC11);   //   on falling edge
     sei();
+
+    z80_init();
+    z80_powerup();
 
 #ifndef STEP
     // enable interrupt for keypress

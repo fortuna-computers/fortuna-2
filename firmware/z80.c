@@ -5,12 +5,15 @@
 #include <util/delay.h>
 
 #include "io.h"
+#include "ram.h"
+#include "sdcard.h"
 
-#define WAIT     _delay_us(1)
+#define WAIT      _delay_us(1)
 
-extern uint16_t last_pressed_key;
+extern uint16_t   last_pressed_key;
 
-volatile int next_interrupt = -1;
+volatile int      next_interrupt = -1;
+volatile uint32_t sdcard_block = 0;
 
 void z80_init()
 {
@@ -19,6 +22,8 @@ void z80_init()
     set_CLK(0);
     set_INT(1);
     set_SCK_WAIT(1);
+    z80_cycle();
+    _delay_us(100);
 }
 
 void z80_powerup()
@@ -43,6 +48,81 @@ void z80_cycle()
     set_CLK(0);
 }
 
+void z80_release_bus()
+{
+    z80_set_speed(T_STOPPED);
+    if (get_BUSACK() == 0)
+        return;
+#ifdef DEBUG
+    printf_P(PSTR("Requesting bus: "));
+#endif
+    set_BUSREQ(0);
+    while (get_BUSACK() != 0) {
+#ifdef DEBUG
+        // putchar('.');
+#endif
+        z80_cycle();
+    }
+#ifdef DEBUG
+    printf_P(PSTR("bus obtained!\n"));
+#endif
+    set_MREQ_as_output();
+    set_WR_as_output();
+    set_RD_as_output();
+}
+
+void z80_request_bus()
+{
+    set_BUSREQ(1);
+    set_MREQ_as_high_impedance();
+    set_WR_as_high_impedance();
+    set_RD_as_high_impedance();
+}
+
+static void sd_read_to_ram()
+{
+#ifdef DEBUG
+    printf_P(PSTR("Reading block %02X from SDCard to RAM.\n"), sdcard_block);
+#endif
+    z80_release_bus();
+    bool ok = sdcard_read_page(sdcard_block);
+#ifdef DEBUG
+    for (int i = 0; i < 512; ++i)
+        printf_P(PSTR("%02X"), buffer[i]);
+    putchar('\n');
+#endif
+    ram_write_buffer();
+    z80_request_bus();
+#ifdef DEBUG
+    if (ok) 
+        printf_P(PSTR("Reading done.\n"));
+    else
+        printf_P(PSTR("Reading failed.\n"));
+#endif
+}
+
+static void sd_write_from_ram()
+{
+#ifdef DEBUG
+    printf_P(PSTR("Writing from RAM to SDCard block %02X.\n"), sdcard_block);
+#endif
+    z80_release_bus();
+    ram_read_buffer();
+#ifdef DEBUG
+    for (int i = 0; i < 512; ++i)
+        printf_P(PSTR("%02X"), buffer[i]);
+    putchar('\n');
+#endif
+    bool ok = sdcard_write_page(sdcard_block);
+    z80_request_bus();
+#ifdef DEBUG
+    if (ok) 
+        printf_P(PSTR("Writing done.\n"));
+    else
+        printf_P(PSTR("Writing failed.\n"));
+#endif
+}
+
 static void z80_out(uint8_t port)
 {
     uint8_t data = get_data();
@@ -52,6 +132,24 @@ static void z80_out(uint8_t port)
     switch (port) {
         case I_TERMINAL:
             putchar(data);
+            break;
+        case I_SD_B0:
+            sdcard_block |= data;
+            break;
+        case I_SD_B1:
+            sdcard_block |= ((uint32_t) data << 8);
+            break;
+        case I_SD_B2:
+            sdcard_block |= ((uint32_t) data << 16);
+            break;
+        case I_SD_B3:
+            sdcard_block |= ((uint32_t) data << 24);
+            break;
+        case I_SD_ACTION:
+            if (data & 1)
+                sd_write_from_ram();
+            else
+                sd_read_to_ram();
             break;
     }
 }
@@ -121,13 +219,22 @@ void z80_interrupt(uint8_t code)
 
 void z80_set_speed(Z80_Speed speed)
 {
+    if (speed == T_STOPPED) {
+        TCCR1A = 0;
+        TCCR1B = 0;
+        ICR1 = 0;
+        OCR1A = 0;
+        OCR1B = 0;
+        TCNT1 = 0;
+        return;
+    }
+
 	TCCR1B = 0x18; // 0001 1000, Disable Timer Clock 
 	TCCR1A = 0xA2; // 1010 0010
 
 	switch (speed) {
-		case T_STOPPED:
-			TCCR1B = 0;
-            return;
+        case T_STOPPED:
+            break;
         case T_100HZ:
             ICR1 = 20625-1;
             break;

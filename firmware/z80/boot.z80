@@ -1,5 +1,14 @@
-TERMINAL equ 0x1
-ISR      equ 0x8
+TERMINAL  equ 0x1
+SD_B0     equ 0x2
+SD_B1     equ 0x3
+SD_B2     equ 0x4
+SD_B3     equ 0x5
+SD_ACTION equ 0x6
+
+SD_READ   equ 0
+SD_WRITE  equ 1
+
+ISR       equ 0x8
 
     ;
     ; initialization
@@ -22,6 +31,15 @@ ISR      equ 0x8
     ; regular code
     ;
 skip_interrupt_routine
-    nop
+    ld  a, 1
+    out (SD_B0), a
+    ld  a, 0
+    out (SD_B1), a
+    out (SD_B2), a
+    out (SD_B3), a
+    ld  a, SD_WRITE
+    out (SD_ACTION), a
+    ; ld  a, (510)
+    ;out (0xee), a
 hang:
     jp hang

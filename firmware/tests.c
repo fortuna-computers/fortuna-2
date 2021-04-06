@@ -11,6 +11,7 @@
 #include "ram.h"
 #include "sdcard.h"
 #include "serial.h"
+#include "z80.h"
 
 static void create_seed()
 {
@@ -43,6 +44,9 @@ static void test_byte(uint16_t addr)
 
 void run_tests()
 {
+    z80_powerup();
+    z80_release_bus();
+
     printf_P(PSTR("Free RAM in microcontroller: %d bytes.\n"), free_ram());
     create_seed();
     printf_P(PSTR("Writing bytes...\n"));
@@ -106,6 +110,8 @@ void run_tests()
     for (size_t i = 0; i < 512; ++i)
         printf_P(PSTR("%02X"), buffer[i]);
     putchar('\n');
+
+    z80_request_bus();
 
     for(;;);
 }
