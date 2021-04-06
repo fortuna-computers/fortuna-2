@@ -9,6 +9,7 @@
 
 #include "io.h"
 #include "ram.h"
+#include "sdcard.h"
 #include "serial.h"
 
 static void create_seed()
@@ -21,7 +22,6 @@ static void create_seed()
     printf_P(PSTR("Seed is %d. Next is %d.\n"), seed, next);
 
     eeprom_write_word((uint16_t*) 0, next);
-
 }
 
 static int free_ram()
@@ -75,16 +75,37 @@ void run_tests()
     for (size_t i = 0; i < 512; ++i) {
         uint8_t expected = random();
         printf_P(PSTR("%s%02X " RESET), (buffer[i] == expected) ? GRN : RED, buffer[i]);
-	/*
-        if (buffer[i] != expected) {
-            printf_P(PSTR("[%X] "), i);
-        }
-        */
     }
     putchar('\n');
     if (!success)
         printf_P(PSTR(RED "Writing failed!\n" RESET));
     printf_P(PSTR("Buffer checksum: %04X\n"), ram_buffer_checksum());
+
+    // sdcard read
+    sdcard_initialize();
+    printf_P(PSTR("SDCard initialization: %02X %02X\n"), sdcard_last_stage(), sdcard_last_response());
+
+    printf_P(PSTR("SD read page 0: "));
+    if (!sdcard_read_page(0))
+        printf_P(PSTR("failed: %02X %02X.\n"), sdcard_last_stage(), sdcard_last_response());
+    for (size_t i = 0; i < 512; ++i)
+        printf_P(PSTR("%02X"), buffer[i]);
+    putchar('\n');
+
+    // sdcard write
+    uint8_t sdi = random();
+    for (size_t i = 0; i < 512; ++i) {
+        buffer[i] = sdi + i;
+    }
+    sdcard_write_page(1);
+    printf_P(PSTR("SD write page 1 starting at %02X: %02X %02X\n"), sdi, sdcard_last_stage(), sdcard_last_response());
+    
+    printf_P(PSTR("SD read page 1: "));
+    if (!sdcard_read_page(1))
+        printf_P(PSTR("failed: %02X %02X.\n"), sdcard_last_stage(), sdcard_last_response());
+    for (size_t i = 0; i < 512; ++i)
+        printf_P(PSTR("%02X"), buffer[i]);
+    putchar('\n');
 
     for(;;);
 }
