@@ -1,0 +1,10 @@
+source: app.z80
+type: app
+debug:
+  rom: boot.z80
+  os: os.z80
+  image:
+    name: debug.img
+    format: fat32
+    os_filename: KERNEL.BIN
+    app_filename: APP.EXE
