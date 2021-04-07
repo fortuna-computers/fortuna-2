@@ -54,17 +54,17 @@ void z80_release_bus()
     if (get_BUSACK() == 0)
         return;
 #ifdef DEBUG
-    printf_P(PSTR("Requesting bus: "));
+    printf_P(PSTR("Z80 is releasing bus: "));
 #endif
     set_BUSREQ(0);
     while (get_BUSACK() != 0) {
 #ifdef DEBUG
-        // putchar('.');
+        putchar('.');
 #endif
         z80_cycle();
     }
 #ifdef DEBUG
-    printf_P(PSTR("bus obtained!\n"));
+    printf_P(PSTR("bus released!\n"));
 #endif
     set_MREQ_as_output();
     set_WR_as_output();
@@ -77,6 +77,9 @@ void z80_request_bus()
     set_MREQ_as_high_impedance();
     set_WR_as_high_impedance();
     set_RD_as_high_impedance();
+#ifdef DEBUG
+    printf_P(PSTR("Bus is taken back by Z80!\n"));
+#endif
 }
 
 static void sd_read_to_ram()
@@ -91,11 +94,13 @@ static void sd_read_to_ram()
         printf_P(PSTR("%02X"), buffer[i]);
     putchar('\n');
 #endif
-    ram_write_buffer();
+    bool ram_ok = ram_write_buffer();
     z80_request_bus();
 #ifdef DEBUG
-    if (ok) 
+    if (ok && ram_ok)
         printf_P(PSTR("Reading done.\n"));
+    else if (!ram_ok)
+        printf_P(PSTR("Error writing to RAM.\n"));
     else
         printf_P(PSTR("Reading failed.\n"));
 #endif
