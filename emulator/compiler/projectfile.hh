@@ -2,29 +2,32 @@
 #define EMULATOR_PROJECTFILE_HH
 
 #include <string>
+#include <optional>
 
 struct ProjectFile {
-    enum class SourceType { Boot, OS, App };
+    enum class SourceType { Undefined, ROM, OS, App };
     
     struct Image {
-        enum class Format { Fat32 };
+        enum class Format { Undefined, Fat32 };
         std::string name;
-        Format      format;
-        std::string os_filename;
+        Format      format = Format::Undefined;
         std::string app_filename;
     };
     
     struct Debug {
-        std::string rom;
-        std::string os;
-        Image       image;
+        std::string          rom;
+        std::string          os;
+        std::optional<Image> image;
     };
     
-    static ProjectFile import(std::string const& contents);
+    std::string          source;
+    SourceType           source_type = SourceType::Undefined;
+    std::optional<Debug> debug;
     
-    std::string source;
-    SourceType  source_type;
-    Debug       debug;
+    static ProjectFile import(std::string const& contents);
+
+private:
+    void validate();
 };
 
 #endif

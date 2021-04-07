@@ -6,5 +6,4 @@ debug:
   image:
     name: debug.img
     format: fat32
-    os_filename: KERNEL.BIN
     app_filename: APP.EXE
