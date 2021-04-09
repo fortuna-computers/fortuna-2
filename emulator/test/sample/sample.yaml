@@ -3,6 +3,7 @@ type: app
 debug:
   rom: boot.z80
   os: os.z80
+  app_address: 0x2000
   image:
     name: debug.img
     format: fat32

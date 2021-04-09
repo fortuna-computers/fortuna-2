@@ -27,6 +27,8 @@ ProjectFile ProjectFile::import(std::string const& contents)
             p.debug->rom = debug["rom"].as<std::string>();
         if (debug["os"])
             p.debug->os = debug["os"].as<std::string>();
+        if (debug["app_address"])
+            p.debug->app_address = debug["app_address"].as<uint16_t>();
         
         if (debug["image"]) {
             p.debug->image = Image();
@@ -64,6 +66,8 @@ void ProjectFile::validate()
         if (source_type == SourceType::App) {
             if (debug->os.empty())
                 throw std::runtime_error("The property 'debug.os' is required for this type of source if debug is enabled.");
+            if (debug->app_address == NO_ADDRESS)
+                throw std::runtime_error("The property 'debug.app_address' is required for this type of source if debug is enabled.");
         }
         if (debug->image.has_value()) {
             if (debug->image->name.empty())

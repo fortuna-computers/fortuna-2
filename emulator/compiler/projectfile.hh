@@ -18,6 +18,7 @@ struct ProjectFile {
         std::string          rom;
         std::string          os;
         std::optional<Image> image;
+        uint16_t             app_address = NO_ADDRESS;
     };
     
     std::string          source;
@@ -28,6 +29,8 @@ struct ProjectFile {
 
 private:
     void validate();
+    
+    static constexpr uint16_t NO_ADDRESS = 0xffff;
 };
 
 #endif
