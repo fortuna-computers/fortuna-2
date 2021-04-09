@@ -93,7 +93,10 @@ TEST_CASE("Test full", "[Compiler]") {
     REQUIRE(0x200 == r.binaries.at("os.z80").address);
     REQUIRE(0x2000 == r.binaries.at("app.z80").address);
     REQUIRE((Files{{"boot.z80", 2}, {"os.z80", 2}, {"app.z80", 3}}) == r.debug.files);
-    REQUIRE((SourceAddress{"    dec b", 0x2000, {0x5}}) == r.debug.source.at("app.z80").at(0));
+    REQUIRE((SourceAddress{"    dec b   ; 05", 0x2000, {0x5}}) == r.debug.source.at("app.z80").at(1));
+    REQUIRE((SourceAddress{"    jp  200h     ; C3 00 02", 0x2, {0xc3, 0x0, 0x2}}) == r.debug.source.at("boot.z80").at(2));
+    REQUIRE((Symbols{{"hello", 0x2001}}) == r.debug.symbols);
+
     /*
     assert_eq((SourceAddress{" dec h", 0, {0x25}}), r.debug.source.at("sample1.z80").at(1));
     assert_eq((SourceAddress{" ret", 5, {0xc9}}), r.debug.source.at("sample2.z80").at(1));

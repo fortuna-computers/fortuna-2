@@ -161,7 +161,7 @@ void Compiler::load_listing(std::string const& path, SourceFile const& source, F
             if (std::regex_match(line, m, regex1) || std::regex_match(line, m, regex2)) {
                 std::string symbol_name = m[1];
                 unsigned long addr = strtoul(std::string(m[2]).c_str(), nullptr, 16);
-                result.debug.symbols[symbol_name] = addr;
+                result.debug.symbols[symbol_name] = addr + source.expected_address;
             }
             
         }
