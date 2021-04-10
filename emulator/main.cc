@@ -1,7 +1,9 @@
 #include <iostream>
+#include "ui/mainwindow.hh"
 
 int main()
 {
-    std::cout << "Hello, World!" << std::endl;
+    MainWindow::get().run();
+    
     return 0;
 }

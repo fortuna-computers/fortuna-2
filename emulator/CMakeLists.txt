@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(contrib/yaml-cpp)
 add_subdirectory(contrib/glfw)
-include_directories(contrib/yaml-cpp/include contrib/glad/include contrib/glfw/include contrib/imgui)
+include_directories(contrib/yaml-cpp/include contrib/glad/include contrib/glfw/include contrib/imgui contrib/imgui/backends)
 
 # EXECUTABLE
 
@@ -22,7 +22,7 @@ set(SOURCES
     compiler/debug.hh compiler/debug.cc)
 
 add_executable(emulator
-               main.cc ${SOURCES})
+               main.cc ${SOURCES} ui/mainwindow.cc ui/mainwindow.hh)
 target_link_libraries(emulator
                       yaml-cpp stdc++fs glfw)
 
