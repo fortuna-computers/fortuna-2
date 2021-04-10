@@ -1,3 +1,9 @@
 [submodule "contrib/yaml-cpp"]
 	path = emulator/contrib/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp
+[submodule "emulator/contrib/glfw"]
+	path = emulator/contrib/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "emulator/contrib/imgui"]
+	path = emulator/contrib/imgui
+	url = https://github.com/ocornut/imgui.git
