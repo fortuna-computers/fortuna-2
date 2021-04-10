@@ -1,9 +1,13 @@
-#include <iostream>
-#include "ui/mainwindow.hh"
+#include "ui/glfwwindow.hh"
+#include "ui/demowindow.hh"
 
 int main()
 {
-    MainWindow::get().run();
+    DemoWindow demo_window;
+    
+    GLFWWindow& window = GLFWWindow::get();
+    window.add_window(demo_window);
+    window.run();
     
     return 0;
 }

@@ -19,10 +19,10 @@ set(IMGUI_SRC
 set(SOURCES
     ${IMGUI_SRC}
     compiler/compiler.hh compiler/compiler.cc compiler/projectfile.cc compiler/projectfile.hh compiler/compilationresult.hh
-    compiler/debug.hh compiler/debug.cc)
+    compiler/debug.hh compiler/debug.cc ui/window.hh ui/glfwwindow.cc ui/glfwwindow.hh)
 
 add_executable(emulator
-               main.cc ${SOURCES} ui/mainwindow.cc ui/mainwindow.hh)
+               main.cc ${SOURCES} ui/demowindow.cc ui/demowindow.hh)
 target_link_libraries(emulator
                       yaml-cpp stdc++fs glfw)
 
