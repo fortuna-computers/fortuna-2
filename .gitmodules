@@ -7,3 +7,6 @@
 [submodule "emulator/contrib/imgui"]
 	path = emulator/contrib/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "emulator/contrib/imgui-filebrowser"]
+	path = emulator/contrib/imgui-filebrowser
+	url = https://github.com/AirGuanZ/imgui-filebrowser.git

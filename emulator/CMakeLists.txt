@@ -7,7 +7,8 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(contrib/yaml-cpp)
 add_subdirectory(contrib/glfw)
-include_directories(contrib/yaml-cpp/include contrib/glad/include contrib/glfw/include contrib/imgui contrib/imgui/backends)
+include_directories(contrib/yaml-cpp/include contrib/glad/include contrib/glfw/include contrib/imgui contrib/imgui/backends
+                    contrib/z80 contrib/imgui-filebrowser)
 
 # EXECUTABLE
 
@@ -18,8 +19,9 @@ set(IMGUI_SRC
 
 set(SOURCES
     ${IMGUI_SRC}
+    contrib/z80/Z80.c
     compiler/compiler.hh compiler/compiler.cc compiler/projectfile.cc compiler/projectfile.hh compiler/compilationresult.hh
-    compiler/debug.hh compiler/debug.cc ui/window.hh ui/glfwwindow.cc ui/glfwwindow.hh)
+    compiler/debug.hh compiler/debug.cc ui/window.hh ui/glfwwindow.cc ui/glfwwindow.hh emulator/emulator.cc ui/loadprojectwindow.cc ui/loadprojectwindow.hh)
 
 add_executable(emulator
                main.cc ${SOURCES} ui/demowindow.cc ui/demowindow.hh)

@@ -2,6 +2,9 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/contrib/glfw" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/contrib/imgui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/contrib/imgui-filebrowser" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/contrib/yaml-cpp" vcs="Git" />
   </component>
 </project>
