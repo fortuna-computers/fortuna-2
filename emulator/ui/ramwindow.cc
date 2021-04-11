@@ -8,7 +8,6 @@
 
 void RamWindow::draw()
 {
-    Emulator& emulator = Emulator::get();
     MainWindow& main_window = MainWindow::get();
 
     float h = 370;
@@ -51,7 +50,70 @@ void RamWindow::draw()
 
 void RamWindow::draw_memory_table()
 {
-
+    Emulator& emulator = Emulator::get();
+    
+    static int tbl_flags = ImGuiTableFlags_BordersOuter
+                           | ImGuiTableFlags_NoBordersInBody
+                           | ImGuiTableFlags_RowBg
+                           | ImGuiTableFlags_ScrollY;
+    static ImU32 pc_bg_color = ImGui::GetColorU32(ImVec4(0.2f, 0.6f, 0.2f, 0.65f));
+    static ImU32 sp_bg_color = ImGui::GetColorU32(ImVec4(0.6f, 0.2f, 0.2f, 0.65f));
+    uint16_t page = ((uint16_t) page_number_) << 8;
+    
+    ImVec2 size = ImVec2(-FLT_MIN, 293);
+    if (ImGui::BeginTable("##ram", 18, tbl_flags, size)) {
+        
+        // headers
+        ImGui::TableSetupScrollFreeze(0, 1); // Make top row always visible
+        ImGui::TableSetupColumn("Address", ImGuiTableColumnFlags_WidthFixed);
+        for (int i = 0; i < 0x10; ++i) {
+            char buf[3];
+            sprintf(buf, "_%X", i);
+            ImGui::TableSetupColumn(buf, ImGuiTableColumnFlags_WidthFixed);
+        }
+        ImGui::TableSetupColumn("ASCII", ImGuiTableColumnFlags_WidthStretch);
+        ImGui::TableHeadersRow();
+        
+        if (emulator.stopped()) {
+            for (int line = 0; line < 0x10; ++line) {
+                ImGui::TableNextRow();
+                
+                // address
+                uint16_t addr = page + (line * 0x10);
+                ImGui::TableSetColumnIndex(0);
+                ImGui::Text("%04X : ", addr);
+                
+                // data
+                std::string ascii;
+                for (int i = 0; i < 0x10; ++i) {
+                    ImGui::TableSetColumnIndex(i + 1);
+                    uint8_t byte = emulator.ram_get((line * 0x10) + i);
+                    bool needs_pop = false;
+                    /*
+                    if (addr + i == p().pc()) {
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, pc_bg_color);
+                    } else if (p().registers().has_value() && addr + i == p().registers().value().SP) {
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, sp_bg_color);
+                    }
+                     */
+                    if (byte == 0) {
+                        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(ImColor(128, 128, 128)));
+                        needs_pop = true;
+                    }
+                    ImGui::Text("%02X", byte);
+                    if (needs_pop)
+                        ImGui::PopStyleColor();
+                    ascii += (byte >= 32 && byte < 127) ? (char) byte : '.';
+                }
+                
+                // ascii
+                ImGui::TableSetColumnIndex(17);
+                ImGui::Text("%s", ascii.c_str());
+            }
+        }
+        
+        ImGui::EndTable();
+    }
 }
 
 void RamWindow::draw_stack()

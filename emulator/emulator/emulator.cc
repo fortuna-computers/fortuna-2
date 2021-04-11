@@ -55,3 +55,8 @@ size_t Emulator::ram_size()
 {
     return MEMORY_SIZE;
 }
+
+Z80* Emulator::z80() const
+{
+    return nullptr;
+}

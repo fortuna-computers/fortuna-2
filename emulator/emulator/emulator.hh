@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <Z80.h>
 
 class Emulator {
 public:
@@ -17,6 +18,8 @@ public:
     
                   void    ram_set(uint16_t addr, uint8_t data);
     [[nodiscard]] uint8_t ram_get(uint16_t addr) const;
+    
+    [[nodiscard]] Z80* z80() const;
     
     static size_t ram_size() ;
 
