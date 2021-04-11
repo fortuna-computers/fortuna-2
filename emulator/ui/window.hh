@@ -10,7 +10,7 @@ public:
 protected:
     Window() = default;
     
-    bool visible_ = true;
+    bool visible_ = false;
     
     static const int PageUp = 0x10a;
     static const int PageDown = 0x10b;

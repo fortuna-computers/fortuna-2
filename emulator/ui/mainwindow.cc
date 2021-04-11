@@ -1,4 +1,4 @@
-#include "glfwwindow.hh"
+#include "mainwindow.hh"
 
 #include <stdexcept>
 
@@ -6,6 +6,8 @@
 #include <GLFW/glfw3.h>
 #include <glad/gl.h>
 
+#include "imgui.h"
+#include "imgui_internal.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_glfw.h"
 
@@ -13,18 +15,18 @@
 // INITIALIZATION
 //
 
-GLFWWindow& GLFWWindow::get()
+MainWindow& MainWindow::get()
 {
-    static GLFWWindow main_window;
+    static MainWindow main_window;
     return main_window;
 }
 
-GLFWWindow::GLFWWindow()
+MainWindow::MainWindow()
 {
     // initialize
     if (!glfwInit())
         throw std::runtime_error("Could not initialize GLFW.");
-    glfwSetErrorCallback([](int error, const char* description) { GLFWWindow::get().on_error(error, description); });
+    glfwSetErrorCallback([](int error, const char* description) { MainWindow::get().on_error(error, description); });
     
     // window hints
     glfwWindowHint(GLFW_DOUBLEBUFFER, 1);
@@ -50,14 +52,18 @@ GLFWWindow::GLFWWindow()
     
     // configure ImGui
     IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
+    ImGuiContext* context = ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     ImGui_ImplGlfw_InitForOpenGL(window_, true);
     ImGui_ImplOpenGL3_Init(glsl_version.c_str());
     ImGui::StyleColorsDark();
+    
+    // properties
+    initialize_properties(context);
+    ImGui::LoadIniSettingsFromDisk("imgui.ini");
 }
 
-GLFWWindow::~GLFWWindow()
+MainWindow::~MainWindow()
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -72,7 +78,7 @@ GLFWWindow::~GLFWWindow()
 // MAIN LOOP
 //
 
-void GLFWWindow::run()
+void MainWindow::run()
 {
     while (!glfwWindowShouldClose(window_)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -98,7 +104,54 @@ void GLFWWindow::run()
 // CALLBACKS
 //
 
-void GLFWWindow::on_error(int error, char const* description)
+void MainWindow::on_error(int error, char const* description)
 {
     throw std::runtime_error("Error " + std::to_string(error) + ": " + description);
 }
+
+//
+// PROPERTIES
+//
+
+std::string MainWindow::property(std::string const& name) const
+{
+    auto it = properties_.find(name);
+    if (it == properties_.end())
+        return "";
+    return it->second;
+}
+
+void MainWindow::set_property(std::string const& name, std::string const& value)
+{
+    properties_[name] = value;
+}
+
+void MainWindow::initialize_properties(ImGuiContext* p_context)
+{
+    ImGuiSettingsHandler ini_handler;
+    ini_handler.TypeName = "UserData";
+    ini_handler.TypeHash = ImHashStr("UserData");
+    ini_handler.ReadOpenFn = [](ImGuiContext*, ImGuiSettingsHandler* h, const char* name) -> void* {
+        if (strcmp(name, "Config") == 0)
+            return h->UserData;
+        return nullptr;
+    };
+    ini_handler.ReadLineFn = [](ImGuiContext*, ImGuiSettingsHandler*, void* entry, const char* line) {
+        auto& props = *reinterpret_cast<std::unordered_map<std::string, std::string>*>(entry);
+        std::string sline = line;
+        if (sline.find('=') != std::string::npos) {
+            std::string key = sline.substr(0, sline.find('='));
+            std::string value = sline.substr(sline.find('=') + 1);
+            props[key] = value;
+        }
+    };
+    ini_handler.WriteAllFn = [](ImGuiContext*, ImGuiSettingsHandler* h, ImGuiTextBuffer* buf) {
+        auto& props = *reinterpret_cast<std::unordered_map<std::string, std::string>*>(h->UserData);
+        buf->appendf("[UserData][Config]\n");
+        for (auto& [k,v] : props)
+            buf->appendf((k + "=%s").c_str(), v.c_str());
+    };
+    ini_handler.UserData = &properties_;
+    p_context->SettingsHandlers.push_back(ini_handler);
+}
+

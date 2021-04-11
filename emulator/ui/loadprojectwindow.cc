@@ -1,8 +1,18 @@
 #include "loadprojectwindow.hh"
+#include "mainwindow.hh"
+
+LoadProjectWindow::LoadProjectWindow()
+{
+    file_browser_.SetTitle("title");
+    file_browser_.SetTypeFilters({ ".yaml", "" });
+    file_browser_.SetCurrentTypeFilterIndex(1);
+    strcpy(project_file_, MainWindow::get().property("project_file").c_str());
+}
 
 void LoadProjectWindow::draw()
 {
-    ImGui::Begin("Welcome to Z80AW debugger", nullptr);
+    ImGui::SetNextWindowSize(ImVec2(600, 82));
+    ImGui::Begin("Welcome to Mini-Z80 debugger", nullptr, ImGuiWindowFlags_NoResize);
     
     ImGui::Text("Select project file"); ImGui::SameLine();
     ImGui::InputText("##b", project_file_, sizeof project_file_); ImGui::SameLine();
@@ -12,6 +22,7 @@ void LoadProjectWindow::draw()
     ImGui::Separator();
     
     if (ImGui::Button("Start execution (F12)") || ImGui::IsKeyPressed(F12, false)) {
+        MainWindow::get().set_property("project_file", project_file_);
         on_start_executing_(project_file_);
     }
     
@@ -22,11 +33,5 @@ void LoadProjectWindow::draw()
         strcpy(project_file_, file_browser_.GetSelected().c_str());
         file_browser_.ClearSelected();
     }
-}
-
-LoadProjectWindow::LoadProjectWindow()
-{
-    file_browser_.SetTitle("title");
-    file_browser_.SetTypeFilters({ ".yaml" });
 }
 

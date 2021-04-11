@@ -21,7 +21,7 @@ set(SOURCES
     ${IMGUI_SRC}
     contrib/z80/Z80.c
     compiler/compiler.hh compiler/compiler.cc compiler/projectfile.cc compiler/projectfile.hh compiler/compilationresult.hh
-    compiler/debug.hh compiler/debug.cc ui/window.hh ui/glfwwindow.cc ui/glfwwindow.hh emulator/emulator.cc ui/loadprojectwindow.cc ui/loadprojectwindow.hh)
+    compiler/debug.hh compiler/debug.cc ui/window.hh ui/mainwindow.cc ui/mainwindow.hh emulator/emulator.cc ui/loadprojectwindow.cc ui/loadprojectwindow.hh)
 
 add_executable(emulator
                main.cc ${SOURCES} ui/demowindow.cc ui/demowindow.hh)
