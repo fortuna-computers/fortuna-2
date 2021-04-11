@@ -11,6 +11,11 @@ class MainWindow {
 public:
     ~MainWindow();
     
+    MainWindow(MainWindow const&) = delete;
+    MainWindow& operator=(MainWindow const&) = delete;
+    MainWindow(MainWindow&&) = delete;
+    MainWindow& operator=(MainWindow&&) = delete;
+    
     void run();
     void add_window(Window& window) { children_.push_back(&window); }
 

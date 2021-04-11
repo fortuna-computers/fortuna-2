@@ -13,9 +13,13 @@ Manager::Manager()
     });
     load_project_window_.set_visible(true);
     
+    menu_window_.on_open_memory([this]() { ram_window_.set_visible(true); });
+    menu_window_.on_open_demo([this]() { demo_window_.set_visible(true); });
+    
     window_.add_window(demo_window_);
     window_.add_window(load_project_window_);
     window_.add_window(message_box_);
+    window_.add_window(menu_window_);
     window_.add_window(ram_window_);
 }
 
@@ -25,6 +29,7 @@ void Manager::run()
         window_.run();
     } catch (std::exception& e) {
         window_.force_end_frame();
+        std::cerr << e.what() << "\n";
         message_box_.set_message(MessageBox::Error, e.what());
         run();
     }
@@ -42,7 +47,7 @@ void Manager::load_project(std::string const& project_name)
         uint16_t addr = 0;
         for (uint8_t byte: rom)
             WrZ80(addr++, byte);
-        // TODO - show windows
+        menu_window_.set_visible(true);
         load_project_window_.set_visible(false);
     }
 }
