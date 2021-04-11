@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <vector>
 #include "debug.hh"
+#include "projectfile.hh"
 
 struct Binary {
     std::vector<uint8_t> data;
@@ -18,6 +19,7 @@ struct CompilationResult {
     std::string                             message  {};
     std::unordered_map<std::string, Binary> binaries {};
     Debug                                   debug    {};
+    ProjectFile                             project_file {};
 };
 
 struct SourceFile {

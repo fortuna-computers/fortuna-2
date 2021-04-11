@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include <imgui.h>
 #include "window.hh"
 
 class MainWindow {
@@ -20,6 +21,8 @@ public:
     std::string property(std::string const& name) const;
     void        set_property(std::string const& name, std::string const& value);
     
+    ImGuiIO& io() const;
+    
 private:
     MainWindow();
     void on_error(int error, const char* description);
@@ -29,6 +32,7 @@ private:
     std::vector<Window*> children_;
     std::unordered_map<std::string, std::string> properties_ {};
     ImGuiContext* context_;
+    ImGuiIO* io_;
     
     static constexpr float background_color[] = { 0.45f, 0.55f, 0.60f };
 };

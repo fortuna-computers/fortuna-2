@@ -13,6 +13,7 @@ CompilationResult Compiler::compile_from_project_file(std::string const& project
     ProjectFile project_file = load_project_file(project_filename);
     
     CompilationResult result;
+    result.project_file = project_file;
     for (SourceFile const& source: create_source_list(project_file)) {
         auto sources_path = fs::path(project_filename).parent_path();
         try {

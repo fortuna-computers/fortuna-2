@@ -53,7 +53,7 @@ MainWindow::MainWindow()
     // configure ImGui
     IMGUI_CHECKVERSION();
     context_ = ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
+    io_ = &ImGui::GetIO();
     ImGui_ImplGlfw_InitForOpenGL(window_, true);
     ImGui_ImplOpenGL3_Init(glsl_version.c_str());
     ImGui::StyleColorsDark();
@@ -160,6 +160,11 @@ void MainWindow::initialize_properties(ImGuiContext* p_context)
     };
     ini_handler.UserData = &properties_;
     p_context->SettingsHandlers.push_back(ini_handler);
+}
+
+ImGuiIO& MainWindow::io() const
+{
+    return *io_;
 }
 
 
