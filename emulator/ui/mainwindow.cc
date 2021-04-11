@@ -52,14 +52,14 @@ MainWindow::MainWindow()
     
     // configure ImGui
     IMGUI_CHECKVERSION();
-    ImGuiContext* context = ImGui::CreateContext();
+    context_ = ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     ImGui_ImplGlfw_InitForOpenGL(window_, true);
     ImGui_ImplOpenGL3_Init(glsl_version.c_str());
     ImGui::StyleColorsDark();
     
     // properties
-    initialize_properties(context);
+    initialize_properties(context_);
     ImGui::LoadIniSettingsFromDisk("imgui.ini");
 }
 
@@ -98,6 +98,13 @@ void MainWindow::run()
         
         glfwPollEvents();
     }
+}
+
+void MainWindow::force_end_frame()
+{
+    while (context_->CurrentWindowStack.Size > 1)
+        ImGui::End();
+    ImGui::EndFrame();
 }
 
 //
@@ -154,4 +161,5 @@ void MainWindow::initialize_properties(ImGuiContext* p_context)
     ini_handler.UserData = &properties_;
     p_context->SettingsHandlers.push_back(ini_handler);
 }
+
 

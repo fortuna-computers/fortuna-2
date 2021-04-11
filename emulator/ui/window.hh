@@ -6,6 +6,7 @@ public:
     [[nodiscard]] bool visible() const { return visible_; }
     void set_visible(bool visible) { visible_ = visible; }
     virtual void draw() = 0;
+    virtual void update() {}
 
 protected:
     Window() = default;

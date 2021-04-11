@@ -15,6 +15,8 @@ public:
 
     static MainWindow& get();
     
+    void force_end_frame();
+    
     std::string property(std::string const& name) const;
     void        set_property(std::string const& name, std::string const& value);
     
@@ -26,6 +28,7 @@ private:
     struct GLFWwindow* window_;
     std::vector<Window*> children_;
     std::unordered_map<std::string, std::string> properties_ {};
+    ImGuiContext* context_;
     
     static constexpr float background_color[] = { 0.45f, 0.55f, 0.60f };
 };
