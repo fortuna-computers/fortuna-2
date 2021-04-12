@@ -14,6 +14,8 @@ public:
     void on_open_video(std::function<void()> const& f) { on_open_video_ = f; }
     void on_open_storage(std::function<void()> const& f) { on_open_storage_ = f; }
     void on_open_demo(std::function<void()> const& f) { on_open_demo_ = f; }
+    
+    std::string name() const override { return "menu_window"; }
 
 private:
     std::function<void()> on_open_code_;

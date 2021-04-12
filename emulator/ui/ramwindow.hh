@@ -7,6 +7,7 @@
 class RamWindow : public Window {
 public:
     void draw() override;
+    std::string name() const override { return "ram_window"; }
 
 private:
     void draw_memory_table() const;

@@ -6,6 +6,7 @@
 class DemoWindow : public Window {
 public:
     void draw() override;
+    std::string name() const override { return "demo_window"; }
 };
 
 #endif

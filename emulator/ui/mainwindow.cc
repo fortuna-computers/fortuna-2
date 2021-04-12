@@ -133,6 +133,22 @@ void MainWindow::set_property(std::string const& name, std::string const& value)
     properties_[name] = value;
 }
 
+bool MainWindow::property_bool(std::string const& name) const
+{
+    std::string p = property(name);
+    if (p == "true")
+        return true;
+    return false;
+}
+
+void MainWindow::set_property_bool(std::string const& name, bool value)
+{
+    if (value)
+        set_property(name, "true");
+    else
+        set_property(name, "false");
+}
+
 void MainWindow::initialize_properties(ImGuiContext* p_context)
 {
     ImGuiSettingsHandler ini_handler;
@@ -156,15 +172,10 @@ void MainWindow::initialize_properties(ImGuiContext* p_context)
         auto& props = *reinterpret_cast<std::unordered_map<std::string, std::string>*>(h->UserData);
         buf->appendf("[UserData][Config]\n");
         for (auto& [k,v] : props)
-            buf->appendf((k + "=%s").c_str(), v.c_str());
+            buf->appendf((k + "=%s\n").c_str(), v.c_str());
     };
     ini_handler.UserData = &properties_;
     p_context->SettingsHandlers.push_back(ini_handler);
-}
-
-ImGuiIO& MainWindow::io() const
-{
-    return *io_;
 }
 
 

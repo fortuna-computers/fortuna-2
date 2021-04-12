@@ -11,6 +11,7 @@ public:
     
     void set_message(Type type, std::string const& message, std::string const& title = "");
     void draw() override;
+    std::string name() const override { return "message_box"; }
 
 private:
     std::string message_;

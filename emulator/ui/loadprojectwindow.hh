@@ -10,6 +10,7 @@ class LoadProjectWindow : public Window {
 public:
     LoadProjectWindow();
     void draw() override;
+    std::string name() const override { return "load_project_window"; }
     
     void on_start_executing(std::function<void(std::string const& filename)> const& f) { on_start_executing_ = f; }
 
