@@ -48,7 +48,7 @@ void RamWindow::draw()
     ImGui::End();
 }
 
-void RamWindow::draw_memory_table()
+void RamWindow::draw_memory_table() const
 {
     Emulator& emulator = Emulator::get();
     
@@ -58,7 +58,6 @@ void RamWindow::draw_memory_table()
                            | ImGuiTableFlags_ScrollY;
     static ImU32 pc_bg_color = ImGui::GetColorU32(ImVec4(0.2f, 0.6f, 0.2f, 0.65f));
     static ImU32 sp_bg_color = ImGui::GetColorU32(ImVec4(0.6f, 0.2f, 0.2f, 0.65f));
-    uint16_t page = ((uint16_t) page_number_) << 8;
     
     ImVec2 size = ImVec2(-FLT_MIN, 293);
     if (ImGui::BeginTable("##ram", 18, tbl_flags, size)) {
@@ -79,7 +78,7 @@ void RamWindow::draw_memory_table()
                 ImGui::TableNextRow();
                 
                 // address
-                uint16_t addr = page + (line * 0x10);
+                uint16_t addr = (page_number_ << 8) + (line * 0x10);
                 ImGui::TableSetColumnIndex(0);
                 ImGui::Text("%04X : ", addr);
                 
@@ -87,15 +86,12 @@ void RamWindow::draw_memory_table()
                 std::string ascii;
                 for (int i = 0; i < 0x10; ++i) {
                     ImGui::TableSetColumnIndex(i + 1);
-                    uint8_t byte = emulator.ram_get((line * 0x10) + i);
+                    uint8_t byte = emulator.ram_get(addr + (line * 0x10) + i);
                     bool needs_pop = false;
-                    /*
-                    if (addr + i == p().pc()) {
+                    if (addr + i == emulator.z80().PC.W)
                         ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, pc_bg_color);
-                    } else if (p().registers().has_value() && addr + i == p().registers().value().SP) {
+                    else if (addr + i == emulator.z80().SP.W)
                         ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, sp_bg_color);
-                    }
-                     */
                     if (byte == 0) {
                         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(ImColor(128, 128, 128)));
                         needs_pop = true;
@@ -118,13 +114,16 @@ void RamWindow::draw_memory_table()
 
 void RamWindow::draw_stack()
 {
-    /*
+    Emulator& emulator = Emulator::get();
+    
     char stack[512] = "Stack: ";
-    int n = strlen(stack);
-    for (uint8_t byte: m.stack())
-        n += sprintf(&stack[n], "%02X ", byte);
+    size_t n = strlen(stack);
+    for (uint16_t i = 0; i < 28; i += 2) {
+        uint16_t data = emulator.ram_get(emulator.z80().SP.W + i);
+        data |= emulator.ram_get(emulator.z80().SP.W + i + 1) << 8;
+        n += sprintf(&stack[n], "%04X ", data);
+    }
     ImGui::Text("%s", stack);
-    */
 }
 
 void RamWindow::go_to_page_number(int page)

@@ -4,17 +4,14 @@
 
 #include <cstddef>
 
-static constexpr size_t MEMORY_SIZE = 32 * 1024;
-static uint8_t ram_[MEMORY_SIZE] = { 0 };
-
 void WrZ80(word Addr,byte Value)
 {
-    ram_[Addr & (MEMORY_SIZE - 1)] = Value;
+    Emulator::get().ram_set(Addr, Value);
 }
 
 byte RdZ80(word Addr)
 {
-    return ram_[Addr & (MEMORY_SIZE - 1)];
+    return Emulator::get().ram_get(Addr);
 }
 
 void OutZ80(word Port,byte Value)
@@ -43,20 +40,15 @@ Emulator& Emulator::get()
 
 void Emulator::ram_set(uint16_t addr, uint8_t data)
 {
-    WrZ80(addr, data);
+    ram_[addr & (MEMORY_SIZE - 1)] = data;
 }
 
 uint8_t Emulator::ram_get(uint16_t addr) const
 {
-    return RdZ80(addr);
+    return ram_[addr & (MEMORY_SIZE - 1)];
 }
 
 size_t Emulator::ram_size()
 {
     return MEMORY_SIZE;
-}
-
-Z80* Emulator::z80() const
-{
-    return nullptr;
 }

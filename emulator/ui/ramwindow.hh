@@ -9,7 +9,7 @@ public:
     void draw() override;
 
 private:
-    void draw_memory_table();
+    void draw_memory_table() const;
     void go_to_page_number(int page);
     
     int16_t page_number_ = 0;
