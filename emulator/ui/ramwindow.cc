@@ -12,7 +12,7 @@ void RamWindow::draw()
 
     float h = 370;
     ImGui::SetNextWindowSize(ImVec2(560, h));
-    if (ImGui::Begin("Memory", &visible_)) {
+    if (ImGui::Begin("Memory", &visible_, ImGuiWindowFlags_NoResize)) {
         uint8_t page = page_number_;
         
         ImGui::AlignTextToFramePadding();

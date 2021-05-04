@@ -8,7 +8,7 @@ void CpuWindow::draw()
     Z80 const& z80 = emulator.z80();
     
     ImGui::SetNextWindowSize({ 265, 375 });
-    if (ImGui::Begin("CPU", nullptr, ImGuiWindowFlags_NoResize)) {
+    if (ImGui::Begin("CPU", &visible_, ImGuiWindowFlags_NoResize)) {
         if (emulator.stopped()) {
             ImGui::Text("Registers:");
             
