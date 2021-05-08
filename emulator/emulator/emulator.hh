@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <Z80.h>
+#include "terminal.hh"
 
 class Emulator {
 public:
@@ -16,18 +17,22 @@ public:
     Emulator(Emulator&&) = delete;
     Emulator& operator=(Emulator&&) = delete;
     
-    [[nodiscard]] bool stopped() const { return true; }
+    bool stopped() const { return true; }
     
-                  void    ram_set(uint16_t addr, uint8_t data);
-    [[nodiscard]] uint8_t ram_get(uint16_t addr) const;
+    void    ram_set(uint16_t addr, uint8_t data);
+    uint8_t ram_get(uint16_t addr) const;
     
-    [[nodiscard]] Z80 const& z80() const { return z80_; }
-    [[nodiscard]] Z80& z80() { return z80_; }
+    Z80 const& z80() const { return z80_; }
+    Z80& z80() { return z80_; }
+    
+    Terminal const& terminal() const { return terminal_; }
+    Terminal& terminal() { return terminal_; }
     
     static size_t ram_size();
 
 private:
     Emulator() = default;
+    Terminal terminal_ { 40, 25 };
     Z80 z80_ {};
     uint8_t ram_[MEMORY_SIZE] = { 0 };
 };

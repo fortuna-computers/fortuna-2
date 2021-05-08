@@ -4,6 +4,15 @@
 
 #include <cstddef>
 
+enum IORQ {
+    I_TERMINAL      = 0x1,
+    I_SD_B0         = 0x2,
+    I_SD_B1         = 0x3,
+    I_SD_B2         = 0x4,
+    I_SD_B3         = 0x5,
+    I_SD_ACTION     = 0x6,  // 0 = read, 1 = write
+};
+
 void WrZ80(word Addr,byte Value)
 {
     Emulator::get().ram_set(Addr, Value);
@@ -16,7 +25,11 @@ byte RdZ80(word Addr)
 
 void OutZ80(word Port,byte Value)
 {
-    (void) Port; (void) Value;  // TODO
+    switch (Port & 0xff) {
+        case I_TERMINAL:
+            Emulator::get().terminal().add_char(Value);
+            break;
+    }
 }
 
 byte InZ80(word Port)
