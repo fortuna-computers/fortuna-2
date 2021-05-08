@@ -17,16 +17,20 @@ set(IMGUI_SRC
     contrib/imgui/imgui_widgets.cpp contrib/imgui/backends/imgui_impl_glfw.cpp contrib/imgui/backends/imgui_impl_opengl3.cpp
     contrib/glad/src/gl.c)
 
-set(SOURCES
+set(GUI_SRC
     ${IMGUI_SRC}
+    ui/loadprojectwindow.cc ui/loadprojectwindow.hh manager.cc manager.hh ui/demowindow.cc ui/demowindow.hh
+    ui/messagebox.cc ui/messagebox.hh ui/ramwindow.cc ui/ramwindow.hh ui/menuwindow.cc ui/menuwindow.hh
+    ui/window.hh ui/mainwindow.cc ui/mainwindow.hh
+    ui/cpuwindow.cc ui/cpuwindow.hh ui/terminalwindow.cc ui/terminalwindow.hh)
+
+set(SOURCES
     contrib/z80/Z80.c
     compiler/compiler.hh compiler/compiler.cc compiler/projectfile.cc compiler/projectfile.hh compiler/compilationresult.hh
-    compiler/debug.hh compiler/debug.cc ui/window.hh ui/mainwindow.cc ui/mainwindow.hh emulator/emulator.cc
-    ui/loadprojectwindow.cc ui/loadprojectwindow.hh manager.cc manager.hh ui/demowindow.cc ui/demowindow.hh
-    ui/messagebox.cc ui/messagebox.hh ui/ramwindow.cc ui/ramwindow.hh emulator/emulator.hh ui/menuwindow.cc ui/menuwindow.hh ui/cpuwindow.cc ui/cpuwindow.hh ui/terminalwindow.cc ui/terminalwindow.hh)
+    compiler/debug.hh compiler/debug.cc emulator/emulator.hh emulator/emulator.cc emulator/terminal.cc emulator/terminal.hh)
 
 add_executable(emulator
-               main.cc ${SOURCES})
+               main.cc ${SOURCES} ${GUI_SRC})
 target_link_libraries(emulator
                       yaml-cpp stdc++fs glfw)
 
@@ -34,7 +38,7 @@ target_link_libraries(emulator
 
 add_executable(emulator-tests
                EXCLUDE_FROM_ALL
-               ${SOURCES} test/testmain.cc test/projectfile_test.cc test/compiler_test.cc)
+               ${SOURCES} test/testmain.cc test/projectfile_test.cc test/compiler_test.cc test/terminal_test.cc)
 target_link_libraries(emulator-tests
                       yaml-cpp stdc++fs)
 add_custom_command(
