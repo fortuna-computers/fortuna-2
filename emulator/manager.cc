@@ -16,6 +16,7 @@ Manager::Manager()
     menu_window_.on_open_cpu([this]() { cpu_window_.set_visible(true); });
     menu_window_.on_open_memory([this]() { ram_window_.set_visible(true); });
     menu_window_.on_open_demo([this]() { demo_window_.set_visible(true); });
+    menu_window_.on_open_terminal([this]() { terminal_window_.set_visible(true); });
     
     window_.add_window(load_project_window_);
     window_.add_window(message_box_);

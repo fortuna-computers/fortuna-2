@@ -14,8 +14,8 @@ void MenuWindow::draw()
         on_open_cpu_();
     if (ImGui::Button("Memory", size) && on_open_memory_)
         on_open_memory_();
-    if (ImGui::Button("Video", size) && on_open_video_)
-        on_open_video_();
+    if (ImGui::Button("Terminal", size) && on_open_terminal_)
+        on_open_terminal_();
     if (ImGui::Button("Storage", size) && on_open_storage_)
         on_open_storage_();
     if (ImGui::Button("Demo", size) && on_open_demo_)

@@ -4,6 +4,13 @@ Terminal::Terminal(size_t lines, size_t columns)
         : lines_(lines), columns_(columns)
 {
     reset();
+    
+    char c = 33;
+    for (size_t i = 0; i < lines * columns; ++i) {
+        add_char(c++);
+        if (c > 126)
+            c = 33;
+    }
 }
 
 void Terminal::add_char(uint16_t c)

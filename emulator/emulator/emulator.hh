@@ -32,7 +32,7 @@ public:
 
 private:
     Emulator() = default;
-    Terminal terminal_ { 40, 25 };
+    Terminal terminal_ { 25, 40 };
     Z80 z80_ {};
     uint8_t ram_[MEMORY_SIZE] = { 0 };
 };

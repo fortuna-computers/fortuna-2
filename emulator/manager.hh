@@ -9,6 +9,7 @@
 #include "ui/ramwindow.hh"
 #include "ui/menuwindow.hh"
 #include "ui/cpuwindow.hh"
+#include "ui/terminalwindow.hh"
 
 class Manager {
 public:
@@ -25,8 +26,9 @@ private:
     MenuWindow        menu_window_;
     RamWindow         ram_window_;
     CpuWindow         cpu_window_;
+    TerminalWindow    terminal_window_;
     
-    const std::vector<Window*> menu_windows_ = { &ram_window_, &demo_window_, &cpu_window_ };
+    const std::vector<Window*> menu_windows_ = { &ram_window_, &demo_window_, &cpu_window_, &terminal_window_ };
     
     std::optional<Debug> debug {};
     
