@@ -40,6 +40,13 @@ byte InZ80(word Port)
 
 word LoopZ80(Z80 *R)
 {
+    static Emulator& emulator = Emulator::get();
+    
+    if (emulator.keyboard_interrupt()) {
+        emulator.reset_keyboard_interrupt();
+        return 0xcf;  // RST 08h
+    }
+    
     return INT_QUIT;
 }
 
@@ -66,8 +73,8 @@ size_t Emulator::ram_size()
     return MEMORY_SIZE;
 }
 
-#include <iostream>
 void Emulator::keypress(uint8_t key)
 {
-    std::cout << (int) key << "\n";
+    last_keypress_ = key;
+    keyboard_interrupt_ = true;
 }
