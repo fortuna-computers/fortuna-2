@@ -11,7 +11,7 @@ void TerminalWindow::draw()
     float cursor_x = 0.0;
     std::optional<float> cursor_y;
     
-    ImGui::SetNextWindowSize({ static_cast<float>(terminal.columns() * 7) + 16, static_cast<float>(terminal.lines() * 17) + 40 });
+    ImGui::SetNextWindowSize({ static_cast<float>(terminal.columns() * 7) + 16, static_cast<float>(terminal.lines() * 18) + 32 });
     if (ImGui::Begin("Terminal", &visible_, ImGuiWindowFlags_NoResize)) {
     
         // terminal
@@ -27,8 +27,8 @@ void TerminalWindow::draw()
     
         // buttons
         if (Emulator::get().stopped()) {
-            if (ImGui::Button("Keypress... (F2)") || ImGui::IsKeyPressed(F2)) {
-                // show_keypress_modal = true;
+            if ((ImGui::Button("Keypress... (F2)") || ImGui::IsKeyPressed(F2)) && on_send_keypress_) {
+                on_send_keypress_();
             }
         }
     
