@@ -29,6 +29,8 @@ public:
     Terminal& terminal() { return terminal_; }
     
     static size_t ram_size();
+    
+    void keypress(uint8_t key);
 
 private:
     Emulator() = default;

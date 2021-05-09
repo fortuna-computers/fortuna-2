@@ -65,3 +65,9 @@ size_t Emulator::ram_size()
 {
     return MEMORY_SIZE;
 }
+
+#include <iostream>
+void Emulator::keypress(uint8_t key)
+{
+    std::cout << (int) key << "\n";
+}

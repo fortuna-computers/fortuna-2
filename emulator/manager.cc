@@ -18,9 +18,12 @@ Manager::Manager()
     menu_window_.on_open_demo([this]() { demo_window_.set_visible(true); });
     menu_window_.on_open_terminal([this]() { terminal_window_.set_visible(true); });
     
+    terminal_window_.on_send_keypress([this]() { send_keypress_window_.set_visible(true); });
+    
     window_.add_window(load_project_window_);
     window_.add_window(message_box_);
     window_.add_window(menu_window_);
+    window_.add_window(send_keypress_window_);
     for (auto const& window: menu_windows_)
         window_.add_window(*window);
 }

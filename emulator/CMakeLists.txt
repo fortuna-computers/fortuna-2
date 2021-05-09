@@ -22,7 +22,7 @@ set(GUI_SRC
     ui/loadprojectwindow.cc ui/loadprojectwindow.hh manager.cc manager.hh ui/demowindow.cc ui/demowindow.hh
     ui/messagebox.cc ui/messagebox.hh ui/ramwindow.cc ui/ramwindow.hh ui/menuwindow.cc ui/menuwindow.hh
     ui/window.hh ui/mainwindow.cc ui/mainwindow.hh
-    ui/cpuwindow.cc ui/cpuwindow.hh ui/terminalwindow.cc ui/terminalwindow.hh)
+    ui/cpuwindow.cc ui/cpuwindow.hh ui/terminalwindow.cc ui/terminalwindow.hh ui/sendkeypresswindow.cc ui/sendkeypresswindow.hh)
 
 set(SOURCES
     contrib/z80/Z80.c

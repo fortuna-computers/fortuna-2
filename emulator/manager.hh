@@ -10,6 +10,7 @@
 #include "ui/menuwindow.hh"
 #include "ui/cpuwindow.hh"
 #include "ui/terminalwindow.hh"
+#include "ui/sendkeypresswindow.hh"
 
 class Manager {
 public:
@@ -19,14 +20,15 @@ public:
     void run();
     
 private:
-    MainWindow&       window_;
-    DemoWindow        demo_window_;
-    LoadProjectWindow load_project_window_;
-    MessageBox        message_box_;
-    MenuWindow        menu_window_;
-    RamWindow         ram_window_;
-    CpuWindow         cpu_window_;
-    TerminalWindow    terminal_window_;
+    MainWindow&        window_;
+    DemoWindow         demo_window_;
+    LoadProjectWindow  load_project_window_;
+    MessageBox         message_box_;
+    SendKeypressWindow send_keypress_window_;
+    MenuWindow         menu_window_;
+    RamWindow          ram_window_;
+    CpuWindow          cpu_window_;
+    TerminalWindow     terminal_window_;
     
     const std::vector<Window*> menu_windows_ = { &ram_window_, &demo_window_, &cpu_window_, &terminal_window_ };
     
