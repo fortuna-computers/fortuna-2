@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <Z80.h>
 #include <optional>
+#include <fstream>
 #include "terminal.hh"
 
 class Emulator {
@@ -17,6 +18,8 @@ public:
     Emulator& operator=(Emulator const&) = delete;
     Emulator(Emulator&&) = delete;
     Emulator& operator=(Emulator&&) = delete;
+    
+    void initialize(std::vector<uint8_t> const& rom, std::optional<std::string> const& image_filename);
     
     bool stopped() const { return true; }
     
@@ -36,15 +39,16 @@ public:
     
     bool keyboard_interrupt() const { return keyboard_interrupt_; }
     void reset_keyboard_interrupt() { keyboard_interrupt_ = false; }
-
+    
 private:
     Emulator() = default;
     
-    Terminal               terminal_ { 25, 40 };
-    Z80                    z80_ {};
-    uint8_t                ram_[MEMORY_SIZE] = { 0 };
-    uint8_t                last_keypress_ = 0;
-    bool                   keyboard_interrupt_ = false;
+    Terminal                     terminal_ { 25, 40 };
+    Z80                          z80_ {};
+    uint8_t                      ram_[MEMORY_SIZE] = { 0 };
+    uint8_t                      last_keypress_ = 0;
+    bool                         keyboard_interrupt_ = false;
+    std::optional<std::ifstream> image_ {};
 };
 
 #endif //EMULATOR_EMULATOR_HH

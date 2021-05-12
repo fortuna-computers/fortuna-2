@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "Z80.h"
+#include "emulator/emulator.hh"
 
 Manager::Manager()
     : window_(MainWindow::get())
@@ -62,9 +63,10 @@ void Manager::load_project(std::string const& project_name)
     } else {
         debug = result.debug;
         auto& rom = result.binaries.at(result.project_file.debug->rom).data;
-        uint16_t addr = 0;
-        for (uint8_t byte: rom)
-            WrZ80(addr++, byte);
+        std::optional<std::string> image_filename = result.project_file.debug->image.has_value()
+                ? result.project_file.debug->image->name
+                : std::optional<std::string>{};
+        Emulator::get().initialize(rom, image_filename);
         menu_window_.set_visible(true);
         open_windows_from_last_time();
         load_project_window_.set_visible(false);
