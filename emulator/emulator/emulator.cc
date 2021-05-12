@@ -34,7 +34,12 @@ void OutZ80(word Port,byte Value)
 
 byte InZ80(word Port)
 {
-    (void) Port;   // TODO
+    switch (Port & 0xff) {
+        case I_TERMINAL:
+            auto key = Emulator::get().last_keypress();
+            Emulator::get().keypress(0);
+            return key;
+    }
     return 0;
 }
 
