@@ -13,20 +13,17 @@ enum IORQ {
     I_SD_ACTION     = 0x6,  // 0 = read, 1 = write
 };
 
-void Emulator::initialize(std::vector<uint8_t> const& rom, std::optional<std::string> const& image_filename)
+
+void Emulator::initialize(std::vector<uint8_t> const& rom, ProjectFile const& project_file)
 {
+    // load ROM into memory
     uint16_t addr = 0;
     for (uint8_t byte: rom)
         WrZ80(addr++, byte);
     
-    if (image_filename.has_value()) {
-        if (image_.has_value())
-            image_.value().close();
-        image_ = std::ifstream { image_filename.value(), std::ios::binary };
-        if (!(*image_) || image_->bad() || image_->fail())
-            throw std::runtime_error("Error opening image file " + *image_filename + ".");
-    }
+    create_image_file(project_file);
 }
+
 
 void WrZ80(word Addr,byte Value)
 {
@@ -97,4 +94,9 @@ void Emulator::keypress(uint8_t key)
 {
     last_keypress_ = key;
     keyboard_interrupt_ = true;
+}
+
+void Emulator::create_image_file(ProjectFile const& file)
+{
+    // TODO
 }

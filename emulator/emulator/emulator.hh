@@ -7,6 +7,7 @@
 #include <optional>
 #include <fstream>
 #include "terminal.hh"
+#include "../compiler/projectfile.hh"
 
 class Emulator {
 public:
@@ -19,7 +20,7 @@ public:
     Emulator(Emulator&&) = delete;
     Emulator& operator=(Emulator&&) = delete;
     
-    void initialize(std::vector<uint8_t> const& rom, std::optional<std::string> const& image_filename);
+    void initialize(std::vector<uint8_t> const& rom, ProjectFile const& project_file);
     
     bool stopped() const { return true; }
     
@@ -49,6 +50,8 @@ private:
     uint8_t                      last_keypress_ = 0;
     bool                         keyboard_interrupt_ = false;
     std::optional<std::ifstream> image_ {};
+    
+    void create_image_file(ProjectFile const& file);
 };
 
 #endif //EMULATOR_EMULATOR_HH

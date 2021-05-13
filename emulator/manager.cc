@@ -63,10 +63,7 @@ void Manager::load_project(std::string const& project_name)
     } else {
         debug = result.debug;
         auto& rom = result.binaries.at(result.project_file.debug->rom).data;
-        std::optional<std::string> image_filename = result.project_file.debug->image.has_value()
-                ? result.project_file.debug->image->name
-                : std::optional<std::string>{};
-        Emulator::get().initialize(rom, image_filename);
+        Emulator::get().initialize(rom, result.project_file);
         menu_window_.set_visible(true);
         open_windows_from_last_time();
         load_project_window_.set_visible(false);
