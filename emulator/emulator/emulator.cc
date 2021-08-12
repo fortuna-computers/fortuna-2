@@ -1,6 +1,7 @@
 #include "emulator.hh"
 
 #include "Z80.h"
+#include "image.hh"
 
 #include <cstddef>
 
@@ -21,7 +22,7 @@ void Emulator::initialize(std::vector<uint8_t> const& rom, ProjectFile const& pr
     for (uint8_t byte: rom)
         WrZ80(addr++, byte);
     
-    create_image_file(project_file);
+    image_filename_ = image_file_create(project_file);
 }
 
 
@@ -94,9 +95,4 @@ void Emulator::keypress(uint8_t key)
 {
     last_keypress_ = key;
     keyboard_interrupt_ = true;
-}
-
-void Emulator::create_image_file(ProjectFile const& file)
-{
-    // TODO
 }

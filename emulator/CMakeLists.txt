@@ -22,12 +22,12 @@ set(GUI_SRC
     ui/loadprojectwindow.cc ui/loadprojectwindow.hh manager.cc manager.hh ui/demowindow.cc ui/demowindow.hh
     ui/messagebox.cc ui/messagebox.hh ui/ramwindow.cc ui/ramwindow.hh ui/menuwindow.cc ui/menuwindow.hh
     ui/window.hh ui/mainwindow.cc ui/mainwindow.hh
-    ui/cpuwindow.cc ui/cpuwindow.hh ui/terminalwindow.cc ui/terminalwindow.hh ui/sendkeypresswindow.cc ui/sendkeypresswindow.hh)
+    ui/cpuwindow.cc ui/cpuwindow.hh ui/terminalwindow.cc ui/terminalwindow.hh ui/sendkeypresswindow.cc ui/sendkeypresswindow.hh ui/codewindow.cc ui/codewindow.hh)
 
 set(SOURCES
     contrib/z80/Z80.c
     compiler/compiler.hh compiler/compiler.cc compiler/projectfile.cc compiler/projectfile.hh compiler/compilationresult.hh
-    compiler/debug.hh compiler/debug.cc emulator/emulator.hh emulator/emulator.cc emulator/terminal.cc emulator/terminal.hh)
+    compiler/debug.hh compiler/debug.cc emulator/emulator.hh emulator/emulator.cc emulator/terminal.cc emulator/terminal.hh emulator/image.hh emulator/image.cc)
 
 add_executable(emulator
                main.cc ${SOURCES} ${GUI_SRC})

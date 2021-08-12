@@ -49,9 +49,8 @@ private:
     uint8_t                      ram_[MEMORY_SIZE] = { 0 };
     uint8_t                      last_keypress_ = 0;
     bool                         keyboard_interrupt_ = false;
+    std::string                  image_filename_ = "";
     std::optional<std::ifstream> image_ {};
-    
-    void create_image_file(ProjectFile const& file);
 };
 
 #endif //EMULATOR_EMULATOR_HH
