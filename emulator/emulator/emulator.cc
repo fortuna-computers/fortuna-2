@@ -96,3 +96,18 @@ void Emulator::keypress(uint8_t key)
     last_keypress_ = key;
     keyboard_interrupt_ = true;
 }
+
+void Emulator::step()
+{
+    RunZ80(&z80_);
+}
+
+void Emulator::soft_reset()
+{
+    ResetZ80(&z80_);
+}
+
+uint16_t Emulator::pc() const
+{
+    return z80_.PC.W;
+}

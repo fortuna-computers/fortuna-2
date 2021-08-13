@@ -11,7 +11,7 @@ public:
     
     std::string name() const override { return "code"; }
     
-    void set_debug(Debug const& debug) { code_model_.emplace(debug); }
+    void set_debug(Debug const& debug);
 
 private:
     void draw_buttons();

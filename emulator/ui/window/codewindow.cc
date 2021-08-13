@@ -21,15 +21,15 @@ void CodeWindow::draw_buttons()
     
     if (emulator.stopped()) {
         if (ImGui::Button("Step (F7)") || ImGui::IsKeyPressed(F7, false)) {
-            /*
             emulator.step();
             scroll_to_pc_ = true;
-             */
+            code_model_->update(false);
         }
         ImGui::SameLine();
         if (ImGui::Button("Next (F8)") || ImGui::IsKeyPressed(F8, false)) {
             /*
             emulator.next();
+            code_model_->update(false);
             scroll_to_pc_ = true;
              */
         }
@@ -43,6 +43,7 @@ void CodeWindow::draw_buttons()
         if (ImGui::Button("Stop (Ctrl+C)") || (main_window.io().KeyCtrl && ImGui::IsKeyPressed('c', false))) {
             /*
             emulator.stop();
+            code_model_->update(false);
             scroll_to_pc_ = true;
              */
         }
@@ -62,9 +63,7 @@ void CodeWindow::draw_code()
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
     if (emulator.stopped())
-        ;/*
         ImGui::Button(code_model_->file_selected().has_value() ? code_model_->file_selected()->c_str() : "No file selected");
-         */
     else
         ImGui::Button("Code in execution...");
     ImGui::PopStyleColor(3);
@@ -91,7 +90,6 @@ void CodeWindow::draw_code()
         ImGui::TableHeadersRow();
         
         if (emulator.stopped()) {
-            /*
             size_t nline = 1;
             for (auto const& line: code_model_->lines()) {
                 ImGui::TableNextRow();
@@ -137,7 +135,6 @@ void CodeWindow::draw_code()
                 
                 ++nline;
             }
-             */
         }
         
         ImGui::EndTable();
@@ -153,11 +150,9 @@ void CodeWindow::draw_footer()
     if (emulator.stopped()) {
         ImGui::Text("Click on the address to set a breakpoint.");
         
-        if (ImGui::Button("Reset CPU")) {
-            /*
-            emulator.reset();
+        if (ImGui::Button("Soft Reset")) {
+            emulator.soft_reset();
             scroll_to_pc_ = true;
-             */
         }
         ImGui::SameLine();
         if (ImGui::Button("Recompile project (Ctrl+R)") || (main_window.io().KeyCtrl && ImGui::IsKeyPressed('r', false))) {
@@ -178,4 +173,9 @@ void CodeWindow::draw_footer()
         if (ImGui::Button("Advanced..."))
             ; // show_advanced_window = true;
     }
+}
+
+void CodeWindow::set_debug(Debug const& debug)
+{
+    code_model_.emplace(debug);
 }

@@ -24,6 +24,11 @@ public:
     
     bool stopped() const { return true; }
     
+    void step();
+    void soft_reset();
+    
+    uint16_t pc() const;
+    
     void    ram_set(uint16_t addr, uint8_t data);
     uint8_t ram_get(uint16_t addr) const;
     
