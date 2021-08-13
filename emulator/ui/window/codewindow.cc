@@ -2,7 +2,7 @@
 
 #include "imgui.h"
 #include "mainwindow.hh"
-#include "../emulator/emulator.hh"
+#include "../../emulator/emulator.hh"
 
 void CodeWindow::draw()
 {
@@ -22,51 +22,39 @@ void CodeWindow::draw_buttons()
     if (emulator.stopped()) {
         if (ImGui::Button("Step (F7)") || ImGui::IsKeyPressed(F7, false)) {
             /*
-            try {
-                p().step();
-                scroll_to_pc = true;
-            } catch (std::runtime_error& e) {
-                error("Error during step", e.what());
-            }
+            emulator.step();
+            scroll_to_pc_ = true;
              */
         }
         ImGui::SameLine();
         if (ImGui::Button("Next (F8)") || ImGui::IsKeyPressed(F8, false)) {
             /*
-            try {
-                p().next();
-                scroll_to_pc = true;
-            } catch (std::runtime_error& e) {
-                error("Error during next step", e.what());
-            }
+            emulator.next();
+            scroll_to_pc_ = true;
              */
         }
         ImGui::SameLine();
         if (ImGui::Button("Run (F9)") || ImGui::IsKeyPressed(F9, false)) {
             /*
-            try { p().continue_(); } catch (std::runtime_error& e) { error("Error during continue", e.what()); }
+            emulator.continue_();
              */
         }
     } else {
         if (ImGui::Button("Stop (Ctrl+C)") || (main_window.io().KeyCtrl && ImGui::IsKeyPressed('c', false))) {
             /*
-            try {
-                p().stop();
-                scroll_to_pc = true;
-            } catch (std::runtime_error& e) {
-                error("Error stopping execution", e.what());
-            }
-            */
+            emulator.stop();
+            scroll_to_pc_ = true;
+             */
         }
     }
 }
 
 void CodeWindow::draw_code()
 {
+    if (!code_model_.has_value())
+        return;
+    
     Emulator& emulator = Emulator::get();
-    /*
-    CodeView& c = p().codeview();
-     */
     
     // filename
     ImGui::PushID(0);
@@ -74,7 +62,9 @@ void CodeWindow::draw_code()
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
     if (emulator.stopped())
-        ;// ImGui::Button(c.file_selected().has_value() ? c.file_selected()->c_str() : "No file selected");
+        ;/*
+        ImGui::Button(code_model_->file_selected().has_value() ? code_model_->file_selected()->c_str() : "No file selected");
+         */
     else
         ImGui::Button("Code in execution...");
     ImGui::PopStyleColor(3);
@@ -102,51 +92,51 @@ void CodeWindow::draw_code()
         
         if (emulator.stopped()) {
             /*
-                size_t nline = 1;
-                for (auto const& line: c.lines()) {
-                    ImGui::TableNextRow();
-                    
-                    if (line.address.has_value()) {
-                        if (*line.address == p().pc()) {
-                            ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, pc_row_color);
-                            if (scroll_to_pc) {
-                                ImGui::SetScrollHereY();
-                                scroll_to_pc = false;
-                            }
-                        }
-                        
-                        if (line.is_breakpoint)
-                            ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, bkp_cell_color, 0);
-                        
-                        if (nline == show_this_line_on_next_frame.value_or(-1)) {
+            size_t nline = 1;
+            for (auto const& line: code_model_->lines()) {
+                ImGui::TableNextRow();
+                
+                if (line.address.has_value()) {
+                    if (*line.address == emulator.pc()) {
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, pc_row_color);
+                        if (scroll_to_pc_) {
                             ImGui::SetScrollHereY();
-                            show_this_line_on_next_frame.reset();
-                        }
-                        
-                        ImGui::TableSetColumnIndex(0);
-                        char buf[5];
-                        sprintf(buf, "%04X", *line.address);
-                        if (ImGui::Selectable(buf)) {
-                            if (line.is_breakpoint)
-                                c.remove_breakpoint(nline);
-                            else
-                                c.add_breakpoint(nline);
+                            scroll_to_pc_ = false;
                         }
                     }
                     
-                    ImGui::TableSetColumnIndex(1);
-                    char buf[30] = { 0 };
-                    int pos = 0;
-                    for (auto b: line.bytes)
-                        pos += sprintf(&buf[pos], "%02X ", b);
-                    if (!line.bytes.empty())
-                        ImGui::Text("%s", buf);
+                    if (line.is_breakpoint)
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, bkp_cell_color, 0);
                     
-                    ImGui::TableSetColumnIndex(2);
-                    ImGui::Text("%s", line.code.c_str());
+                    if (nline == show_this_line_on_next_frame.value_or(-1)) {
+                        ImGui::SetScrollHereY();
+                        show_this_line_on_next_frame.reset();
+                    }
                     
-                    ++nline;
+                    ImGui::TableSetColumnIndex(0);
+                    char buf[5];
+                    sprintf(buf, "%04X", *line.address);
+                    if (ImGui::Selectable(buf)) {
+                        if (line.is_breakpoint)
+                            code_model_->remove_breakpoint(nline);
+                        else
+                            code_model_->add_breakpoint(nline);
+                    }
                 }
+                
+                ImGui::TableSetColumnIndex(1);
+                char buf[30] = { 0 };
+                int pos = 0;
+                for (auto b: line.bytes)
+                    pos += sprintf(&buf[pos], "%02X ", b);
+                if (!line.bytes.empty())
+                    ImGui::Text("%s", buf);
+                
+                ImGui::TableSetColumnIndex(2);
+                ImGui::Text("%s", line.code.c_str());
+                
+                ++nline;
+            }
              */
         }
         
@@ -165,27 +155,17 @@ void CodeWindow::draw_footer()
         
         if (ImGui::Button("Reset CPU")) {
             /*
-            try {
-                p().reset();
-                scroll_to_pc = true;
-            } catch (std::runtime_error& e) {
-                error("Error resetting CPU", e.what());
-            }
-            */
+            emulator.reset();
+            scroll_to_pc_ = true;
+             */
         }
         ImGui::SameLine();
         if (ImGui::Button("Recompile project (Ctrl+R)") || (main_window.io().KeyCtrl && ImGui::IsKeyPressed('r', false))) {
             /*
-            try {
-                p().recompile_project();
-                if (config.emulator_mode)
-                    p().upload_compiled();
-                update_symbol_list();
-                p().reset();
-                scroll_to_pc = true;
-            } catch (std::runtime_error& e) {
-                error("Error recompiling project", e.what());
-            }
+            p().recompile_project();  // TODO ???
+            update_symbol_list();
+            emulator.reset();
+            scroll_to_pc_ = true;
              */
         }
         ImGui::SameLine();

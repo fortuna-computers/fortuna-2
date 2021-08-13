@@ -19,10 +19,10 @@ set(IMGUI_SRC
 
 set(GUI_SRC
     ${IMGUI_SRC}
-    ui/loadprojectwindow.cc ui/loadprojectwindow.hh manager.cc manager.hh ui/demowindow.cc ui/demowindow.hh
-    ui/messagebox.cc ui/messagebox.hh ui/ramwindow.cc ui/ramwindow.hh ui/menuwindow.cc ui/menuwindow.hh
-    ui/window.hh ui/mainwindow.cc ui/mainwindow.hh
-    ui/cpuwindow.cc ui/cpuwindow.hh ui/terminalwindow.cc ui/terminalwindow.hh ui/sendkeypresswindow.cc ui/sendkeypresswindow.hh ui/codewindow.cc ui/codewindow.hh)
+    ui/window/loadprojectwindow.cc ui/window/loadprojectwindow.hh manager.cc manager.hh ui/window/demowindow.cc ui/window/demowindow.hh
+    ui/modal/messagebox.cc ui/modal/messagebox.hh ui/window/ramwindow.cc ui/window/ramwindow.hh ui/window/menuwindow.cc ui/window/menuwindow.hh
+    ui/window.hh ui/window/mainwindow.cc ui/window/mainwindow.hh
+    ui/window/cpuwindow.cc ui/window/cpuwindow.hh ui/window/terminalwindow.cc ui/window/terminalwindow.hh ui/modal/sendkeypressmodal.cc ui/modal/sendkeypressmodal.hh ui/window/codewindow.cc ui/window/codewindow.hh ui/model/codemodel.cc ui/model/codemodel.hh)
 
 set(SOURCES
     contrib/z80/Z80.c

@@ -2,7 +2,7 @@
 #define EMULATOR_RAMWINDOW_HH
 
 #include <cstdint>
-#include "window.hh"
+#include "../window.hh"
 
 class RamWindow : public Window {
 public:

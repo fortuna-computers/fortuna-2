@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "window.hh"
+#include "../window.hh"
 
 class MessageBox : public Window {
 public:

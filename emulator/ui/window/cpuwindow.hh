@@ -1,7 +1,7 @@
 #ifndef EMULATOR_CPUWINDOW_HH
 #define EMULATOR_CPUWINDOW_HH
 
-#include "window.hh"
+#include "../window.hh"
 
 class CpuWindow : public Window {
 public:

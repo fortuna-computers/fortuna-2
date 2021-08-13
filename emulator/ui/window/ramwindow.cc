@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <climits>
 #include "imgui.h"
-#include "../emulator/emulator.hh"
+#include "../../emulator/emulator.hh"
 #include "mainwindow.hh"
 
 void RamWindow::draw()

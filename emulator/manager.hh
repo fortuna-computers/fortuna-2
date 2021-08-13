@@ -2,16 +2,16 @@
 #define EMULATOR_MANAGER_HH
 
 #include "compiler/debug.hh"
-#include "ui/mainwindow.hh"
-#include "ui/demowindow.hh"
-#include "ui/loadprojectwindow.hh"
-#include "ui/messagebox.hh"
-#include "ui/ramwindow.hh"
-#include "ui/menuwindow.hh"
-#include "ui/cpuwindow.hh"
-#include "ui/terminalwindow.hh"
-#include "ui/sendkeypresswindow.hh"
-#include "ui/codewindow.hh"
+#include "ui/window/mainwindow.hh"
+#include "ui/window/demowindow.hh"
+#include "ui/window/loadprojectwindow.hh"
+#include "ui/modal/messagebox.hh"
+#include "ui/window/ramwindow.hh"
+#include "ui/window/menuwindow.hh"
+#include "ui/window/cpuwindow.hh"
+#include "ui/window/terminalwindow.hh"
+#include "ui/modal/sendkeypressmodal.hh"
+#include "ui/window/codewindow.hh"
 
 class Manager {
 public:
@@ -25,7 +25,7 @@ private:
     DemoWindow         demo_window_;
     LoadProjectWindow  load_project_window_;
     MessageBox         message_box_;
-    SendKeypressWindow send_keypress_window_;
+    SendKeypressModal send_keypress_window_;
     MenuWindow         menu_window_;
     RamWindow          ram_window_;
     CpuWindow          cpu_window_;

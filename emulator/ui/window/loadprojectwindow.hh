@@ -4,7 +4,7 @@
 #include <functional>
 #include "imgui.h"
 #include "imfilebrowser.h"
-#include "window.hh"
+#include "../window.hh"
 
 class LoadProjectWindow : public Window {
 public:

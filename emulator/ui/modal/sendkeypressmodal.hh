@@ -1,10 +1,10 @@
-#ifndef EMULATOR_SENDKEYPRESSWINDOW_HH
-#define EMULATOR_SENDKEYPRESSWINDOW_HH
+#ifndef EMULATOR_SENDKEYPRESSMODAL_HH
+#define EMULATOR_SENDKEYPRESSMODAL_HH
 
 #include <vector>
-#include "window.hh"
+#include "../window.hh"
 
-class SendKeypressWindow : public Window {
+class SendKeypressModal : public Window {
 public:
     void draw() override;
     

@@ -3,7 +3,7 @@
 
 #include <functional>
 
-#include "window.hh"
+#include "../window.hh"
 
 class MenuWindow : public Window {
 public:

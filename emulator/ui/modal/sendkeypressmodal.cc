@@ -1,10 +1,10 @@
 #include <imgui.h>
 #include <GLFW/glfw3.h>
-#include "sendkeypresswindow.hh"
-#include "../emulator/emulator.hh"
-#include "mainwindow.hh"
+#include "sendkeypressmodal.hh"
+#include "../../emulator/emulator.hh"
+#include "../window/mainwindow.hh"
 
-void SendKeypressWindow::draw()
+void SendKeypressModal::draw()
 {
     if (ImGui::BeginPopupModal("Keypress", &visible_, ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui::Text("Press a key to send to the Z80 computer.");
@@ -21,7 +21,7 @@ void SendKeypressWindow::draw()
         ImGui::OpenPopup("Keypress");
 }
 
-bool SendKeypressWindow::do_keypress()
+bool SendKeypressModal::do_keypress()
 {
     ImGuiIO& io = MainWindow::get().io();
     
@@ -36,7 +36,7 @@ bool SendKeypressWindow::do_keypress()
     return press;
 }
 
-std::vector<uint8_t> SendKeypressWindow::translate_keypress(int key, bool ctrl, bool shift, bool alt, bool super)
+std::vector<uint8_t> SendKeypressModal::translate_keypress(int key, bool ctrl, bool shift, bool alt, bool super)
 {
     // std::cout << "Keypress: " << key << std::endl;
     

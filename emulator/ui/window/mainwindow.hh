@@ -5,7 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <imgui.h>
-#include "window.hh"
+#include "../window.hh"
 
 class MainWindow {
 public:

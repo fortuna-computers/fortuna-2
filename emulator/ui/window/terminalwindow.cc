@@ -1,7 +1,7 @@
 #include <optional>
 #include "terminalwindow.hh"
 
-#include "../emulator/emulator.hh"
+#include "../../emulator/emulator.hh"
 #include "imgui.h"
 
 void TerminalWindow::draw()

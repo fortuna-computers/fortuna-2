@@ -2,7 +2,7 @@
 #define EMULATOR_TERMINALWINDOW_HH
 
 #include <functional>
-#include "window.hh"
+#include "../window.hh"
 
 class TerminalWindow : public Window {
 public:

@@ -1,5 +1,5 @@
 #include "cpuwindow.hh"
-#include "../emulator/emulator.hh"
+#include "../../emulator/emulator.hh"
 #include "imgui.h"
 
 void CpuWindow::draw()
