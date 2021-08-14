@@ -1,2 +1,3 @@
     ld  a, 0f0h  ; 3E F0
+    nop          ; 00
     jp  200h     ; C3 00 02

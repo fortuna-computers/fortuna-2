@@ -6,12 +6,11 @@
 enum class Order { Source, Alphabetical };
 
 struct CodeViewLine {
-    CodeViewLine(std::string code, std::optional<uint16_t> const& address, bool is_pc, bool is_breakpoint, std::vector<uint8_t> bytes)
-            : code(std::move(code)), address(address), is_pc(is_pc), is_breakpoint(is_breakpoint), bytes(std::move(bytes)) {}
+    CodeViewLine(std::string code, std::optional<uint16_t> const& address, bool is_breakpoint, std::vector<uint8_t> bytes)
+            : code(std::move(code)), address(address), is_breakpoint(is_breakpoint), bytes(std::move(bytes)) {}
     
     std::string             code;
     std::optional<uint16_t> address;
-    bool                    is_pc;
     bool                    is_breakpoint;
     std::vector<uint8_t>    bytes;
 };
@@ -24,17 +23,17 @@ public:
     std::vector<CodeViewLine> const&  lines() const { return lines_; }
     std::optional<std::string> const& file_selected() const { return file_selected_; }
     
-    void update(bool update_file_selected);
+    void update();
     
     void add_breakpoint(size_t line);
     void remove_breakpoint(size_t line);
 
 private:
-    Debug const&               debug_;
+    Debug                      debug_;
     std::vector<CodeViewLine>  lines_;
     std::optional<std::string> file_selected_;
     
-    std::optional<SourceLine> find_pc_location(bool update_file_selected);
+    std::optional<SourceLine> find_pc_location();
     void                      create_lines(std::string const& filename);
 };
 
