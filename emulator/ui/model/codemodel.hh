@@ -29,7 +29,7 @@ public:
     void remove_breakpoint(size_t line);
 
 private:
-    Debug                      debug_;
+    Debug const&               debug_;
     std::vector<CodeViewLine>  lines_;
     std::optional<std::string> file_selected_;
     

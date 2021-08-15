@@ -12,6 +12,7 @@
 #include "ui/window/terminalwindow.hh"
 #include "ui/modal/sendkeypressmodal.hh"
 #include "ui/window/codewindow.hh"
+#include "ui/window/fileselectwindow.hh"
 
 class Manager {
 public:
@@ -31,6 +32,7 @@ private:
     CpuWindow          cpu_window_;
     TerminalWindow     terminal_window_;
     CodeWindow         code_window_;
+    FileSelectWindow   file_select_window_;
     
     const std::vector<Window*> menu_windows_ = { &code_window_, &ram_window_, &demo_window_, &cpu_window_, &terminal_window_ };
     

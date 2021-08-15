@@ -26,6 +26,7 @@ Manager::Manager()
     window_.add_window(message_box_);
     window_.add_window(menu_window_);
     window_.add_window(send_keypress_window_);
+    window_.add_window(file_select_window_);
     for (auto const& window: menu_windows_)
         window_.add_window(*window);
 }
@@ -62,12 +63,15 @@ void Manager::load_project(std::string const& project_name)
     if (result.error.has_value()) {
         message_box_.set_message(MessageBox::Error, result.error.value());
     } else {
+        this->debug = result.debug;
         auto& rom = result.binaries.at(result.project_file.debug->rom).data;
         Emulator::get().initialize(rom, result.project_file);
         menu_window_.set_visible(true);
-        code_window_.set_debug(result.debug);
         open_windows_from_last_time();
         load_project_window_.set_visible(false);
+    
+        code_window_.set_debug(*debug);
+        file_select_window_.set_debug(*debug);
     }
 }
 
