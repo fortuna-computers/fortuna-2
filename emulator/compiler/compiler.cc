@@ -208,6 +208,7 @@ size_t Compiler::read_address(SourceFile const& source, Filenames const& filenam
     std::string const& filename = filenames.at(file_number);
     result.debug.source.at(filename)[file_line].address = addr;
     result.debug.location.insert({ addr, { filename, file_line } });
+    result.debug.reverse_location.insert({ { filename, file_line }, addr });
     
     // add bytes
     size_t pos = 30;

@@ -6,6 +6,7 @@
 #include <Z80.h>
 #include <optional>
 #include <fstream>
+#include <unordered_set>
 #include "terminal.hh"
 #include "../compiler/projectfile.hh"
 
@@ -46,6 +47,11 @@ public:
     bool keyboard_interrupt() const { return keyboard_interrupt_; }
     void reset_keyboard_interrupt() { keyboard_interrupt_ = false; }
     
+    void add_breakpoint(uint16_t addr)      { breakpoints_.insert(addr); }
+    void remove_breakpoint(uint16_t addr)   { breakpoints_.erase(addr); }
+    void remove_all_breakpoints()           { breakpoints_.clear(); }
+    bool is_breakpoint(uint16_t addr) const { return breakpoints_.find(addr) != breakpoints_.end(); }
+    
 private:
     Emulator() = default;
     
@@ -56,6 +62,7 @@ private:
     bool                         keyboard_interrupt_ = false;
     std::string                  image_filename_ = "";
     std::optional<std::ifstream> image_ {};
+    std::unordered_set<uint16_t> breakpoints_;
 };
 
 #endif //EMULATOR_EMULATOR_HH

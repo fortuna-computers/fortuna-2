@@ -23,6 +23,12 @@ struct SourceLine {
     
     bool operator==(SourceLine const& rhs) const;
     friend std::ostream& operator<<(std::ostream& os, SourceLine const& line_);
+    
+    struct HashFunction {
+        size_t operator()(SourceLine const& sl) const {
+            return std::hash<std::string>()(sl.filename) ^ std::hash<size_t>()(sl.line);
+        }
+    };
 };
 
 using NumberOfLines = size_t;
@@ -30,14 +36,16 @@ using NumberOfLines = size_t;
 using SourceAddresses = std::unordered_map<size_t, SourceAddress>;
 using Source          = std::unordered_map<std::string, SourceAddresses>;
 using Location        = std::unordered_map<uint16_t, SourceLine>;
+using ReverseLocation = std::unordered_map<SourceLine, uint16_t, SourceLine::HashFunction>;
 using Symbols         = std::unordered_map<std::string, uint16_t>;
 using Files           = std::unordered_map<std::string, NumberOfLines>;
 
 struct Debug {
-    Source   source;
-    Location location;
-    Symbols  symbols;
-    Files    files;
+    Source          source;
+    Location        location;
+    ReverseLocation reverse_location;
+    Symbols         symbols;
+    Files           files;
 };
 
 std::ostream& operator<<(std::ostream& os, Files const& files);
