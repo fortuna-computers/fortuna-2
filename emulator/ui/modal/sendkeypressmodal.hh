@@ -6,6 +6,8 @@
 
 class SendKeypressModal : public Window {
 public:
+    explicit SendKeypressModal(Emulator& emulator) : Window(emulator) {}
+    
     void draw() override;
     
     std::string name() const override { return "sendkeypress"; }

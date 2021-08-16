@@ -6,6 +6,8 @@
 
 class TerminalWindow : public Window {
 public:
+    explicit TerminalWindow(Emulator& emulator) : Window(emulator) {}
+    
     void draw() override;
     
     std::string name() const override { return "terminal"; }

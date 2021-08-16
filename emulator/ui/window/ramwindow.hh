@@ -6,6 +6,8 @@
 
 class RamWindow : public Window {
 public:
+    explicit RamWindow(Emulator& emulator) : Window(emulator) {}
+    
     void draw() override;
     std::string name() const override { return "ram_window"; }
 

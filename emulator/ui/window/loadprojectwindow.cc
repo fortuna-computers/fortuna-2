@@ -1,8 +1,8 @@
 #include "loadprojectwindow.hh"
 #include "../gui/gui.hh"
 
-LoadProjectWindow::LoadProjectWindow(Properties& properties)
-    : properties_(properties)
+LoadProjectWindow::LoadProjectWindow(Emulator& emulator, Properties& properties)
+    : Window(emulator), properties_(properties)
 {
     file_browser_.SetTitle("title");
     file_browser_.SetTypeFilters({ ".yaml", "" });

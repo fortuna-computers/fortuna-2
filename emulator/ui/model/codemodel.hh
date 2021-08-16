@@ -2,6 +2,7 @@
 #define EMULATOR_CODEMODEL_HH
 
 #include "../../compiler/debug.hh"
+#include "../../emulator/emulator.hh"
 
 enum class Order { Source, Alphabetical };
 
@@ -18,7 +19,7 @@ struct CodeViewLine {
 
 class CodeModel {
 public:
-    explicit CodeModel(Debug const& debug);
+    explicit CodeModel(Emulator& emulator, Debug const& debug);
     
     std::vector<CodeViewLine> const&  lines() const { return lines_; }
     std::optional<std::string> const& file_selected() const { return file_selected_; }
@@ -33,6 +34,7 @@ public:
     Debug const& debug() const { return debug_; }
 
 private:
+    Emulator&                  emulator_;
     Debug                      debug_;
     std::vector<CodeViewLine>  lines_;
     std::optional<std::string> file_selected_;

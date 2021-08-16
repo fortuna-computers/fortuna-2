@@ -14,6 +14,12 @@ enum IORQ {
     I_SD_ACTION     = 0x6,  // 0 = read, 1 = write
 };
 
+static Emulator* emulator;
+
+Emulator::Emulator()
+{
+    emulator = this;
+}
 
 void Emulator::initialize(std::vector<uint8_t> const& rom, ProjectFile const& project_file)
 {
@@ -28,19 +34,19 @@ void Emulator::initialize(std::vector<uint8_t> const& rom, ProjectFile const& pr
 
 void WrZ80(word Addr,byte Value)
 {
-    Emulator::get().ram_set(Addr, Value);
+    emulator->ram_set(Addr, Value);
 }
 
 byte RdZ80(word Addr)
 {
-    return Emulator::get().ram_get(Addr);
+    return emulator->ram_get(Addr);
 }
 
 void OutZ80(word Port,byte Value)
 {
     switch (Port & 0xff) {
         case I_TERMINAL:
-            Emulator::get().terminal().add_char(Value);
+            emulator->terminal().add_char(Value);
             break;
     }
 }
@@ -49,8 +55,8 @@ byte InZ80(word Port)
 {
     switch (Port & 0xff) {
         case I_TERMINAL:
-            auto key = Emulator::get().last_keypress();
-            Emulator::get().keypress(0);
+            auto key = emulator->last_keypress();
+            emulator->keypress(0);
             return key;
     }
     return 0;
@@ -58,10 +64,8 @@ byte InZ80(word Port)
 
 word LoopZ80(Z80 *R)
 {
-    static Emulator& emulator = Emulator::get();
-    
-    if (emulator.keyboard_interrupt()) {
-        emulator.reset_keyboard_interrupt();
+    if (emulator->keyboard_interrupt()) {
+        emulator->reset_keyboard_interrupt();
         return 0xcf;  // RST 08h
     }
     
@@ -69,12 +73,6 @@ word LoopZ80(Z80 *R)
 }
 
 void PatchZ80(Z80 *R) { (void) R; }
-
-Emulator& Emulator::get()
-{
-    static Emulator emulator;
-    return emulator;
-}
 
 void Emulator::ram_set(uint16_t addr, uint8_t data)
 {

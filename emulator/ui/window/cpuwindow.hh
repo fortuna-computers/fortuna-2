@@ -5,6 +5,8 @@
 
 class CpuWindow : public Window {
 public:
+    explicit CpuWindow(Emulator& emulator) : Window(emulator) {}
+    
     void draw() override;
     
     [[nodiscard]] std::string name() const override { return "cpu_window"; }

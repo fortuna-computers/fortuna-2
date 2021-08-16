@@ -5,6 +5,8 @@
 
 class DemoWindow : public Window {
 public:
+    explicit DemoWindow(Emulator& emulator) : Window(emulator) {}
+    
     void draw() override;
     std::string name() const override { return "demo_window"; }
 };

@@ -25,10 +25,12 @@ private:
     GUI                gui_;
     Properties         properties_;
     
+    Emulator           emulator_;
+    
     DemoWindow         demo_window_;
     LoadProjectWindow  load_project_window_;
     MessageBox         message_box_;
-    SendKeypressModal send_keypress_window_;
+    SendKeypressModal  send_keypress_window_;
     MenuWindow         menu_window_;
     RamWindow          ram_window_;
     CpuWindow          cpu_window_;

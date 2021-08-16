@@ -7,6 +7,8 @@
 
 class MessageBox : public Window {
 public:
+    explicit MessageBox(Emulator& emulator) : Window(emulator) {}
+    
     enum Type { Info, Error, FatalError };
     
     void set_message(Type type, std::string const& message, std::string const& title = "");

@@ -16,11 +16,9 @@ void CodeWindow::draw()
 
 void CodeWindow::draw_buttons()
 {
-    Emulator& emulator = Emulator::get();
-    
-    if (emulator.stopped()) {
+    if (emulator_.stopped()) {
         if (ImGui::Button("Step (F7)") || ImGui::IsKeyPressed(F7, false)) {
-            emulator.step();
+            emulator_.step();
             scroll_to_pc_ = true;
             code_model_->update();
         }
@@ -54,14 +52,12 @@ void CodeWindow::draw_code()
     if (!code_model_)
         return;
     
-    Emulator& emulator = Emulator::get();
-    
     // filename
     ImGui::PushID(0);
     ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
-    if (emulator.stopped())
+    if (emulator_.stopped())
         ImGui::Button(code_model_->file_selected() ? code_model_->file_selected()->c_str() : "No file selected");
     else
         ImGui::Button("Code in execution...");
@@ -88,13 +84,13 @@ void CodeWindow::draw_code()
         ImGui::TableSetupColumn("Code", ImGuiTableColumnFlags_WidthStretch);
         ImGui::TableHeadersRow();
         
-        if (emulator.stopped()) {
+        if (emulator_.stopped()) {
             size_t nline = 1;
             for (auto const& line: code_model_->lines()) {
                 ImGui::TableNextRow();
                 
                 if (line.address.has_value()) {
-                    if (*line.address == emulator.pc()) {
+                    if (*line.address == emulator_.pc()) {
                         ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, pc_row_color);
                         if (scroll_to_pc_) {
                             ImGui::SetScrollHereY();
@@ -143,13 +139,11 @@ void CodeWindow::draw_code()
 
 void CodeWindow::draw_footer()
 {
-    Emulator& emulator = Emulator::get();
-    
-    if (emulator.stopped()) {
+    if (emulator_.stopped()) {
         ImGui::Text("Click on the address to set a breakpoint.");
         
         if (ImGui::Button("Soft Reset")) {
-            emulator.soft_reset();
+            emulator_.soft_reset();
             scroll_to_pc_ = true;
         }
         ImGui::SameLine();

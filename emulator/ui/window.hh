@@ -2,9 +2,12 @@
 #define EMULATOR_WINDOW_HH
 
 #include <string>
+#include "../emulator/emulator.hh"
 
 class Window {
 public:
+    explicit Window(Emulator& emulator) : emulator_(emulator) {}
+    
     [[nodiscard]] bool visible() const { return visible_; }
     void set_visible(bool visible) { visible_ = visible; }
     
@@ -14,8 +17,7 @@ public:
     [[nodiscard]] virtual std::string name() const = 0;
 
 protected:
-    Window() = default;
-    
+    Emulator& emulator_;
     bool visible_ = false;
     
     static const int PageUp = 0x10a;

@@ -14,7 +14,7 @@ class Emulator {
 public:
     static constexpr size_t MEMORY_SIZE = 32 * 1024;
     
-    static Emulator& get();
+    Emulator();
     
     Emulator(Emulator const&) = delete;
     Emulator& operator=(Emulator const&) = delete;
@@ -53,8 +53,6 @@ public:
     bool is_breakpoint(uint16_t addr) const { return breakpoints_.find(addr) != breakpoints_.end(); }
     
 private:
-    Emulator() = default;
-    
     Terminal                     terminal_ { 25, 40 };
     Z80                          z80_ {};
     uint8_t                      ram_[MEMORY_SIZE] = { 0 };

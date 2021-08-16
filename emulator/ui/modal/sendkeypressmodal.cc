@@ -29,7 +29,7 @@ bool SendKeypressModal::do_keypress()
     for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) {
         if (ImGui::IsKeyPressed(i)) {
             for (uint8_t k: translate_keypress(i, io.KeyCtrl, io.KeyShift, io.KeyAlt, io.KeySuper))
-                Emulator::get().keypress(k);
+                emulator_.keypress(k);
             press = true;
         }
     }

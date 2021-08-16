@@ -7,7 +7,16 @@
 
 Manager::Manager()
     : properties_(gui_.context()),
-      load_project_window_(properties_)
+      demo_window_(emulator_),
+      load_project_window_(emulator_, properties_),
+      message_box_(emulator_),
+      send_keypress_window_(emulator_),
+      menu_window_(emulator_),
+      ram_window_(emulator_),
+      cpu_window_(emulator_),
+      terminal_window_(emulator_),
+      code_window_(emulator_),
+      file_select_window_(emulator_)
 {
     load_project_window_.on_start_executing([this](std::string const& filename) {
         load_project(filename);
@@ -66,12 +75,12 @@ void Manager::load_project(std::string const& project_name)
         message_box_.set_message(MessageBox::Error, result.error.value());
     } else {
         auto& rom = result.binaries.at(result.project_file.debug->rom).data;
-        Emulator::get().initialize(rom, result.project_file);
+        emulator_.initialize(rom, result.project_file);
         menu_window_.set_visible(true);
         open_windows_from_last_time();
         load_project_window_.set_visible(false);
     
-        code_model_ = CodeModel(result.debug);
+        code_model_.emplace(emulator_, result.debug);
         code_window_.set_code_model(*code_model_);
         file_select_window_.set_code_model(*code_model_);
     }

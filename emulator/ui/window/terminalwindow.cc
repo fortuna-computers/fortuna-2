@@ -6,7 +6,7 @@
 
 void TerminalWindow::draw()
 {
-    Terminal& terminal = Emulator::get().terminal();
+    Terminal& terminal = emulator_.terminal();
     
     float cursor_x = 0.0;
     std::optional<float> cursor_y;
@@ -26,7 +26,7 @@ void TerminalWindow::draw()
         ImGui::PopStyleColor();
     
         // buttons
-        if (Emulator::get().stopped()) {
+        if (emulator_.stopped()) {
             if ((ImGui::Button("Keypress... (F2)") || ImGui::IsKeyPressed(F2)) && on_send_keypress_) {
                 on_send_keypress_();
             }

@@ -9,7 +9,7 @@
 
 class LoadProjectWindow : public Window {
 public:
-    explicit LoadProjectWindow(Properties& properties);
+    LoadProjectWindow(Emulator& emulator, Properties& properties);
     
     void draw() override;
     std::string name() const override { return "load_project_window"; }

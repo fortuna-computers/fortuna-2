@@ -8,6 +8,8 @@
 
 class FileSelectWindow : public Window {
 public:
+    explicit FileSelectWindow(Emulator& emulator) : Window(emulator) {}
+    
     void draw() override;
     
     std::string name() const override { return "file_select"; }

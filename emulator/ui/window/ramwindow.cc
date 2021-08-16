@@ -48,8 +48,6 @@ void RamWindow::draw()
 
 void RamWindow::draw_memory_table() const
 {
-    Emulator& emulator = Emulator::get();
-    
     static int tbl_flags = ImGuiTableFlags_BordersOuter
                            | ImGuiTableFlags_NoBordersInBody
                            | ImGuiTableFlags_RowBg
@@ -71,7 +69,7 @@ void RamWindow::draw_memory_table() const
         ImGui::TableSetupColumn("ASCII", ImGuiTableColumnFlags_WidthStretch);
         ImGui::TableHeadersRow();
         
-        if (emulator.stopped()) {
+        if (emulator_.stopped()) {
             for (int line = 0; line < 0x10; ++line) {
                 ImGui::TableNextRow();
                 
@@ -84,11 +82,11 @@ void RamWindow::draw_memory_table() const
                 std::string ascii;
                 for (int i = 0; i < 0x10; ++i) {
                     ImGui::TableSetColumnIndex(i + 1);
-                    uint8_t byte = emulator.ram_get(addr + (line * 0x10) + i);
+                    uint8_t byte = emulator_.ram_get(addr + (line * 0x10) + i);
                     bool needs_pop = false;
-                    if (addr + i == emulator.z80().PC.W)
+                    if (addr + i == emulator_.z80().PC.W)
                         ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, pc_bg_color);
-                    else if (addr + i == emulator.z80().SP.W)
+                    else if (addr + i == emulator_.z80().SP.W)
                         ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, sp_bg_color);
                     if (byte == 0) {
                         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(ImColor(128, 128, 128)));
@@ -112,13 +110,11 @@ void RamWindow::draw_memory_table() const
 
 void RamWindow::draw_stack()
 {
-    Emulator& emulator = Emulator::get();
-    
     char stack[512] = "Stack: ";
     size_t n = strlen(stack);
     for (uint16_t i = 0; i < 28; i += 2) {
-        uint16_t data = emulator.ram_get(emulator.z80().SP.W + i);
-        data |= emulator.ram_get(emulator.z80().SP.W + i + 1) << 8;
+        uint16_t data = emulator_.ram_get(emulator_.z80().SP.W + i);
+        data |= emulator_.ram_get(emulator_.z80().SP.W + i + 1) << 8;
         n += sprintf(&stack[n], "%04X ", data);
     }
     ImGui::Text("%s", stack);

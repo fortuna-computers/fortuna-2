@@ -4,12 +4,11 @@
 
 void CpuWindow::draw()
 {
-    Emulator& emulator = Emulator::get();
-    Z80 const& z80 = emulator.z80();
+    Z80 const& z80 = emulator_.z80();
     
     ImGui::SetNextWindowSize({ 265, 375 });
     if (ImGui::Begin("CPU", &visible_, ImGuiWindowFlags_NoResize)) {
-        if (emulator.stopped()) {
+        if (emulator_.stopped()) {
             ImGui::Text("Registers:");
             
             auto pair = [](size_t& i, size_t sz, std::string const& name, int value) {

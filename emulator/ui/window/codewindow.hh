@@ -8,6 +8,8 @@
 
 class CodeWindow : public Window {
 public:
+    explicit CodeWindow(Emulator& emulator) : Window(emulator) {}
+    
     void draw() override;
     
     std::string name() const override { return "code"; }

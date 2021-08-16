@@ -7,6 +7,8 @@
 
 class MenuWindow : public Window {
 public:
+    explicit MenuWindow(Emulator& emulator) : Window(emulator) {}
+    
     void draw() override;
     void on_open_code(std::function<void()> const& f) { on_open_code_ = f; }
     void on_open_cpu(std::function<void()> const& f) { on_open_cpu_ = f; }

@@ -21,7 +21,7 @@ void FileSelectWindow::draw()
                                | ImGuiTableFlags_SortTristate;
         
         if (ImGui::BeginTable("##file", 1, tbl_flags)) {
-            if (Emulator::get().stopped() && code_model_) {
+            if (emulator_.stopped() && code_model_) {
                 ImGui::TableSetupScrollFreeze(0, 1); // Make top row always visible
                 ImGui::TableSetupColumn("File Name", ImGuiTableColumnFlags_WidthStretch);
                 ImGui::TableHeadersRow();
