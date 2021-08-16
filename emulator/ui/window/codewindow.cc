@@ -37,7 +37,7 @@ void CodeWindow::draw_buttons()
              */
         }
     } else {
-        if (ImGui::Button("Stop (Ctrl+C)") || (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed('c', false))) {
+        if (ImGui::Button("Stop (Ctrl+C)") || (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed('C', false))) {
             /*
             emulator.stop();
             code_model_->update(false);
@@ -156,10 +156,10 @@ void CodeWindow::draw_footer()
              */
         }
         ImGui::SameLine();
-        if (ImGui::Button("Go to file... (F)") || ImGui::IsKeyPressed('f', false))
+        if (ImGui::Button("Go to file... (F)") || ImGui::IsKeyPressed('F', false))
             file_select_window_.set_visible(true);
         ImGui::SameLine();
-        if (ImGui::Button("Go to symbol... (S)") || ImGui::IsKeyPressed('s', false))
+        if (ImGui::Button("Go to symbol... (S)") || ImGui::IsKeyPressed('S', false))
             ; // show_choose_symbol = true;
         ImGui::SameLine();
         if (ImGui::Button("Advanced..."))
