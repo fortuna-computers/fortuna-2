@@ -6,12 +6,14 @@
 
 void CodeWindow::draw()
 {
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, { 0, 250 });
     if (ImGui::Begin(window_title().c_str(), &visible_)) {
         draw_buttons();
         draw_code();
         draw_footer();
     }
     ImGui::End();
+    ImGui::PopStyleVar();
 }
 
 void CodeWindow::draw_buttons()

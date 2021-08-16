@@ -6,6 +6,7 @@
 
 void FileSelectWindow::draw()
 {
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, { 0, 150 });
     if (ImGui::Begin("Choose file", &visible_)) {
         ImGui::Text("Choose a file to go to:");
         
@@ -42,5 +43,6 @@ void FileSelectWindow::draw()
         }
     }
     ImGui::End();
+    ImGui::PopStyleVar();
 }
 
