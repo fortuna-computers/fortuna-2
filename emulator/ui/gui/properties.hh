@@ -14,9 +14,9 @@ public:
     void        set_property_bool(std::string const& name, bool value);
 
 private:
-    void initialize_properties(struct ImGuiContext* p_context);
+    std::unordered_map<std::string, std::string>& initialize_properties(struct ImGuiContext* p_context);
     
-    std::unordered_map<std::string, std::string> properties_;
+    std::unordered_map<std::string, std::string>& properties_;
 };
 
 #endif

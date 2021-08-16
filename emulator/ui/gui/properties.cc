@@ -4,8 +4,8 @@
 #include "imgui_internal.h"
 
 Properties::Properties(ImGuiContext* context)
+    : properties_(initialize_properties(context))
 {
-    initialize_properties(context);
     ImGui::LoadIniSettingsFromDisk("imgui.ini");
 }
 
@@ -38,11 +38,14 @@ void Properties::set_property_bool(std::string const& name, bool value)
         set_property(name, "false");
 }
 
-void Properties::initialize_properties(ImGuiContext* p_context)
+std::unordered_map<std::string, std::string>& Properties::initialize_properties(ImGuiContext* p_context)
 {
+    auto properties = new std::unordered_map<std::string, std::string>();
+    
     ImGuiSettingsHandler ini_handler;
     ini_handler.TypeName = "UserData";
     ini_handler.TypeHash = ImHashStr("UserData");
+    ini_handler.UserData = properties;
     ini_handler.ReadOpenFn = [](ImGuiContext*, ImGuiSettingsHandler* h, const char* name) -> void* {
         if (strcmp(name, "Config") == 0)
             return h->UserData;
@@ -62,7 +65,9 @@ void Properties::initialize_properties(ImGuiContext* p_context)
         buf->appendf("[UserData][Config]\n");
         for (auto& [k,v] : props)
             buf->appendf((k + "=%s\n").c_str(), v.c_str());
+        delete &props;
     };
-    ini_handler.UserData = &properties_;
     p_context->SettingsHandlers.push_back(ini_handler);
+    
+    return *properties;
 }
