@@ -3,19 +3,19 @@
 
 #include <functional>
 #include "../window.hh"
+#include "../modal/sendkeypressmodal.hh"
 
 class TerminalWindow : public Window {
 public:
-    explicit TerminalWindow(Emulator& emulator) : Window(emulator) {}
+    TerminalWindow(Emulator& emulator, SendKeypressModal& send_keypress_modal)
+        : Window(emulator), send_keypress_modal_(send_keypress_modal) {}
     
     void draw() override;
     
     std::string name() const override { return "terminal"; }
     
-    void on_send_keypress(std::function<void()> const& f) { on_send_keypress_ = f; }
-    
 private:
-    std::function<void()> on_send_keypress_;
+    SendKeypressModal&    send_keypress_modal_;
 };
 
 #endif

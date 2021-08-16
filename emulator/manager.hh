@@ -22,8 +22,8 @@ public:
     void run();
     
 private:
-    GUI                gui_;
     Properties         properties_;
+    GUI                gui_;
     
     Emulator           emulator_;
     
@@ -31,14 +31,16 @@ private:
     LoadProjectWindow  load_project_window_;
     MessageBox         message_box_;
     SendKeypressModal  send_keypress_window_;
-    MenuWindow         menu_window_;
     RamWindow          ram_window_;
     CpuWindow          cpu_window_;
     TerminalWindow     terminal_window_;
-    CodeWindow         code_window_;
     FileSelectWindow   file_select_window_;
+    CodeWindow         code_window_;
     
-    const std::vector<Window*> menu_windows_ = { &code_window_, &ram_window_, &demo_window_, &cpu_window_, &terminal_window_ };
+    MenuWindow         menu_window_;
+    
+    const std::vector<Window*> menu_windows_ = { &code_window_, &ram_window_, &demo_window_, &cpu_window_, &terminal_window_ },
+                               other_windows_ = { &load_project_window_, &menu_window_, &message_box_, &send_keypress_window_, &file_select_window_ };
     
     std::optional<CodeModel> code_model_ {};
     

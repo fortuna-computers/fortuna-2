@@ -4,28 +4,32 @@
 #include <functional>
 
 #include "../window.hh"
+#include "codewindow.hh"
+#include "cpuwindow.hh"
+#include "ramwindow.hh"
+#include "terminalwindow.hh"
+#include "demowindow.hh"
+
+struct MenuChildrenWindows {
+    CodeWindow&     code_window;
+    CpuWindow&      cpu_window;
+    RamWindow&      ram_window;
+    TerminalWindow& terminal_window;
+    DemoWindow&     demo_window;
+    // StorageWindow&   storage_window;
+};
 
 class MenuWindow : public Window {
 public:
-    explicit MenuWindow(Emulator& emulator) : Window(emulator) {}
+    explicit MenuWindow(Emulator& emulator, MenuChildrenWindows const& menu_children_windows)
+        : Window(emulator), menu_children_windows_(menu_children_windows) {}
     
     void draw() override;
-    void on_open_code(std::function<void()> const& f) { on_open_code_ = f; }
-    void on_open_cpu(std::function<void()> const& f) { on_open_cpu_ = f; }
-    void on_open_memory(std::function<void()> const& f) { on_open_memory_ = f; }
-    void on_open_terminal(std::function<void()> const& f) { on_open_terminal_ = f; }
-    void on_open_storage(std::function<void()> const& f) { on_open_storage_ = f; }
-    void on_open_demo(std::function<void()> const& f) { on_open_demo_ = f; }
     
     std::string name() const override { return "menu_window"; }
 
 private:
-    std::function<void()> on_open_code_;
-    std::function<void()> on_open_cpu_;
-    std::function<void()> on_open_memory_;
-    std::function<void()> on_open_terminal_;
-    std::function<void()> on_open_storage_;
-    std::function<void()> on_open_demo_;
+    MenuChildrenWindows menu_children_windows_;
 };
 
 #endif

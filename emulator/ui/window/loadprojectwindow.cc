@@ -7,11 +7,13 @@ LoadProjectWindow::LoadProjectWindow(Emulator& emulator, Properties& properties)
     file_browser_.SetTitle("title");
     file_browser_.SetTypeFilters({ ".yaml", "" });
     file_browser_.SetCurrentTypeFilterIndex(1);
-    strcpy(project_file_, properties_.property("project_file").c_str());
 }
 
 void LoadProjectWindow::draw()
 {
+    if (project_file_[0] == '\0')
+        strcpy(project_file_, properties_.property("project_file").c_str());
+    
     ImGui::SetNextWindowSize(ImVec2(600, 82));
     ImGui::Begin("Welcome to Mini-Z80 debugger", nullptr, ImGuiWindowFlags_NoResize);
     
@@ -35,4 +37,3 @@ void LoadProjectWindow::draw()
         file_browser_.ClearSelected();
     }
 }
-

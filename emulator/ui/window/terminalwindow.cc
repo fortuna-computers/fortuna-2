@@ -27,8 +27,8 @@ void TerminalWindow::draw()
     
         // buttons
         if (emulator_.stopped()) {
-            if ((ImGui::Button("Keypress... (F2)") || ImGui::IsKeyPressed(F2)) && on_send_keypress_) {
-                on_send_keypress_();
+            if ((ImGui::Button("Keypress... (F2)") || ImGui::IsKeyPressed(F2))) {
+                send_keypress_modal_.set_visible(true);
             }
         }
     

@@ -26,8 +26,6 @@ public:
     ImGuiContext* context() const { return context_; }
 
 private:
-    void on_error(int error, const char* description);
-    
     struct GLFWwindow* window_;
     std::vector<Window*> children_;
     ImGuiContext* context_;

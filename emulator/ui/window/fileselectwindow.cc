@@ -2,6 +2,7 @@
 
 #include "imgui.h"
 #include "../../emulator/emulator.hh"
+#include "codewindow.hh"
 
 void FileSelectWindow::draw()
 {

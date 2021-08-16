@@ -15,16 +15,14 @@
 // INITIALIZATION
 //
 
-static GUI* gui_ = nullptr;
-
 GUI::GUI()
 {
-    gui_ = this;
-    
     // initialize
     if (!glfwInit())
         throw std::runtime_error("Could not initialize GLFW.");
-    glfwSetErrorCallback([](int error, const char* description) { gui_->on_error(error, description); });
+    glfwSetErrorCallback([](int error, const char* description) {
+        throw std::runtime_error("Error " + std::to_string(error) + ": " + description);
+    });
     
     // window hints
     glfwWindowHint(GLFW_DOUBLEBUFFER, 1);
@@ -100,13 +98,4 @@ void GUI::force_end_frame()
     while (context_->CurrentWindowStack.Size > 1)
         ImGui::End();
     ImGui::EndFrame();
-}
-
-//
-// CALLBACKS
-//
-
-void GUI::on_error(int error, char const* description)
-{
-    throw std::runtime_error("Error " + std::to_string(error) + ": " + description);
 }

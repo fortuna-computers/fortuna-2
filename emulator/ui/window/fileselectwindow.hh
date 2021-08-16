@@ -4,7 +4,6 @@
 #include "../window.hh"
 #include "../../compiler/debug.hh"
 #include "../model/codemodel.hh"
-#include "codewindow.hh"
 
 class FileSelectWindow : public Window {
 public:

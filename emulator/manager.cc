@@ -6,39 +6,27 @@
 #include "emulator/emulator.hh"
 
 Manager::Manager()
-    : properties_(gui_.context()),
-      demo_window_(emulator_),
+    : demo_window_(emulator_),
       load_project_window_(emulator_, properties_),
       message_box_(emulator_),
       send_keypress_window_(emulator_),
-      menu_window_(emulator_),
       ram_window_(emulator_),
       cpu_window_(emulator_),
-      terminal_window_(emulator_),
-      code_window_(emulator_),
-      file_select_window_(emulator_)
+      terminal_window_(emulator_, send_keypress_window_),
+      file_select_window_(emulator_),
+      code_window_(emulator_, file_select_window_),
+      menu_window_(emulator_, { code_window_, cpu_window_, ram_window_, terminal_window_, demo_window_ })
 {
+    properties_.initialize(gui_.context());
+    
     load_project_window_.on_start_executing([this](std::string const& filename) {
         load_project(filename);
     });
     load_project_window_.set_visible(true);
     
-    menu_window_.on_open_code([this]() { code_window_.set_visible(true); });
-    menu_window_.on_open_cpu([this]() { cpu_window_.set_visible(true); });
-    menu_window_.on_open_memory([this]() { ram_window_.set_visible(true); });
-    menu_window_.on_open_demo([this]() { demo_window_.set_visible(true); });
-    menu_window_.on_open_terminal([this]() { terminal_window_.set_visible(true); });
-    
-    code_window_.on_go_to_file([this]() { file_select_window_.set_visible(true); });
-    
-    terminal_window_.on_send_keypress([this]() { send_keypress_window_.set_visible(true); });
-    
-    gui_.add_window(load_project_window_);
-    gui_.add_window(message_box_);
-    gui_.add_window(menu_window_);
-    gui_.add_window(send_keypress_window_);
-    gui_.add_window(file_select_window_);
     for (auto const& window: menu_windows_)
+        gui_.add_window(*window);
+    for (auto const& window: other_windows_)
         gui_.add_window(*window);
 }
 
