@@ -163,9 +163,6 @@ void CodeWindow::draw_footer()
         ImGui::SameLine();
         if (ImGui::Button("Go to symbol... (S)") || ImGui::IsKeyPressed('S', false))
             symbol_select_window_.set_visible(true);
-        ImGui::SameLine();
-        if (ImGui::Button("Advanced..."))
-            ; // show_advanced_window = true;
     }
 }
 
