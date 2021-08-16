@@ -66,3 +66,9 @@ void CodeModel::create_lines(std::string const& filename)
         lines_.emplace_back(sa.source, sa.address, emulator.is_breakpoint(*sa.address), sa.bytes);
     }
 }
+
+void CodeModel::set_file(std::string const& filename)
+{
+    file_selected_ = filename;
+    update();
+}

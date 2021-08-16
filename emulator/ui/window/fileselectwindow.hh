@@ -3,6 +3,7 @@
 
 #include "../window.hh"
 #include "../../compiler/debug.hh"
+#include "../model/codemodel.hh"
 
 class FileSelectWindow : public Window {
 public:
@@ -10,10 +11,10 @@ public:
     
     std::string name() const override { return "file_select"; }
     
-    void set_debug(Debug const& debug) { debug_ = debug; }
+    void set_code_model(CodeModel& code_model) { code_model_ = &code_model; }
 
 private:
-    std::optional<Debug> debug_;
+    CodeModel* code_model_ = nullptr;
     
 };
 

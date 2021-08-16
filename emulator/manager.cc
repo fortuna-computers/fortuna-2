@@ -20,6 +20,8 @@ Manager::Manager()
     menu_window_.on_open_demo([this]() { demo_window_.set_visible(true); });
     menu_window_.on_open_terminal([this]() { terminal_window_.set_visible(true); });
     
+    code_window_.on_go_to_file([this]() { file_select_window_.set_visible(true); });
+    
     terminal_window_.on_send_keypress([this]() { send_keypress_window_.set_visible(true); });
     
     window_.add_window(load_project_window_);
@@ -63,15 +65,15 @@ void Manager::load_project(std::string const& project_name)
     if (result.error.has_value()) {
         message_box_.set_message(MessageBox::Error, result.error.value());
     } else {
-        this->debug = result.debug;
         auto& rom = result.binaries.at(result.project_file.debug->rom).data;
         Emulator::get().initialize(rom, result.project_file);
         menu_window_.set_visible(true);
         open_windows_from_last_time();
         load_project_window_.set_visible(false);
     
-        code_window_.set_debug(*debug);
-        file_select_window_.set_debug(*debug);
+        code_model_ = CodeModel(result.debug);
+        code_window_.set_code_model(*code_model_);
+        file_select_window_.set_code_model(*code_model_);
     }
 }
 

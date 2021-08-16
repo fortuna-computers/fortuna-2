@@ -52,7 +52,7 @@ void CodeWindow::draw_buttons()
 
 void CodeWindow::draw_code()
 {
-    if (!code_model_.has_value())
+    if (!code_model_)
         return;
     
     Emulator& emulator = Emulator::get();
@@ -165,7 +165,7 @@ void CodeWindow::draw_footer()
         }
         ImGui::SameLine();
         if (ImGui::Button("Go to file... (F)") || ImGui::IsKeyPressed('f', false))
-            ; // show_choose_file = true;
+            on_go_to_file_();
         ImGui::SameLine();
         if (ImGui::Button("Go to symbol... (S)") || ImGui::IsKeyPressed('s', false))
             ; // show_choose_symbol = true;
@@ -173,9 +173,4 @@ void CodeWindow::draw_footer()
         if (ImGui::Button("Advanced..."))
             ; // show_advanced_window = true;
     }
-}
-
-void CodeWindow::set_debug(Debug const& debug)
-{
-    code_model_.emplace(debug);
 }

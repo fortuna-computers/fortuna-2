@@ -5,7 +5,7 @@
 
 void FileSelectWindow::draw()
 {
-    if (ImGui::Begin("Choose file", &show_choose_file)) {
+    if (ImGui::Begin("Choose file", &visible_)) {
         ImGui::Text("Choose a file to go to:");
         
         static int tbl_flags = ImGuiTableFlags_BordersOuterH
@@ -21,17 +21,17 @@ void FileSelectWindow::draw()
                                | ImGuiTableFlags_SortTristate;
         
         if (ImGui::BeginTable("##file", 1, tbl_flags)) {
-            if (!Emulator::get().stopped() && debug_) {
+            if (Emulator::get().stopped() && code_model_) {
                 ImGui::TableSetupScrollFreeze(0, 1); // Make top row always visible
                 ImGui::TableSetupColumn("File Name", ImGuiTableColumnFlags_WidthStretch);
                 ImGui::TableHeadersRow();
                 
-                for (auto const& [filename, _]: debug_->files) {
+                for (auto const& [filename, _]: code_model_->debug().files) {
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
                     if (ImGui::Selectable(filename.c_str(), false, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0)) {
-                        p().codeview().set_file(fname);
-                        ImGui::SetWindowFocus("Code debugger");
+                        code_model_->set_file(filename);
+                        ImGui::SetWindowFocus("Code");
                     }
                 }
             }

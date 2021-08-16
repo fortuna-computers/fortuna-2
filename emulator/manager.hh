@@ -36,7 +36,7 @@ private:
     
     const std::vector<Window*> menu_windows_ = { &code_window_, &ram_window_, &demo_window_, &cpu_window_, &terminal_window_ };
     
-    std::optional<Debug> debug {};
+    std::optional<CodeModel> code_model_ {};
     
     void load_project(std::string const& project_name);
     
