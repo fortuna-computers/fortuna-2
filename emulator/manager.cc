@@ -36,13 +36,6 @@ Manager::~Manager()
         properties_.set_property_bool(mwindow->name(), mwindow->visible());
 }
 
-void Manager::open_windows_from_last_time()
-{
-    for (auto const& mwindow: menu_windows_)
-        if (properties_.property_bool(mwindow->name()))
-            mwindow->set_visible(true);
-}
-
 void Manager::run()
 {
     try {
@@ -59,18 +52,26 @@ void Manager::load_project(std::string const& project_name)
 {
     CompilationResult result = Compiler().compile_from_project_file(project_name);
     std::cout << result.message;
+    
     if (result.error.has_value()) {
         message_box_.set_message(MessageBox::Error, result.error.value());
     } else {
         auto& rom = result.binaries.at(result.project_file.debug->rom).data;
         emulator_.initialize(rom, result.project_file);
+        load_project_window_.set_visible(false);
         menu_window_.set_visible(true);
         open_windows_from_last_time();
-        load_project_window_.set_visible(false);
     
         code_model_.emplace(emulator_, result.debug);
         code_window_.set_code_model(*code_model_);
         file_select_window_.set_code_model(*code_model_);
     }
+}
+
+void Manager::open_windows_from_last_time()
+{
+    for (auto const& mwindow: menu_windows_)
+        if (properties_.property_bool(mwindow->name()))
+            mwindow->set_visible(true);
 }
 
