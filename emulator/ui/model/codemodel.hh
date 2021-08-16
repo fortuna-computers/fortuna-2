@@ -23,7 +23,7 @@ public:
     std::vector<CodeViewLine> const&  lines() const { return lines_; }
     std::optional<std::string> const& file_selected() const { return file_selected_; }
     
-    void update();
+    void update(bool update_file_selected = true);
     
     void add_breakpoint(size_t line);
     void remove_breakpoint(size_t line);
@@ -37,7 +37,7 @@ private:
     std::vector<CodeViewLine>  lines_;
     std::optional<std::string> file_selected_;
     
-    std::optional<SourceLine> find_pc_location();
+    std::optional<SourceLine> find_pc_location(bool update_file_selected);
     void                      create_lines(std::string const& filename);
 };
 

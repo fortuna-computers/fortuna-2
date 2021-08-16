@@ -6,7 +6,7 @@
 
 void CodeWindow::draw()
 {
-    if (ImGui::Begin("Code", &visible_)) {
+    if (ImGui::Begin(window_title().c_str(), &visible_)) {
         draw_buttons();
         draw_code();
         draw_footer();

@@ -31,7 +31,8 @@ void FileSelectWindow::draw()
                     ImGui::TableSetColumnIndex(0);
                     if (ImGui::Selectable(filename.c_str(), false, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0)) {
                         code_model_->set_file(filename);
-                        ImGui::SetWindowFocus("Code");
+                        ImGui::SetWindowFocus(CodeWindow::window_title().c_str());
+                        visible_ = false;
                     }
                 }
             }

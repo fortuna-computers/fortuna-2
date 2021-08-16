@@ -12,6 +12,8 @@ public:
     
     std::string name() const override { return "code"; }
     
+    static std::string window_title() { return "Code"; }
+    
     void set_code_model(CodeModel& code_model) { code_model_ = &code_model; }
     
     void on_go_to_file(std::function<void()> const& f) { on_go_to_file_ = f; }

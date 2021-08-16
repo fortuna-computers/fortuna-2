@@ -7,11 +7,11 @@ CodeModel::CodeModel(Debug const& debug)
     update();
 }
 
-void CodeModel::update()
+void CodeModel::update(bool update_file_selected)
 {
     lines_.clear();
     
-    std::optional<SourceLine> sl = find_pc_location();
+    std::optional<SourceLine> sl = find_pc_location(update_file_selected);
     if (!sl)
         return;
     
@@ -38,18 +38,24 @@ void CodeModel::remove_breakpoint(size_t line)
     update();
 }
 
-std::optional<SourceLine> CodeModel::find_pc_location()
+std::optional<SourceLine> CodeModel::find_pc_location(bool update_file_selected)
 {
     Emulator& emulator = Emulator::get();
     
     SourceLine sl;
-    try {
-        sl = debug_.location.at(emulator.pc());
-    } catch (std::out_of_range&) {
-        file_selected_ = {};
-        return {};
+    if (update_file_selected) {
+        try {
+            sl = debug_.location.at(emulator.pc());
+        } catch (std::out_of_range&) {
+            file_selected_ = {};
+            return {};
+        }
+        file_selected_ = sl.filename;
+    } else {  // this is called when the user selects a file
+        if (!file_selected_)
+            return {};
+        sl = SourceLine { *file_selected_, 1 };
     }
-    file_selected_ = sl.filename;
     
     return sl;
 }
@@ -70,5 +76,5 @@ void CodeModel::create_lines(std::string const& filename)
 void CodeModel::set_file(std::string const& filename)
 {
     file_selected_ = filename;
-    update();
+    update(false);
 }

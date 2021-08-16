@@ -4,6 +4,7 @@
 #include "../window.hh"
 #include "../../compiler/debug.hh"
 #include "../model/codemodel.hh"
+#include "codewindow.hh"
 
 class FileSelectWindow : public Window {
 public:
@@ -15,7 +16,6 @@ public:
 
 private:
     CodeModel* code_model_ = nullptr;
-    
 };
 
 #endif
