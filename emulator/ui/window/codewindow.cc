@@ -103,9 +103,9 @@ void CodeWindow::draw_code()
                     if (line.is_breakpoint)
                         ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, bkp_cell_color, 0);
                     
-                    if (nline == show_this_line_on_next_frame.value_or(-1)) {
+                    if (nline == show_this_line_on_next_frame_.value_or(-1)) {
                         ImGui::SetScrollHereY();
-                        show_this_line_on_next_frame.reset();
+                        show_this_line_on_next_frame_.reset();
                     }
                     
                     ImGui::TableSetColumnIndex(0);
@@ -162,9 +162,14 @@ void CodeWindow::draw_footer()
             file_select_window_.set_visible(true);
         ImGui::SameLine();
         if (ImGui::Button("Go to symbol... (S)") || ImGui::IsKeyPressed('S', false))
-            ; // show_choose_symbol = true;
+            symbol_select_window_.set_visible(true);
         ImGui::SameLine();
         if (ImGui::Button("Advanced..."))
             ; // show_advanced_window = true;
     }
+}
+
+void CodeWindow::set_show_this_line_on_next_frame(size_t line)
+{
+    show_this_line_on_next_frame_ = line;
 }

@@ -74,3 +74,18 @@ void CodeModel::set_file(std::string const& filename)
     file_selected_ = filename;
     update(false);
 }
+
+std::optional<uint16_t> CodeModel::go_to_symbol(std::string const& symbol)
+{
+    auto it = debug_.symbols.find(symbol);
+    if (it == debug_.symbols.end())
+        return {};
+    
+    auto it_loc = debug_.location.find(it->second);
+    if (it_loc == debug_.location.end())
+        return {};
+    
+    SourceLine const& sl = it_loc->second;
+    set_file(sl.filename);
+    return sl.line;
+}

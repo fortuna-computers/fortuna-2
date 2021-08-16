@@ -30,6 +30,7 @@ public:
     void remove_breakpoint(size_t line);
     
     void set_file(std::string const& filename);
+    std::optional<uint16_t> go_to_symbol(std::string const& symbol);
     
     Debug const& debug() const { return debug_; }
 

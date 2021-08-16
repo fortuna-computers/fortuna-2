@@ -14,10 +14,13 @@ Manager::Manager()
       cpu_window_(emulator_),
       terminal_window_(emulator_, send_keypress_window_),
       file_select_window_(emulator_),
-      code_window_(emulator_, file_select_window_),
+      symbol_select_window_(emulator_),
+      code_window_(emulator_, file_select_window_, symbol_select_window_),
       menu_window_(emulator_, { code_window_, cpu_window_, ram_window_, terminal_window_, demo_window_ })
 {
     properties_.initialize(gui_.context());
+    
+    symbol_select_window_.set_code_window(&code_window_);
     
     load_project_window_.on_start_executing([this](std::string const& filename) {
         load_project(filename);
@@ -65,6 +68,7 @@ void Manager::load_project(std::string const& project_name)
         code_model_.emplace(emulator_, result.debug);
         code_window_.set_code_model(*code_model_);
         file_select_window_.set_code_model(*code_model_);
+        symbol_select_window_.set_code_model(*code_model_);
     }
 }
 

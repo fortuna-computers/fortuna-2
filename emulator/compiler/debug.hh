@@ -17,6 +17,11 @@ struct SourceAddress {
     friend std::ostream& operator<<(std::ostream& os, SourceAddress const& address_);
 };
 
+struct SymbolLocation {
+    std::string fileline;
+    uint16_t    address;
+};
+
 struct SourceLine {
     std::string filename;
     size_t      line;

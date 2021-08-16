@@ -1,13 +1,13 @@
-#include "fileselectwindow.hh"
+#include "symbolselectwindow.hh"
 
 #include "imgui.h"
 #include "codewindow.hh"
 
-void FileSelectWindow::draw()
+void SymbolSelectWindow::draw()
 {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, { 0, 150 });
-    if (ImGui::Begin("Choose file", &visible_)) {
-        ImGui::Text("Choose a file to go to:");
+    if (ImGui::Begin("Choose symbol", &visible_)) {
+        ImGui::Text("Choose a symbol to go to:");
         
         static int tbl_flags = ImGuiTableFlags_BordersOuterH
                                | ImGuiTableFlags_BordersOuterV
@@ -21,27 +21,35 @@ void FileSelectWindow::draw()
                                | ImGuiTableFlags_Sortable
                                | ImGuiTableFlags_SortTristate;
         
-        if (ImGui::BeginTable("##file", 1, tbl_flags)) {
-            if (emulator_.stopped() && code_model_) {
+        if (ImGui::BeginTable("##file", 2, tbl_flags)) {
+            if (emulator_.stopped()) {
                 ImGui::TableSetupScrollFreeze(0, 1); // Make top row always visible
-                ImGui::TableSetupColumn("File Name", ImGuiTableColumnFlags_WidthStretch);
+                ImGui::TableSetupColumn("Symbol", ImGuiTableColumnFlags_WidthStretch);
+                ImGui::TableSetupColumn("Location", ImGuiTableColumnFlags_WidthStretch);
                 ImGui::TableHeadersRow();
                 
-                for (auto const& [filename, _]: code_model_->debug().files) {
+                for (auto const& [name, location]: code_model_->debug().symbols) {
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
-                    if (ImGui::Selectable(filename.c_str(), false, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0)) {
-                        code_model_->set_file(filename);
+                    int sel_flags = ImGuiSelectableFlags_AllowDoubleClick | ImGuiSelectableFlags_SpanAllColumns;
+                    if (ImGui::Selectable(name.c_str(), false, sel_flags) && ImGui::IsMouseDoubleClicked(0)) {
+                        auto oaddr = code_model_->go_to_symbol(name);
+                        if (oaddr)
+                            code_window_->set_show_this_line_on_next_frame(*oaddr);
                         ImGui::SetWindowFocus(CodeWindow::window_title().c_str());
                         visible_ = false;
                     }
+                    ImGui::TableSetColumnIndex(1);
+                    
+                    auto it = code_model_->debug().location.find(location);
+                    if (it != code_model_->debug().location.end())
+                        ImGui::Text("%s:%d", it->second.filename.c_str(), it->second.line);
                 }
             }
-            
             ImGui::EndTable();
         }
     }
     ImGui::End();
     ImGui::PopStyleVar();
+    
 }
-
