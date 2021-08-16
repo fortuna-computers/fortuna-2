@@ -2,7 +2,7 @@
 #define EMULATOR_MANAGER_HH
 
 #include "compiler/debug.hh"
-#include "ui/window/mainwindow.hh"
+#include "ui/gui/gui.hh"
 #include "ui/window/demowindow.hh"
 #include "ui/window/loadprojectwindow.hh"
 #include "ui/modal/messagebox.hh"
@@ -22,7 +22,9 @@ public:
     void run();
     
 private:
-    MainWindow&        window_;
+    GUI                gui_;
+    Properties         properties_;
+    
     DemoWindow         demo_window_;
     LoadProjectWindow  load_project_window_;
     MessageBox         message_box_;

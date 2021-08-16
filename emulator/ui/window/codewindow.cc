@@ -1,7 +1,7 @@
 #include "codewindow.hh"
 
 #include "imgui.h"
-#include "mainwindow.hh"
+#include "../gui/gui.hh"
 #include "../../emulator/emulator.hh"
 
 void CodeWindow::draw()
@@ -17,7 +17,6 @@ void CodeWindow::draw()
 void CodeWindow::draw_buttons()
 {
     Emulator& emulator = Emulator::get();
-    MainWindow& main_window = MainWindow::get();
     
     if (emulator.stopped()) {
         if (ImGui::Button("Step (F7)") || ImGui::IsKeyPressed(F7, false)) {
@@ -40,7 +39,7 @@ void CodeWindow::draw_buttons()
              */
         }
     } else {
-        if (ImGui::Button("Stop (Ctrl+C)") || (main_window.io().KeyCtrl && ImGui::IsKeyPressed('c', false))) {
+        if (ImGui::Button("Stop (Ctrl+C)") || (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed('c', false))) {
             /*
             emulator.stop();
             code_model_->update(false);
@@ -144,7 +143,6 @@ void CodeWindow::draw_code()
 
 void CodeWindow::draw_footer()
 {
-    MainWindow& main_window = MainWindow::get();
     Emulator& emulator = Emulator::get();
     
     if (emulator.stopped()) {
@@ -155,7 +153,7 @@ void CodeWindow::draw_footer()
             scroll_to_pc_ = true;
         }
         ImGui::SameLine();
-        if (ImGui::Button("Recompile project (Ctrl+R)") || (main_window.io().KeyCtrl && ImGui::IsKeyPressed('r', false))) {
+        if (ImGui::Button("Recompile project (Ctrl+R)") || (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed('r', false))) {
             /*
             p().recompile_project();  // TODO ???
             update_symbol_list();

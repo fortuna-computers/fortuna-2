@@ -4,12 +4,10 @@
 #include <climits>
 #include "imgui.h"
 #include "../../emulator/emulator.hh"
-#include "mainwindow.hh"
+#include "../gui/gui.hh"
 
 void RamWindow::draw()
 {
-    MainWindow& main_window = MainWindow::get();
-
     float h = 370;
     ImGui::SetNextWindowSize(ImVec2(560, h));
     if (ImGui::Begin("Memory", &visible_, ImGuiWindowFlags_NoResize)) {
@@ -19,7 +17,7 @@ void RamWindow::draw()
         ImGui::Text("Page: (PgUp)");
         ImGui::SameLine();
         
-        if (ImGui::Button("<") || (!main_window.io().KeyCtrl && ImGui::IsKeyPressed(PageUp)))
+        if (ImGui::Button("<") || (!ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(PageUp)))
             go_to_page_number(page_number_ - 1);
         ImGui::SameLine();
         
@@ -36,7 +34,7 @@ void RamWindow::draw()
                          }, this);
         ImGui::PopItemWidth();
         ImGui::SameLine();
-        if (ImGui::Button(">") || (!main_window.io().KeyCtrl && ImGui::IsKeyPressed(PageDown)))
+        if (ImGui::Button(">") || (!ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(PageDown)))
             go_to_page_number(page_number_ + 1);
         ImGui::SameLine();
         ImGui::Text("(PgDown)");

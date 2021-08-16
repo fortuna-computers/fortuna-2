@@ -1,12 +1,13 @@
 #include "loadprojectwindow.hh"
-#include "mainwindow.hh"
+#include "../gui/gui.hh"
 
-LoadProjectWindow::LoadProjectWindow()
+LoadProjectWindow::LoadProjectWindow(Properties& properties)
+    : properties_(properties)
 {
     file_browser_.SetTitle("title");
     file_browser_.SetTypeFilters({ ".yaml", "" });
     file_browser_.SetCurrentTypeFilterIndex(1);
-    strcpy(project_file_, MainWindow::get().property("project_file").c_str());
+    strcpy(project_file_, properties_.property("project_file").c_str());
 }
 
 void LoadProjectWindow::draw()
@@ -22,7 +23,7 @@ void LoadProjectWindow::draw()
     ImGui::Separator();
     
     if (ImGui::Button("Start execution (F12)") || ImGui::IsKeyPressed(F12, false)) {
-        MainWindow::get().set_property("project_file", project_file_);
+        properties_.set_property("project_file", project_file_);
         on_start_executing_(project_file_);
     }
     

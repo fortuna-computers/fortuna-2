@@ -3,11 +3,11 @@
 #include "compiler/compilationresult.hh"
 
 #include <iostream>
-#include "Z80.h"
 #include "emulator/emulator.hh"
 
 Manager::Manager()
-    : window_(MainWindow::get())
+    : properties_(gui_.context()),
+      load_project_window_(properties_)
 {
     load_project_window_.on_start_executing([this](std::string const& filename) {
         load_project(filename);
@@ -24,34 +24,34 @@ Manager::Manager()
     
     terminal_window_.on_send_keypress([this]() { send_keypress_window_.set_visible(true); });
     
-    window_.add_window(load_project_window_);
-    window_.add_window(message_box_);
-    window_.add_window(menu_window_);
-    window_.add_window(send_keypress_window_);
-    window_.add_window(file_select_window_);
+    gui_.add_window(load_project_window_);
+    gui_.add_window(message_box_);
+    gui_.add_window(menu_window_);
+    gui_.add_window(send_keypress_window_);
+    gui_.add_window(file_select_window_);
     for (auto const& window: menu_windows_)
-        window_.add_window(*window);
+        gui_.add_window(*window);
 }
 
 Manager::~Manager()
 {
     for (auto const& mwindow: menu_windows_)
-        window_.set_property_bool(mwindow->name(), mwindow->visible());
+        properties_.set_property_bool(mwindow->name(), mwindow->visible());
 }
 
 void Manager::open_windows_from_last_time()
 {
     for (auto const& mwindow: menu_windows_)
-        if (window_.property_bool(mwindow->name()))
+        if (properties_.property_bool(mwindow->name()))
             mwindow->set_visible(true);
 }
 
 void Manager::run()
 {
     try {
-        window_.run();
+        gui_.run();
     } catch (std::exception& e) {
-        window_.force_end_frame();
+        gui_.force_end_frame();
         std::cerr << e.what() << "\n";
         message_box_.set_message(MessageBox::Error, e.what());
         run();

@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 #include "sendkeypressmodal.hh"
 #include "../../emulator/emulator.hh"
-#include "../window/mainwindow.hh"
+#include "../gui/gui.hh"
 
 void SendKeypressModal::draw()
 {
@@ -23,7 +23,7 @@ void SendKeypressModal::draw()
 
 bool SendKeypressModal::do_keypress()
 {
-    ImGuiIO& io = MainWindow::get().io();
+    ImGuiIO const& io = ImGui::GetIO();
     
     bool press = false;
     for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) {
