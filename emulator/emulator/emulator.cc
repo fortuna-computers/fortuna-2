@@ -116,7 +116,8 @@ size_t Emulator::ram_size()
 void Emulator::keypress(uint8_t key)
 {
     last_keypress_ = key;
-    keyboard_interrupt_ = true;
+    if (key != 0)
+        keyboard_interrupt_ = true;
 }
 
 void Emulator::step()
@@ -156,6 +157,7 @@ void Emulator::next()
 
 void Emulator::soft_reset()
 {
+    terminal_.reset();
     ResetZ80(&z80_);
 }
 
