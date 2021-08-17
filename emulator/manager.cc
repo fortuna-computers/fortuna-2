@@ -42,7 +42,10 @@ Manager::~Manager()
 void Manager::run()
 {
     try {
-        gui_.run();
+        while (gui_.continue_executing()) {
+            gui_.step();
+            emulator_.execute();
+        }
     } catch (std::exception& e) {
         gui_.force_end_frame();
         std::cerr << e.what() << "\n";

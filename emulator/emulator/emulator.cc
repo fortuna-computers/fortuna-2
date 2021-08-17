@@ -69,6 +69,14 @@ word LoopZ80(Z80 *R)
         return 0xcf;  // RST 08h
     }
     
+    if (emulator->continue_mode()) {
+        // TODO - check breakpoints
+        
+        auto now = system_clock::now();
+        if (now < emulator->execute_until())
+            return INT_NONE;
+    }
+    
     return INT_QUIT;
 }
 
@@ -100,6 +108,16 @@ void Emulator::step()
     RunZ80(&z80_);
 }
 
+void Emulator::continue_()
+{
+    continue_mode_ = true;
+}
+
+void Emulator::stop()
+{
+    continue_mode_ = false;
+}
+
 void Emulator::soft_reset()
 {
     ResetZ80(&z80_);
@@ -108,4 +126,12 @@ void Emulator::soft_reset()
 uint16_t Emulator::pc() const
 {
     return z80_.PC.W;
+}
+
+void Emulator::execute()
+{
+    if (continue_mode_) {
+        execute_until_ = system_clock::now() + milliseconds(8);
+        RunZ80(&z80_);
+    }
 }

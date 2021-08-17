@@ -69,39 +69,37 @@ void RamWindow::draw_memory_table() const
         ImGui::TableSetupColumn("ASCII", ImGuiTableColumnFlags_WidthStretch);
         ImGui::TableHeadersRow();
         
-        if (emulator_.stopped()) {
-            for (int line = 0; line < 0x10; ++line) {
-                ImGui::TableNextRow();
-                
-                // address
-                uint16_t addr = (page_number_ << 8) + (line * 0x10);
-                ImGui::TableSetColumnIndex(0);
-                ImGui::Text("%04X : ", addr);
-                
-                // data
-                std::string ascii;
-                for (int i = 0; i < 0x10; ++i) {
-                    ImGui::TableSetColumnIndex(i + 1);
-                    uint8_t byte = emulator_.ram_get(addr + (line * 0x10) + i);
-                    bool needs_pop = false;
-                    if (addr + i == emulator_.z80().PC.W)
-                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, pc_bg_color);
-                    else if (addr + i == emulator_.z80().SP.W)
-                        ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, sp_bg_color);
-                    if (byte == 0) {
-                        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(ImColor(128, 128, 128)));
-                        needs_pop = true;
-                    }
-                    ImGui::Text("%02X", byte);
-                    if (needs_pop)
-                        ImGui::PopStyleColor();
-                    ascii += (byte >= 32 && byte < 127) ? (char) byte : '.';
+        for (int line = 0; line < 0x10; ++line) {
+            ImGui::TableNextRow();
+            
+            // address
+            uint16_t addr = (page_number_ << 8) + (line * 0x10);
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("%04X : ", addr);
+            
+            // data
+            std::string ascii;
+            for (int i = 0; i < 0x10; ++i) {
+                ImGui::TableSetColumnIndex(i + 1);
+                uint8_t byte = emulator_.ram_get(addr + (line * 0x10) + i);
+                bool needs_pop = false;
+                if (addr + i == emulator_.z80().PC.W)
+                    ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, pc_bg_color);
+                else if (addr + i == emulator_.z80().SP.W)
+                    ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, sp_bg_color);
+                if (byte == 0) {
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(ImColor(128, 128, 128)));
+                    needs_pop = true;
                 }
-                
-                // ascii
-                ImGui::TableSetColumnIndex(17);
-                ImGui::Text("%s", ascii.c_str());
+                ImGui::Text("%02X", byte);
+                if (needs_pop)
+                    ImGui::PopStyleColor();
+                ascii += (byte >= 32 && byte < 127) ? (char) byte : '.';
             }
+            
+            // ascii
+            ImGui::TableSetColumnIndex(17);
+            ImGui::Text("%s", ascii.c_str());
         }
         
         ImGui::EndTable();

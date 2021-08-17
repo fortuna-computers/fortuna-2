@@ -34,17 +34,13 @@ void CodeWindow::draw_buttons()
         }
         ImGui::SameLine();
         if (ImGui::Button("Run (F9)") || ImGui::IsKeyPressed(F9, false)) {
-            /*
-            emulator.continue_();
-             */
+            emulator_.continue_();
         }
     } else {
         if (ImGui::Button("Stop (Ctrl+C)") || (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed('C', false))) {
-            /*
-            emulator.stop();
-            code_model_->update(false);
+            emulator_.stop();
+            code_model_->update();
             scroll_to_pc_ = true;
-             */
         }
     }
 }
@@ -146,6 +142,7 @@ void CodeWindow::draw_footer()
         
         if (ImGui::Button("Soft Reset")) {
             emulator_.soft_reset();
+            update();
             scroll_to_pc_ = true;
         }
         ImGui::SameLine();

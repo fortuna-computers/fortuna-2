@@ -1,6 +1,7 @@
 #ifndef EMULATOR_EMULATOR_HH
 #define EMULATOR_EMULATOR_HH
 
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <Z80.h>
@@ -9,6 +10,8 @@
 #include <unordered_set>
 #include "terminal.hh"
 #include "../compiler/projectfile.hh"
+
+using namespace std::chrono;
 
 class Emulator {
 public:
@@ -23,9 +26,15 @@ public:
     
     void initialize(std::vector<uint8_t> const& rom, ProjectFile const& project_file);
     
-    bool stopped() const { return true; }
+    bool stopped() const { return !continue_mode_; }
+    bool continue_mode() const { return continue_mode_; }
+    time_point<system_clock> const& execute_until() const { return execute_until_; }
+    
+    void execute();
     
     void step();
+    void continue_();
+    void stop();
     void soft_reset();
     
     uint16_t pc() const;
@@ -53,14 +62,16 @@ public:
     bool is_breakpoint(uint16_t addr) const { return breakpoints_.find(addr) != breakpoints_.end(); }
     
 private:
-    Terminal                     terminal_ { 25, 40 };
-    Z80                          z80_ {};
-    uint8_t                      ram_[MEMORY_SIZE] = { 0 };
-    uint8_t                      last_keypress_ = 0;
-    bool                         keyboard_interrupt_ = false;
-    std::string                  image_filename_ = "";
-    std::optional<std::ifstream> image_ {};
-    std::unordered_set<uint16_t> breakpoints_;
+    Terminal                          terminal_ { 25, 40 };
+    Z80                               z80_ {};
+    uint8_t                           ram_[MEMORY_SIZE] = { 0 };
+    uint8_t                           last_keypress_ = 0;
+    bool                              keyboard_interrupt_ = false;
+    bool                              continue_mode_ = false;
+    std::string                       image_filename_ = "";
+    std::optional<std::ifstream>      image_ {};
+    std::unordered_set<uint16_t>      breakpoints_;
+    time_point<system_clock> execute_until_;
 };
 
 #endif //EMULATOR_EMULATOR_HH

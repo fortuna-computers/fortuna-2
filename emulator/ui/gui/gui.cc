@@ -71,26 +71,24 @@ GUI::~GUI()
 // MAIN LOOP
 //
 
-void GUI::run()
+void GUI::step()
 {
-    while (!glfwWindowShouldClose(window_)) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-        
-        for (auto& child: children_)
-            if (child->visible())
-                child->draw();
-        
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-        glfwSwapBuffers(window_);
-        
-        glfwPollEvents();
-    }
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+    
+    for (auto& child: children_)
+        if (child->visible())
+            child->draw();
+    
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    glfwSwapBuffers(window_);
+    
+    glfwPollEvents();
 }
 
 void GUI::force_end_frame()
@@ -98,4 +96,9 @@ void GUI::force_end_frame()
     while (context_->CurrentWindowStack.Size > 1)
         ImGui::End();
     ImGui::EndFrame();
+}
+
+bool GUI::continue_executing() const
+{
+    return !glfwWindowShouldClose(window_);
 }
