@@ -23,10 +23,17 @@ Emulator::Emulator()
 
 void Emulator::initialize(std::vector<uint8_t> const& rom, ProjectFile const& project_file)
 {
+    // reset CPU
+    soft_reset();
+    
+    // reset RAM
+    for (uint8_t& addr : ram_)
+        addr = 0;
+    
     // load ROM into memory
     uint16_t addr = 0;
     for (uint8_t byte: rom)
-        WrZ80(addr++, byte);
+        ram_[addr++] = byte;
     
     image_filename_ = image_file_create(project_file);
 }

@@ -27,6 +27,10 @@ Manager::Manager()
     });
     load_project_window_.set_visible(true);
     
+    code_window_.on_recompile_project([this]() {
+        load_project(last_project_loaded_);
+    });
+    
     for (auto const& window: menu_windows_)
         gui_.add_window(*window);
     for (auto const& window: other_windows_)
@@ -72,6 +76,7 @@ void Manager::load_project(std::string const& project_name)
         code_window_.set_code_model(*code_model_);
         file_select_window_.set_code_model(*code_model_);
         symbol_select_window_.set_code_model(*code_model_);
+        last_project_loaded_ = project_name;
     }
 }
 

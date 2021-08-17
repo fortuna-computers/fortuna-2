@@ -22,6 +22,8 @@ public:
     void set_code_model(CodeModel& code_model) { code_model_ = &code_model; }
     
     void set_show_this_line_on_next_frame(size_t line);
+    
+    void on_recompile_project(std::function<void()> const& f) { on_recompile_project_ = f; }
 
 private:
     void draw_buttons();
@@ -34,6 +36,8 @@ private:
     CodeModel* code_model_ = nullptr;
     bool scroll_to_pc_ = true;
     std::optional<size_t> show_this_line_on_next_frame_ {};
+    
+    std::function<void()> on_recompile_project_;
 };
 
 #endif

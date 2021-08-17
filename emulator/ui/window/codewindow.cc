@@ -146,13 +146,8 @@ void CodeWindow::draw_footer()
             scroll_to_pc_ = true;
         }
         ImGui::SameLine();
-        if (ImGui::Button("Recompile project (Ctrl+R)") || (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed('r', false))) {
-            /*
-            p().recompile_project();  // TODO ???
-            update_symbol_list();
-            emulator.reset();
-            scroll_to_pc_ = true;
-             */
+        if (ImGui::Button("Recompile project (Ctrl+R)") || (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed('R', false))) {
+            on_recompile_project_();
         }
         ImGui::SameLine();
         if (ImGui::Button("Go to file... (F)") || ImGui::IsKeyPressed('F', false))

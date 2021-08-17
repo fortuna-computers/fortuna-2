@@ -46,6 +46,8 @@ private:
     
     std::optional<CodeModel> code_model_ {};
     
+    std::string              last_project_loaded_;
+    
     void load_project(std::string const& project_name);
     
     void open_windows_from_last_time();
