@@ -65,7 +65,7 @@ void CodeModel::create_lines(std::string const& filename)
     
     for (size_t i = 1; i <= number_of_lines; ++i) {
         SourceAddress const& sa = source_addresses.at(i);
-        lines_.emplace_back(sa.source, sa.address, emulator_.is_breakpoint(*sa.address), sa.bytes);
+        lines_.emplace_back(sa.source, sa.address, sa.bytes);
     }
 }
 

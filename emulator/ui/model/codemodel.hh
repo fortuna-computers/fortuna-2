@@ -7,12 +7,11 @@
 enum class Order { Source, Alphabetical };
 
 struct CodeViewLine {
-    CodeViewLine(std::string code, std::optional<uint16_t> const& address, bool is_breakpoint, std::vector<uint8_t> bytes)
-            : code(std::move(code)), address(address), is_breakpoint(is_breakpoint), bytes(std::move(bytes)) {}
+    CodeViewLine(std::string code, std::optional<uint16_t> const& address, std::vector<uint8_t> bytes)
+            : code(std::move(code)), address(address), bytes(std::move(bytes)) {}
     
     std::string             code;
     std::optional<uint16_t> address;
-    bool                    is_breakpoint;
     std::vector<uint8_t>    bytes;
 };
 

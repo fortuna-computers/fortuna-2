@@ -64,19 +64,28 @@ byte InZ80(word Port)
 
 word LoopZ80(Z80 *R)
 {
+    // check for interrupts
     if (emulator->keyboard_interrupt()) {
         emulator->reset_keyboard_interrupt();
         return 0xcf;  // RST 08h
     }
     
     if (emulator->continue_mode()) {
-        // TODO - check breakpoints
+        // check for breakpoints
+        if (emulator->is_breakpoint(R->PC.W)) {
+            emulator->set_continue_mode(false);
+            if (emulator->last_action_was_next())
+                emulator->remove_breakpoint(R->PC.W);
+            return INT_QUIT;
+        }
         
+        // continue execution for allotted time
         auto now = system_clock::now();
         if (now < emulator->execute_until())
             return INT_NONE;
     }
     
+    // it is just a single step
     return INT_QUIT;
 }
 
@@ -118,6 +127,26 @@ void Emulator::stop()
     continue_mode_ = false;
 }
 
+void Emulator::next()
+{
+    switch (ram_get(z80_.PC.W)) {
+        case 0xcd:  // CALL
+        case 0xdc:
+        case 0xfc:
+        case 0xd4:
+        case 0xc4:
+        case 0xf4:
+        case 0xec:
+        case 0xe4:
+        case 0xcc:
+            add_breakpoint(z80_.PC.W + 3);
+            set_continue_mode(true);
+            last_action_was_next_ = true;
+            break;
+    }
+    RunZ80(&z80_);
+}
+
 void Emulator::soft_reset()
 {
     ResetZ80(&z80_);
@@ -134,4 +163,25 @@ void Emulator::execute()
         execute_until_ = system_clock::now() + milliseconds(8);
         RunZ80(&z80_);
     }
+}
+
+void Emulator::add_breakpoint(uint16_t addr)
+{
+    breakpoints_.insert(addr);
+}
+
+void Emulator::remove_breakpoint(uint16_t addr)
+{
+    breakpoints_.erase(addr);
+    last_action_was_next_ = false;
+}
+
+void Emulator::remove_all_breakpoints()
+{
+    breakpoints_.clear();
+}
+
+bool Emulator::is_breakpoint(uint16_t addr) const
+{
+    return breakpoints_.find(addr) != breakpoints_.end();
 }

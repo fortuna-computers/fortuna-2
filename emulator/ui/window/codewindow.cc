@@ -26,11 +26,9 @@ void CodeWindow::draw_buttons()
         }
         ImGui::SameLine();
         if (ImGui::Button("Next (F8)") || ImGui::IsKeyPressed(F8, false)) {
-            /*
-            emulator.next();
-            code_model_->update(false);
+            emulator_.next();
             scroll_to_pc_ = true;
-             */
+            code_model_->update();
         }
         ImGui::SameLine();
         if (ImGui::Button("Run (F9)") || ImGui::IsKeyPressed(F9, false)) {
@@ -96,7 +94,9 @@ void CodeWindow::draw_code()
                         }
                     }
                     
-                    if (line.is_breakpoint)
+                    bool is_breakpoint = emulator_.is_breakpoint(*line.address);
+                    
+                    if (is_breakpoint)
                         ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, bkp_cell_color, 0);
                     
                     if (nline == show_this_line_on_next_frame_.value_or(-1)) {
@@ -108,7 +108,7 @@ void CodeWindow::draw_code()
                     char buf[5];
                     sprintf(buf, "%04X", *line.address);
                     if (ImGui::Selectable(buf)) {
-                        if (line.is_breakpoint)
+                        if (is_breakpoint)
                             code_model_->remove_breakpoint(nline);
                         else
                             code_model_->add_breakpoint(nline);

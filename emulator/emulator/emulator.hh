@@ -27,7 +27,10 @@ public:
     void initialize(std::vector<uint8_t> const& rom, ProjectFile const& project_file);
     
     bool stopped() const { return !continue_mode_; }
+    
     bool continue_mode() const { return continue_mode_; }
+    void set_continue_mode(bool continue_mode) { continue_mode_ = continue_mode; }
+    
     time_point<system_clock> const& execute_until() const { return execute_until_; }
     
     void execute();
@@ -35,6 +38,7 @@ public:
     void step();
     void continue_();
     void stop();
+    void next();
     void soft_reset();
     
     uint16_t pc() const;
@@ -56,11 +60,13 @@ public:
     bool keyboard_interrupt() const { return keyboard_interrupt_; }
     void reset_keyboard_interrupt() { keyboard_interrupt_ = false; }
     
-    void add_breakpoint(uint16_t addr)      { breakpoints_.insert(addr); }
-    void remove_breakpoint(uint16_t addr)   { breakpoints_.erase(addr); }
-    void remove_all_breakpoints()           { breakpoints_.clear(); }
-    bool is_breakpoint(uint16_t addr) const { return breakpoints_.find(addr) != breakpoints_.end(); }
+    void add_breakpoint(uint16_t addr);
+    void remove_breakpoint(uint16_t addr);
+    void remove_all_breakpoints();
+    bool is_breakpoint(uint16_t addr) const;
     
+    bool last_action_was_next() const { return last_action_was_next_; }
+
 private:
     Terminal                          terminal_ { 25, 40 };
     Z80                               z80_ {};
@@ -68,10 +74,11 @@ private:
     uint8_t                           last_keypress_ = 0;
     bool                              keyboard_interrupt_ = false;
     bool                              continue_mode_ = false;
+    bool                              last_action_was_next_ = false;
     std::string                       image_filename_ = "";
     std::optional<std::ifstream>      image_ {};
     std::unordered_set<uint16_t>      breakpoints_;
-    time_point<system_clock> execute_until_;
+    time_point<system_clock>          execute_until_;
 };
 
 #endif //EMULATOR_EMULATOR_HH

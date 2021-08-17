@@ -5,7 +5,7 @@ LoadProjectWindow::LoadProjectWindow(Emulator& emulator, Properties& properties)
     : Window(emulator), properties_(properties)
 {
     file_browser_.SetTitle("title");
-    file_browser_.SetTypeFilters({ ".yaml", "" });
+    file_browser_.SetTypeFilters({ ".yml", ".yaml", "" });
     file_browser_.SetCurrentTypeFilterIndex(1);
 }
 
