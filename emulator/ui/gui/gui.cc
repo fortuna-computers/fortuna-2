@@ -102,3 +102,11 @@ bool GUI::continue_executing() const
 {
     return !glfwWindowShouldClose(window_);
 }
+
+std::optional<unsigned int> GUI::last_keypress() const
+{
+    if (io().InputQueueCharacters.Size == 0)
+        return {};
+    
+    return io().InputQueueCharacters[0];  // TODO - are we losing characters?
+}

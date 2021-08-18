@@ -24,6 +24,8 @@ public:
 
     void force_end_frame();
     
+    std::optional<unsigned int> last_keypress() const;
+    
     ImGuiIO& io() const { return *io_; }
     ImGuiContext* context() const { return context_; }
 

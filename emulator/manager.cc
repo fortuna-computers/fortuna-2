@@ -49,6 +49,11 @@ void Manager::run()
         while (gui_.continue_executing()) {
             gui_.step();
             emulator_.execute();
+            if (!emulator_.stopped()) {
+                auto key = gui_.last_keypress();
+                if (key)
+                    emulator_.keypress((uint8_t) *key);
+            }
         }
     } catch (std::exception& e) {
         gui_.force_end_frame();
