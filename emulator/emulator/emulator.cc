@@ -21,7 +21,7 @@ Emulator::Emulator()
     emulator = this;
 }
 
-void Emulator::initialize(std::vector<uint8_t> const& rom, ProjectFile const& project_file)
+void Emulator::initialize(std::vector<uint8_t> const& rom, ProjectFile const& project_file, std::string const& sources_path)
 {
     // reset CPU
     soft_reset();
@@ -35,7 +35,7 @@ void Emulator::initialize(std::vector<uint8_t> const& rom, ProjectFile const& pr
     for (uint8_t byte: rom)
         ram_[addr++] = byte;
     
-    image_filename_ = image_file_create(project_file);
+    image_filename_ = image_file_create(project_file, sources_path, true).value_or(nullptr);
 }
 
 

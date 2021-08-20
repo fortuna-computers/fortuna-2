@@ -8,7 +8,7 @@ struct ProjectFile {
     enum class SourceType { Undefined, ROM, OS, App };
     
     struct Image {
-        enum class Format { Undefined, Fat32 };
+        enum class Format { Undefined, Fat16, Fat32 };
         std::string name;
         Format      format = Format::Undefined;
         std::string app_filename;

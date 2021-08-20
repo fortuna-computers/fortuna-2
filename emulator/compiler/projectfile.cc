@@ -41,6 +41,8 @@ ProjectFile ProjectFile::import(std::string const& contents)
                 auto format = image["format"].as<std::string>();
                 if (format == "fat32")
                     p.debug->image->format = Image::Format::Fat32;
+                else if (format == "fat16")
+                    p.debug->image->format = Image::Format::Fat16;
                 else
                     throw std::runtime_error("Invalid format '" + format + "'");
             }

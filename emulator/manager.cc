@@ -3,6 +3,7 @@
 #include "compiler/compilationresult.hh"
 
 #include <iostream>
+#include <filesystem>
 #include "emulator/emulator.hh"
 
 Manager::Manager()
@@ -68,11 +69,13 @@ void Manager::load_project(std::string const& project_name)
     CompilationResult result = Compiler().compile_from_project_file(project_name);
     std::cout << result.message;
     
+    auto sources_path = std::filesystem::path(project_name).parent_path();
+    
     if (result.error.has_value()) {
         message_box_.set_message(MessageBox::Error, result.error.value());
     } else {
         auto& rom = result.binaries.at(result.project_file.debug->rom).data;
-        emulator_.initialize(rom, result.project_file);
+        emulator_.initialize(rom, result.project_file, sources_path);
         load_project_window_.set_visible(false);
         menu_window_.set_visible(true);
         open_windows_from_last_time();

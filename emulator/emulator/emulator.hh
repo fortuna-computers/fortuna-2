@@ -24,7 +24,7 @@ public:
     Emulator(Emulator&&) = delete;
     Emulator& operator=(Emulator&&) = delete;
     
-    void initialize(std::vector<uint8_t> const& rom, ProjectFile const& project_file);
+    void initialize(std::vector<uint8_t> const& rom, ProjectFile const& project_file, std::string const& sources_path);
     
     bool stopped() const { return !continue_mode_; }
     
