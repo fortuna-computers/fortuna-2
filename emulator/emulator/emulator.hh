@@ -71,6 +71,9 @@ public:
     
     void     set_sdcard_register(uint32_t value) { sdcard_register_ = value; }
     uint32_t sdcard_register() const { return sdcard_register_; }
+    
+    void     sdcard_write() const;
+    void     sdcard_read();
 
 private:
     Terminal                          terminal_ { 25, 40 };

@@ -67,6 +67,10 @@ void OutZ80(word Port,byte Value)
             emulator->set_sdcard_register(emulator->sdcard_register() | (((uint32_t) Value) << 24));
             break;
         case I_SD_ACTION:
+            if (Value & 1)
+                emulator->sdcard_write();
+            else
+                emulator->sdcard_read();
             break;
     }
 }
@@ -206,4 +210,16 @@ void Emulator::remove_all_breakpoints()
 bool Emulator::is_breakpoint(uint16_t addr) const
 {
     return breakpoints_.find(addr) != breakpoints_.end();
+}
+
+void Emulator::sdcard_write() const
+{
+    if (image_file_)
+        image_file_->write_block_to_image(sdcard_register_, ram_);
+}
+
+void Emulator::sdcard_read()
+{
+    if (image_file_)
+        image_file_->read_block_from_image(sdcard_register_, ram_);
 }

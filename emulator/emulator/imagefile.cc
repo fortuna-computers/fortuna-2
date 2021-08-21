@@ -110,3 +110,18 @@ void ImageFile::add_file(std::string const& filename, Binary const& binary)
     unlink(TMP_FILE_OUTPUT);
     unlink(TMP_FILENAME);
 }
+
+void ImageFile::write_block_to_image(uint32_t block, uint8_t const* data)
+{
+    // TODO - check image file size
+    file_.seekp(block * 512);
+    file_.write((const char*) data, 512);
+}
+
+void ImageFile::read_block_from_image(uint32_t block, uint8_t* data)
+{
+    // TODO - check image file size
+    file_.seekp(block * 512);
+    file_.read((char*) data, 512);
+}
+

@@ -13,16 +13,19 @@ public:
     ImageFile(ImageFile&&)                 = delete;
     ImageFile& operator=(ImageFile const&) = delete;
     ImageFile& operator=(ImageFile&&)      = delete;
+    
+    void write_block_to_image(uint32_t block, uint8_t const* data);
+    void read_block_from_image(uint32_t block, uint8_t* data);
 
 private:
     void add_bootsector(Binary const& binary);
     void add_file(std::string const& filename, Binary const& binary);
     
     std::string   filename_;
-    std::ofstream file_;
+    std::fstream  file_;
     bool          use_in_emulator_;
     
-    static constexpr std::ios_base::openmode file_flags_ = std::ios::out | std::ios::binary;
+    static constexpr std::ios_base::openmode file_flags_ = std::ios::out | std::ios::in | std::ios::binary;
 };
 
 #endif
