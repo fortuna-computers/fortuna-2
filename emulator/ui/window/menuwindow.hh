@@ -9,6 +9,7 @@
 #include "ramwindow.hh"
 #include "terminalwindow.hh"
 #include "demowindow.hh"
+#include "storagewindow.hh"
 
 struct MenuChildrenWindows {
     CodeWindow&     code_window;
@@ -16,7 +17,7 @@ struct MenuChildrenWindows {
     RamWindow&      ram_window;
     TerminalWindow& terminal_window;
     DemoWindow&     demo_window;
-    // StorageWindow&   storage_window;
+    StorageWindow&   storage_window;
 };
 
 class MenuWindow : public Window {

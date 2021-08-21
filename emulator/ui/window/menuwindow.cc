@@ -17,7 +17,7 @@ void MenuWindow::draw()
     if (ImGui::Button("Terminal", size))
         menu_children_windows_.terminal_window.set_visible(true);
     if (ImGui::Button("Storage", size))
-        ;  // menu_children_windows_.storage_window.set_visible(true);
+        menu_children_windows_.storage_window.set_visible(true);
     if (ImGui::Button("Demo", size))
         menu_children_windows_.demo_window.set_visible(true);
     

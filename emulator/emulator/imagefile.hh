@@ -16,15 +16,19 @@ public:
     
     void write_block_to_image(uint32_t block, uint8_t const* data);
     void read_block_from_image(uint32_t block, uint8_t* data);
+    
+    void read_block(uint32_t block, uint8_t data[512]) const;
+    
+    size_t disk_size() const { return file_size_; }
 
 private:
     void add_bootsector(Binary const& binary);
     void add_file(std::string const& filename, Binary const& binary);
     
-    size_t        file_size_ = 16 * 1024 * 1024;
-    std::string   filename_;
-    std::fstream  file_;
-    bool          use_in_emulator_;
+    size_t                file_size_ = 16 * 1024 * 1024;
+    std::string           filename_;
+    mutable std::fstream  file_;
+    bool                  use_in_emulator_;
     
     static constexpr std::ios_base::openmode file_flags_ = std::ios::out | std::ios::in | std::ios::binary;
 };

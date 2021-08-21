@@ -127,3 +127,11 @@ void ImageFile::read_block_from_image(uint32_t block, uint8_t* data)
     }
 }
 
+void ImageFile::read_block(uint32_t block, uint8_t data[512]) const
+{
+    if (block < file_size_ / 512) {
+        file_.seekp(block * 512);
+        file_.read((char*) data, 512);
+    }
+}
+
