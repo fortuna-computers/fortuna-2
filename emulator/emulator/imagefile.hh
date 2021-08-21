@@ -21,6 +21,7 @@ private:
     void add_bootsector(Binary const& binary);
     void add_file(std::string const& filename, Binary const& binary);
     
+    size_t        file_size_ = 16 * 1024 * 1024;
     std::string   filename_;
     std::fstream  file_;
     bool          use_in_emulator_;

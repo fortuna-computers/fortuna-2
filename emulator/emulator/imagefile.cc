@@ -80,7 +80,7 @@ void ImageFile::add_bootsector(Binary const& binary)
     file_.seekp(0x4800);
     file_.write((char*) fat_signature, 4);
     
-    file_.seekp(0xffffff);
+    file_.seekp((long) file_size_ - 1);
     file_.put(0x0);
 }
 
@@ -113,15 +113,17 @@ void ImageFile::add_file(std::string const& filename, Binary const& binary)
 
 void ImageFile::write_block_to_image(uint32_t block, uint8_t const* data)
 {
-    // TODO - check image file size
-    file_.seekp(block * 512);
-    file_.write((const char*) data, 512);
+    if (block < file_size_ / 512) {
+        file_.seekp(block * 512);
+        file_.write((const char*) data, 512);
+    }
 }
 
 void ImageFile::read_block_from_image(uint32_t block, uint8_t* data)
 {
-    // TODO - check image file size
-    file_.seekp(block * 512);
-    file_.read((char*) data, 512);
+    if (block < file_size_ / 512) {
+        file_.seekp(block * 512);
+        file_.read((char*) data, 512);
+    }
 }
 
