@@ -81,7 +81,8 @@ void RamWindow::draw_memory_table() const
             std::string ascii;
             for (int i = 0; i < 0x10; ++i) {
                 ImGui::TableSetColumnIndex(i + 1);
-                uint8_t byte = emulator_.ram_get(addr + (line * 0x10) + i);
+                int address = addr + i;
+                uint8_t byte = emulator_.ram_get(address);
                 bool needs_pop = false;
                 if (addr + i == emulator_.z80().PC.W)
                     ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, pc_bg_color);
