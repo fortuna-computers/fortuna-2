@@ -6,19 +6,21 @@ void CpuWindow::draw()
 {
     Z80 const& z80 = emulator_.z80();
     
-    ImGui::SetNextWindowSize({ 265, 375 });
+    ImGui::SetNextWindowSize({ 267, 400 });
     if (ImGui::Begin("CPU", &visible_, ImGuiWindowFlags_NoResize)) {
         ImGui::Text("Registers:");
         
-        auto pair = [](size_t& i, size_t sz, std::string const& name, int value) {
+        auto pair = [](size_t& i, size_t sz, std::string const& name, size_t value) {
             ImGui::TableSetColumnIndex(i++);
             ImGui::Text("%s:", name.c_str());
             ImGui::TableSetColumnIndex(i++);
-            char buf[5];
+            char buf[9];
             if (sz == 2)
                 sprintf(buf, "%02X", (uint8_t) value);
             else if (sz == 4)
                 sprintf(buf, "%04X", (uint16_t) value);
+            else if (sz == 8)
+                sprintf(buf, "%08X", (uint32_t) value);
             ImGui::Button(buf);
         };
         
@@ -76,6 +78,13 @@ void CpuWindow::draw()
         bool pv = (f >> 2) & 1; ImGui::Checkbox("Parity / Overflow (V)", &pv);
         bool n = (f >> 1) & 1; ImGui::Checkbox("Subtract (N)", &n);
         bool c = (f >> 0) & 1; ImGui::Checkbox("Carry", &c);
+        
+        ImGui::Separator();
+        ImGui::Text("SD Card register: ");
+        ImGui::SameLine();
+        char buf[16];
+        sprintf(buf, "0x%08X", emulator_.sdcard_register());
+        ImGui::Button(buf);
     }
     ImGui::End();
 

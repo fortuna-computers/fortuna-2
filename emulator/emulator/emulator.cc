@@ -54,6 +54,20 @@ void OutZ80(word Port,byte Value)
         case I_TERMINAL:
             emulator->terminal().add_char(Value);
             break;
+        case I_SD_B0:
+            emulator->set_sdcard_register(emulator->sdcard_register() | Value);
+            break;
+        case I_SD_B1:
+            emulator->set_sdcard_register(emulator->sdcard_register() | (((uint32_t) Value) << 8));
+            break;
+        case I_SD_B2:
+            emulator->set_sdcard_register(emulator->sdcard_register() | (((uint32_t) Value) << 16));
+            break;
+        case I_SD_B3:
+            emulator->set_sdcard_register(emulator->sdcard_register() | (((uint32_t) Value) << 24));
+            break;
+        case I_SD_ACTION:
+            break;
     }
 }
 
