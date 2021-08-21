@@ -27,7 +27,7 @@ set(GUI_SRC
 set(SOURCES
     contrib/z80/Z80.c
     compiler/compiler.hh compiler/compiler.cc compiler/projectfile.cc compiler/projectfile.hh compiler/compilationresult.hh
-    compiler/debug.hh compiler/debug.cc emulator/emulator.hh emulator/emulator.cc emulator/terminal.cc emulator/terminal.hh emulator/image.hh emulator/image.cc)
+    compiler/debug.hh compiler/debug.cc emulator/emulator.hh emulator/emulator.cc emulator/terminal.cc emulator/terminal.hh emulator/imagefile.cc emulator/imagefile.hh)
 
 add_executable(emulator
                main.cc ${SOURCES} ${GUI_SRC})

@@ -48,6 +48,8 @@ private:
     
     std::string              last_project_loaded_;
     
+    std::optional<ImageFile> image_file;
+    
     void load_project(std::string const& project_name);
     
     void open_windows_from_last_time();

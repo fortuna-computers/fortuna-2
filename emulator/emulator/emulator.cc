@@ -1,7 +1,6 @@
 #include "emulator.hh"
 
 #include "Z80.h"
-#include "image.hh"
 
 #include <cstddef>
 
@@ -21,7 +20,7 @@ Emulator::Emulator()
     emulator = this;
 }
 
-void Emulator::initialize(std::vector<uint8_t> const& rom, ProjectFile const& project_file, std::string const& sources_path)
+void Emulator::initialize(std::vector<uint8_t> const& rom, std::optional<ImageFile>& image_file)
 {
     // reset CPU
     soft_reset();
@@ -35,7 +34,7 @@ void Emulator::initialize(std::vector<uint8_t> const& rom, ProjectFile const& pr
     for (uint8_t byte: rom)
         ram_[addr++] = byte;
     
-    image_filename_ = image_file_create(project_file, sources_path, true).value_or(nullptr);
+    image_file_ = image_file ? &image_file.value() : nullptr;
 }
 
 

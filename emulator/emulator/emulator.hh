@@ -10,6 +10,8 @@
 #include <unordered_set>
 #include "terminal.hh"
 #include "../compiler/projectfile.hh"
+#include "../compiler/compilationresult.hh"
+#include "imagefile.hh"
 
 using namespace std::chrono;
 
@@ -24,7 +26,7 @@ public:
     Emulator(Emulator&&) = delete;
     Emulator& operator=(Emulator&&) = delete;
     
-    void initialize(std::vector<uint8_t> const& rom, ProjectFile const& project_file, std::string const& sources_path);
+    void initialize(std::vector<uint8_t> const& rom, std::optional<ImageFile>& image_file);
     
     bool stopped() const { return !continue_mode_; }
     
@@ -75,8 +77,7 @@ private:
     bool                              keyboard_interrupt_ = false;
     bool                              continue_mode_ = false;
     bool                              last_action_was_next_ = false;
-    std::string                       image_filename_ = "";
-    std::optional<std::ifstream>      image_ {};
+    ImageFile*                        image_file_ = nullptr;
     std::unordered_set<uint16_t>      breakpoints_;
     time_point<system_clock>          execute_until_;
 };
