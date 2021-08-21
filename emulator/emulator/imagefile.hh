@@ -21,6 +21,8 @@ private:
     std::string   filename_;
     std::ofstream file_;
     bool          use_in_emulator_;
+    
+    static constexpr std::ios_base::openmode file_flags_ = std::ios::out | std::ios::binary;
 };
 
 #endif

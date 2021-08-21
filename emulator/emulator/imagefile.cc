@@ -1,7 +1,11 @@
 #include <unistd.h>
 #include "imagefile.hh"
 
-static constexpr const char* EMULATOR_IMAGE_FILENAME = "/tmp/miniz80.img";
+using namespace std::string_literals;
+
+static constexpr const char *EMULATOR_IMAGE_FILENAME = "/tmp/miniz80.img",
+                            *TMP_FILENAME = "/tmp/miniz80.tmp",
+                            *TMP_FILE_OUTPUT = "/tmp/miniz80.txt";
 
 static const std::vector<uint8_t> bootsector {
         0xeb, 0x3c, 0x90,                          // 0x00 - jump instruction (TODO ?)
@@ -28,7 +32,7 @@ static const std::vector<uint8_t> bootsector {
 
 ImageFile::ImageFile(CompilationResult const& result, bool use_in_emulator, std::string const& path)
     : filename_(use_in_emulator ? EMULATOR_IMAGE_FILENAME : path + "/" + (*result.project_file.debug->image).name),
-      file_(filename_, std::ios::out | std::ios::binary | std::ios::trunc | std::ios::ate),
+      file_(filename_, file_flags_ | std::ios::trunc),
       use_in_emulator_(use_in_emulator)
 {
     if (!file_.is_open())
@@ -75,9 +79,34 @@ void ImageFile::add_bootsector(Binary const& binary)
     file_.write((char*) fat_signature, 4);
     file_.seekp(0x4800);
     file_.write((char*) fat_signature, 4);
+    
+    file_.seekp(0xffffff);
+    file_.put(0x0);
 }
 
 void ImageFile::add_file(std::string const& filename, Binary const& binary)
 {
-
+    std::string tmp_filename;
+    
+    std::ofstream tmp(TMP_FILENAME, std::ios::out | std::ios::binary | std::ios::trunc);
+    if (!tmp.is_open())
+        throw std::runtime_error("Could not create file "s + TMP_FILENAME + " for transferring to image.");
+    tmp.write((char*) binary.data.data(), (long) binary.data.size());
+    tmp.close();
+    
+    file_.close();
+    
+    char buf[4096];
+    snprintf(buf, sizeof buf, "mcopy -i %s %s ::%s > %s 2> %s",
+             filename_.c_str(), TMP_FILENAME, filename.c_str(), TMP_FILE_OUTPUT, TMP_FILE_OUTPUT);
+    printf("%s\n", buf);
+    if (std::system(buf) != 0) {
+        std::string err(std::istreambuf_iterator<char>(std::ifstream(TMP_FILE_OUTPUT).rdbuf()), std::istreambuf_iterator<char>());
+        throw std::runtime_error("Could not copy file " + filename + " to image: " + err);
+    }
+    
+    file_.open(filename_, file_flags_ | std::ios::app);
+    
+    unlink(TMP_FILE_OUTPUT);
+    unlink(TMP_FILENAME);
 }
