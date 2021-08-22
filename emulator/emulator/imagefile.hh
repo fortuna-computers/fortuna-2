@@ -22,7 +22,7 @@ public:
     size_t disk_size() const { return file_size_; }
 
 private:
-    void add_bootsector(Binary const& binary);
+    void add_bootsector();
     void add_file(std::string const& filename, Binary const& binary);
     
     size_t                file_size_ = 16 * 1024 * 1024;

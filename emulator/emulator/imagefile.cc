@@ -42,7 +42,7 @@ ImageFile::ImageFile(CompilationResult const& result, bool use_in_emulator, std:
         throw std::runtime_error("Sorry, only FAT16 images are supported right now.");
     
     // add boot
-    add_bootsector(result.binaries.at(result.project_file.debug->rom));
+    add_bootsector();
     
     // add OS kernel
     if (result.project_file.source_type == ProjectFile::SourceType::OS || result.project_file.source_type == ProjectFile::SourceType::App)
@@ -62,13 +62,9 @@ ImageFile::~ImageFile()
         unlink(filename_.c_str());
 }
 
-void ImageFile::add_bootsector(Binary const& binary)
+void ImageFile::add_bootsector()
 {
-    if (binary.data.size() > 450)
-        throw std::runtime_error("The boot file is too large.");
-    
     file_.write((char*) bootsector.data(), (long) bootsector.size());
-    file_.write((char*) binary.data.data(), (long) binary.data.size());
     
     uint8_t bootsector_signature[] = { 0x55, 0xaa };
     file_.seekp(510);
