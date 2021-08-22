@@ -24,7 +24,7 @@ CompilationResult Compiler::compile_from_project_file(std::string const& project
         }
         auto alias = source.alias.value_or(source.source);
         load_binary(sources_path, alias, source, result);
-        auto filenames = find_filenames(sources_path, result);
+        auto filenames = find_filenames(sources_path, result, source);
         load_listing(sources_path, source, filenames, result);
         cleanup(sources_path);
     }
@@ -78,7 +78,7 @@ void Compiler::load_binary(std::string const& path, std::string const& file, Pro
     binary.address = source.address;
 }
 
-Compiler::Filenames Compiler::find_filenames(std::string const& path, CompilationResult& result)
+Compiler::Filenames Compiler::find_filenames(std::string const& path, CompilationResult& result, ProjectFile::Source const& source)
 {
     std::ifstream f(path + "/listing.txt");
     if (f.fail())
@@ -97,8 +97,11 @@ Compiler::Filenames Compiler::find_filenames(std::string const& path, Compilatio
             if (line[0] == 'F') {
                 std::string file_number_s = line.substr(1, 2);
                 size_t file_number = strtoul(file_number_s.c_str(), nullptr, 10);
-                ret[file_number] = line.substr(5);
-                result.debug.files[line.substr(5)] = 0;
+                std::string filename = line.substr(5);
+                if (filename == source.source && source.alias)  // replace file per alias
+                    filename = *source.alias;
+                ret[file_number] = filename;
+                result.debug.files[filename] = 0;
             } else {
                 section = Other;
             }

@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <filesystem>
-#include "emulator/imagefile.hh"
 
 Manager::Manager()
     : demo_window_(emulator_),
@@ -76,9 +75,8 @@ void Manager::load_project(std::string const& project_name)
         message_box_.set_message(MessageBox::Error, result.error.value());
     } else {
         // initialize emulator
-        auto& rom = result.binaries.at(result.project_file.debug->rom).data;
-        if (result.project_file.debug || result.project_file.debug->image)
-            image_file.emplace(result, true);
+        auto& rom = result.binaries.at(result.project_file.rom).data;
+        image_file.emplace(result, true);
         emulator_.initialize(rom, image_file);
     
         // open windows
