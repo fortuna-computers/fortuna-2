@@ -21,28 +21,34 @@ set(GUI_SRC
     ${IMGUI_SRC}
     ui/window/loadprojectwindow.cc ui/window/loadprojectwindow.hh manager.cc manager.hh ui/window/demowindow.cc ui/window/demowindow.hh
     ui/modal/messagebox.cc ui/modal/messagebox.hh ui/window/ramwindow.cc ui/window/ramwindow.hh ui/window/menuwindow.cc ui/window/menuwindow.hh
-    ui/window.hh ui/gui/gui.cc ui/gui/gui.hh
-    ui/window/cpuwindow.cc ui/window/cpuwindow.hh ui/window/terminalwindow.cc ui/window/terminalwindow.hh ui/modal/sendkeypressmodal.cc ui/modal/sendkeypressmodal.hh ui/window/codewindow.cc ui/window/codewindow.hh ui/model/codemodel.cc ui/model/codemodel.hh ui/window/fileselectwindow.cc ui/window/fileselectwindow.hh ui/gui/properties.cc ui/gui/properties.hh ui/window/symbolselectwindow.cc ui/window/symbolselectwindow.hh ui/window/storagewindow.cc ui/window/storagewindow.hh)
+    ui/window.hh ui/gui/gui.cc ui/gui/gui.hh ui/window/cpuwindow.cc ui/window/cpuwindow.hh ui/window/terminalwindow.cc ui/window/terminalwindow.hh
+    ui/modal/sendkeypressmodal.cc ui/modal/sendkeypressmodal.hh ui/window/codewindow.cc ui/window/codewindow.hh ui/model/codemodel.cc
+    ui/model/codemodel.hh ui/window/fileselectwindow.cc ui/window/fileselectwindow.hh ui/gui/properties.cc ui/gui/properties.hh
+    ui/window/symbolselectwindow.cc ui/window/symbolselectwindow.hh ui/window/storagewindow.cc ui/window/storagewindow.hh)
 
 set(SOURCES
     contrib/z80/Z80.c
     compiler/compiler.hh compiler/compiler.cc compiler/projectfile.cc compiler/projectfile.hh compiler/compilationresult.hh
-    compiler/debug.hh compiler/debug.cc emulator/emulator.hh emulator/emulator.cc emulator/terminal.cc emulator/terminal.hh emulator/imagefile.cc emulator/imagefile.hh)
+    compiler/debug.hh compiler/debug.cc emulator/emulator.hh emulator/emulator.cc emulator/terminal.cc emulator/terminal.hh
+    emulator/imagefile.cc emulator/imagefile.hh)
 
-add_executable(emulator
+add_executable(miniz80
                main.cc ${SOURCES} ${GUI_SRC})
-target_link_libraries(emulator
+target_link_libraries(miniz80
                       yaml-cpp stdc++fs glfw)
+
+add_executable(miniz80_createimage cmd/createimage.cc ${SOURCES})
+target_link_libraries(miniz80_createimage yaml-cpp stdc++fs)
 
 # TESTS
 
-add_executable(emulator-tests
+add_executable(miniz80_tests
                EXCLUDE_FROM_ALL
                ${SOURCES} test/testmain.cc test/projectfile_test.cc test/compiler_test.cc test/terminal_test.cc)
-target_link_libraries(emulator-tests
+target_link_libraries(miniz80_tests
                       yaml-cpp stdc++fs)
 add_custom_command(
-        TARGET emulator-tests
+        TARGET miniz80_tests
         COMMAND ${CMAKE_COMMAND} -E copy_directory
                 ${CMAKE_SOURCE_DIR}/test/sample
                 ${CMAKE_CURRENT_BINARY_DIR}/sample)

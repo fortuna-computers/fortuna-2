@@ -35,6 +35,9 @@ void StorageWindow::draw()
             go_to_block_number(block_number_ + 1);
         ImGui::SameLine();
         ImGui::Text("(PgDown)");
+        ImGui::SameLine();
+        if (ImGui::Button("Reload (Ctrl+L)") || (!ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed('L')))
+            load_data();
         
         draw_storage_table();
     }

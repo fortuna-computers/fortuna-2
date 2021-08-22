@@ -105,7 +105,7 @@ void ImageFile::add_file(std::string const& filename, Binary const& binary)
         throw std::runtime_error("Could not copy file " + filename + " to image: " + err);
     }
     
-    file_.open(filename_, file_flags_ | std::ios::app);
+    file_.open(filename_, file_flags_);
     
     unlink(TMP_FILE_OUTPUT);
     unlink(TMP_FILENAME);
@@ -116,6 +116,7 @@ void ImageFile::write_block_to_image(uint32_t block, uint8_t const* data)
     if (block < file_size_ / 512) {
         file_.seekp(block * 512);
         file_.write((const char*) data, 512);
+        file_.flush();
     }
 }
 

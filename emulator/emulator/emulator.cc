@@ -176,6 +176,12 @@ void Emulator::soft_reset()
 {
     terminal_.reset();
     ResetZ80(&z80_);
+    sdcard_register_ = 0;
+    
+    last_keypress_ = 0;
+    keyboard_interrupt_ = false;
+    continue_mode_ = false;
+    last_action_was_next_ = false;
 }
 
 uint16_t Emulator::pc() const
