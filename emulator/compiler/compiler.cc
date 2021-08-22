@@ -14,15 +14,16 @@ CompilationResult Compiler::compile_from_project_file(std::string const& project
     
     CompilationResult result;
     result.project_file = project_file;
-    for (SourceFile const& source: create_source_list(project_file)) {
+    for (auto const& source: project_file.sources) {
         auto sources_path = fs::path(project_filename).parent_path();
         try {
-            result.message += execute_compiler(sources_path, source.filename);
+            result.message += execute_compiler(sources_path, source.source);
         } catch (std::runtime_error& e) {
             result.error = e.what();
             break;
         }
-        load_binary(sources_path, source.filename, source, result);
+        auto alias = source.alias.value_or(source.source);
+        load_binary(sources_path, alias, source, result);
         auto filenames = find_filenames(sources_path, result);
         load_listing(sources_path, source, filenames, result);
         cleanup(sources_path);
@@ -36,33 +37,7 @@ ProjectFile Compiler::load_project_file(std::string const& filename)
     std::string contents((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
     t.close();
     
-    auto pf = ProjectFile::import(contents);
-    if (pf.source_type != ProjectFile::SourceType::ROM && !pf.debug.has_value())
-        throw std::runtime_error("Cannot emulate a project file without a 'debug' session.");
-    return pf;
-}
-
-std::vector<SourceFile> Compiler::create_source_list(ProjectFile const& pf)
-{
-    std::vector<SourceFile> sources;
-    switch (pf.source_type) {
-        case ProjectFile::SourceType::ROM:
-            sources.emplace_back(pf.source, ROM_LOCATION);
-            break;
-        case ProjectFile::SourceType::OS:
-            sources.emplace_back(pf.debug->rom, ROM_LOCATION);
-            sources.emplace_back(pf.source, OS_LOCATION);
-            break;
-        case ProjectFile::SourceType::App:
-            sources.emplace_back(pf.debug->rom, ROM_LOCATION);
-            sources.emplace_back(pf.debug->os, OS_LOCATION);
-            sources.emplace_back(pf.source, pf.debug->app_address);
-            break;
-        case ProjectFile::SourceType::Undefined:
-            abort();
-    }
-    
-    return sources;
+    return ProjectFile::import(contents);
 }
 
 std::string Compiler::compiler_full_path()
@@ -88,7 +63,7 @@ std::string Compiler::execute_compiler(std::string const& path, std::string cons
     return result;
 }
 
-void Compiler::load_binary(std::string const& path, std::string const& file, SourceFile const& source, CompilationResult& result)
+void Compiler::load_binary(std::string const& path, std::string const& file, ProjectFile::Source const& source, CompilationResult& result)
 {
     std::ifstream instream(path + "/rom.bin", std::ios::in | std::ios::binary);
     if (instream.fail())
@@ -100,7 +75,7 @@ void Compiler::load_binary(std::string const& path, std::string const& file, Sou
         binary.data.resize(data.size());
     for (size_t i = 0; i < data.size(); ++i)
         binary.data[i] = data[i];
-    binary.address = source.expected_address;
+    binary.address = source.address;
 }
 
 Compiler::Filenames Compiler::find_filenames(std::string const& path, CompilationResult& result)
@@ -133,7 +108,7 @@ Compiler::Filenames Compiler::find_filenames(std::string const& path, Compilatio
     return ret;
 }
 
-void Compiler::load_listing(std::string const& path, SourceFile const& source, Filenames const& filenames, CompilationResult& result)
+void Compiler::load_listing(std::string const& path, ProjectFile::Source const& source, Filenames const& filenames, CompilationResult& result)
 {
     std::ifstream f(path + "/listing.txt");
     if (f.fail())
@@ -162,7 +137,7 @@ void Compiler::load_listing(std::string const& path, SourceFile const& source, F
             if (std::regex_match(line, m, regex1) || std::regex_match(line, m, regex2)) {
                 std::string symbol_name = m[1];
                 unsigned long addr = strtoul(std::string(m[2]).c_str(), nullptr, 16);
-                result.debug.symbols[symbol_name] = addr + source.expected_address;
+                result.debug.symbols[symbol_name] = addr + source.address;
             }
             
         }
@@ -194,7 +169,7 @@ void Compiler::read_regular_line(Filenames const& filenames, std::string const& 
     result.debug.source.at(filename).insert({ file_line, { sourceline } });
 }
 
-size_t Compiler::read_address(SourceFile const& source, Filenames const& filenames,
+size_t Compiler::read_address(ProjectFile::Source const& source, Filenames const& filenames,
                            std::string const& line, CompilationResult& result, size_t file_number, size_t file_line)
 {
     // read line
@@ -202,7 +177,7 @@ size_t Compiler::read_address(SourceFile const& source, Filenames const& filenam
     unsigned long addr = strtoul(addr_s.c_str(), nullptr, 16);
     if (addr == ULONG_MAX)
         throw std::runtime_error("Invalid listing file format.");
-    addr += source.expected_address;
+    addr += source.address;
     
     // store in source and location
     std::string const& filename = filenames.at(file_number);

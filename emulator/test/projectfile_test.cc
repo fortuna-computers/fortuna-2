@@ -4,24 +4,30 @@
 
 TEST_CASE("Full project file", "[ProjectFile]") {
     std::string contents = R"(
-        source: app.z80
-        type: app
-        debug:
-          rom: boot.z80
-          os: os.z80
-          app_address: 0x2000
-          image:
-            name: debug.img
-            format: fat32
-            os_filename: KERNEL.BIN
-            app_filename: APP.EXE )";
+        sources:
+          - source: boot.z80
+            address: 0x0
+          - source: boot.z80
+            address: 0x200
+            alias: boot.z80.bak
+          - source: os.z80
+            address: 0x400
+            add_to_image: KERNEL.BIN
+          - source: app.z80
+            address: 0x2000
+            add_to_image: APP.EXE
+
+        rom: boot.z80
+
+        image:
+          format: fat16
+    )";
+    
     ProjectFile project_file = ProjectFile::import(contents);
-    REQUIRE(project_file.source == "app.z80");
-    REQUIRE(project_file.source_type == ProjectFile::SourceType::App);
-    REQUIRE(project_file.debug->rom == "boot.z80");
-    REQUIRE(project_file.debug->os == "os.z80");
-    REQUIRE(project_file.debug->app_address == 0x2000);
-    REQUIRE(project_file.debug->image->name == "debug.img");
-    REQUIRE(project_file.debug->image->format == ProjectFile::Image::Format::Fat32);
-    REQUIRE(project_file.debug->image->app_filename == "APP.EXE");
+    REQUIRE(project_file.sources.at(0).source == "boot.z80");
+    REQUIRE(project_file.sources.at(1).address == 0x200);
+    REQUIRE(project_file.sources.at(1).alias.value() == "boot.z80.bak");
+    REQUIRE(project_file.sources.at(2).add_to_image.value() == "KERNEL.BIN");
+    REQUIRE(project_file.rom == "boot.z80");
+    REQUIRE(project_file.image.format == ProjectFile::Image::Format::Fat16);
 }

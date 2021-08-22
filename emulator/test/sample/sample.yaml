@@ -1,10 +1,17 @@
-source: app.z80
-type: app
-debug:
-  rom: boot.z80
-  os: os.z80
-  app_address: 0x2000
-  image:
-    name: debug.img
-    format: fat32
-    app_filename: APP.EXE
+sources:
+  - source: boot.z80
+    address: 0x0
+  - source: boot.z80
+    address: 0x200
+    alias: boot.z80.bak
+  - source: os.z80
+    address: 0x400
+    add_to_image: KERNEL.BIN
+  - source: app.z80
+    address: 0x2000
+    add_to_image: APP.EXE
+
+rom: boot.z80
+
+image:
+  format: fat16

@@ -1,7 +1,6 @@
 #include "catch.hpp"
 
 #include "../compiler/compiler.hh"
-#include "../compiler/compilationresult.hh"
 
 #include <filesystem>
 #include <fstream>
@@ -15,8 +14,10 @@ static CompilationResult compile_rom(std::string const& content, std::string con
     
     std::ofstream ofs(temp / "test.yaml");
     ofs << R"(
-        source: sample1.z80
-        type: rom
+        sources:
+          - source: sample1.z80
+            address: 0x0
+        rom: sample1.z80
     )";
     ofs.close();
     
@@ -90,7 +91,7 @@ TEST_CASE("Test full", "[Compiler]") {
     REQUIRE(std::vector<uint8_t>{0xcf, 0x00} == r.binaries.at("os.z80").data);
     REQUIRE(std::vector<uint8_t>{0x05, 0x00} == r.binaries.at("app.z80").data);
     REQUIRE(0x0 == r.binaries.at("boot.z80").address);
-    REQUIRE(0x200 == r.binaries.at("os.z80").address);
+    REQUIRE(0x400 == r.binaries.at("os.z80").address);
     REQUIRE(0x2000 == r.binaries.at("app.z80").address);
     REQUIRE((Files{{"boot.z80", 2}, {"os.z80", 2}, {"app.z80", 3}}) == r.debug.files);
     REQUIRE((SourceAddress{"    dec b   ; 05", 0x2000, {0x5}}) == r.debug.source.at("app.z80").at(1));

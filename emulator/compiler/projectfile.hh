@@ -3,27 +3,24 @@
 
 #include <string>
 #include <optional>
+#include <vector>
 
 struct ProjectFile {
-    enum class SourceType { Undefined, ROM, OS, App };
-    
     struct Image {
-        enum class Format { Undefined, Fat16, Fat32 };
-        std::string name;
+        enum class Format { Undefined, Fat16 };
         Format      format = Format::Undefined;
-        std::string app_filename;
     };
     
-    struct Debug {
-        std::string          rom;
-        std::string          os;
-        std::optional<Image> image;
-        uint16_t             app_address = NO_ADDRESS;
+    struct Source {
+        std::string                source;
+        uint16_t                   address;
+        std::optional<std::string> alias;
+        std::optional<std::string> add_to_image;
     };
     
-    std::string          source;
-    SourceType           source_type = SourceType::Undefined;
-    std::optional<Debug> debug;
+    std::vector<Source> sources;
+    std::string         rom;
+    Image               image;
     
     static ProjectFile import(std::string const& contents);
 

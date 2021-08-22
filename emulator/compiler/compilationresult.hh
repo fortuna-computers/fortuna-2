@@ -22,11 +22,4 @@ struct CompilationResult {
     ProjectFile                             project_file {};
 };
 
-struct SourceFile {
-    std::string filename;
-    uint16_t    expected_address;
-    
-    SourceFile(std::string const& filename, uint16_t expected_address) : filename(filename), expected_address(expected_address) {}
-};
-
 #endif

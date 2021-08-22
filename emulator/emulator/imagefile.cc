@@ -31,26 +31,24 @@ static const std::vector<uint8_t> bootsector {
 };
 
 ImageFile::ImageFile(CompilationResult const& result, bool use_in_emulator, std::string const& path)
-    : filename_(use_in_emulator ? EMULATOR_IMAGE_FILENAME : path + "/" + (*result.project_file.debug->image).name),
+    : filename_(use_in_emulator ? EMULATOR_IMAGE_FILENAME : path),
       file_(filename_, file_flags_ | std::ios::trunc),
       use_in_emulator_(use_in_emulator)
 {
     if (!file_.is_open())
         throw std::runtime_error("Unable to create image file " + filename_);
     
-    if (result.project_file.debug->image->format != ProjectFile::Image::Format::Fat16)
+    if (result.project_file.image.format != ProjectFile::Image::Format::Fat16)
         throw std::runtime_error("Sorry, only FAT16 images are supported right now.");
     
     // add boot
     add_bootsector();
     
-    // add OS kernel
-    if (result.project_file.source_type == ProjectFile::SourceType::OS || result.project_file.source_type == ProjectFile::SourceType::App)
-        add_file("KERNEL.BIN", result.binaries.at(result.project_file.debug->os));
-    
-    // add application file
-    if (result.project_file.source_type == ProjectFile::SourceType::App)
-        add_file(result.project_file.debug->image->app_filename, result.binaries.at(result.project_file.source));
+    // add files
+    for (auto const& source: result.project_file.sources) {
+        if (source.add_to_image)
+            add_file(*source.add_to_image, result.binaries.at(source.alias.value_or(source.source)));
+    }
     
     file_.flush();
 }

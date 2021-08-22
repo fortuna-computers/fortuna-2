@@ -6,47 +6,27 @@ ProjectFile ProjectFile::import(std::string const& contents)
 {
     ProjectFile p;
     YAML::Node node = YAML::Load(contents);
-    if (node["source"])
-        p.source = node["source"].as<std::string>();
-    if (node["type"]) {
-        auto type = node["type"].as<std::string>();
-        if (type == "rom")
-            p.source_type = SourceType::ROM;
-        else if (type == "os")
-            p.source_type = SourceType::OS;
-        else if (type == "app")
-            p.source_type = SourceType::App;
-        else
-            throw std::runtime_error("Invalid application type '" + type + "'");
+    
+    for (const auto &item : node["sources"]) {
+        Source source = {
+     item["source"].as<std::string>(),
+     item["address"].as<uint16_t>()
+        };
+        if (item["alias"])
+            source.alias = item["alias"].as<std::string>();
+        if (item["add_to_image"])
+            source.add_to_image = item["add_to_image"].as<std::string>();
+        p.sources.emplace_back(std::move(source));
     }
     
-    if (node["debug"]) {
-        p.debug = Debug();
-        YAML::Node debug = node["debug"];
-        if (debug["rom"])
-            p.debug->rom = debug["rom"].as<std::string>();
-        if (debug["os"])
-            p.debug->os = debug["os"].as<std::string>();
-        if (debug["app_address"])
-            p.debug->app_address = debug["app_address"].as<uint16_t>();
-        
-        if (debug["image"]) {
-            p.debug->image = Image();
-            YAML::Node image = debug["image"];
-            if (image["name"])
-                p.debug->image->name = image["name"].as<std::string>();
-            if (image["app_filename"])
-                p.debug->image->app_filename = image["app_filename"].as<std::string>();
-            if (image["format"]) {
-                auto format = image["format"].as<std::string>();
-                if (format == "fat32")
-                    p.debug->image->format = Image::Format::Fat32;
-                else if (format == "fat16")
-                    p.debug->image->format = Image::Format::Fat16;
-                else
-                    throw std::runtime_error("Invalid format '" + format + "'");
-            }
-        }
+    p.rom = node["rom"].as<std::string>();
+    
+    if (node["image"]) {
+        auto image_format = node["image"]["format"].as<std::string>();
+        if (image_format == "fat16")
+            p.image.format = Image::Format::Fat16;
+        else
+            p.image.format = Image::Format::Undefined;
     }
     
     p.validate();
@@ -56,28 +36,18 @@ ProjectFile ProjectFile::import(std::string const& contents)
 
 void ProjectFile::validate()
 {
-    if (source.empty())
-        throw std::runtime_error("The property 'source' is required.");
-    if (source_type == SourceType::Undefined)
-        throw std::runtime_error("The property 'type' is required.");
-    if (debug.has_value()) {
-        if (source_type == SourceType::App || source_type == SourceType::OS) {
-            if (debug->rom.empty())
-                throw std::runtime_error("The property 'debug.rom' is required for this type of source if debug is enabled.");
-        }
-        if (source_type == SourceType::App) {
-            if (debug->os.empty())
-                throw std::runtime_error("The property 'debug.os' is required for this type of source if debug is enabled.");
-            if (debug->app_address == NO_ADDRESS)
-                throw std::runtime_error("The property 'debug.app_address' is required for this type of source if debug is enabled.");
-        }
-        if (debug->image.has_value()) {
-            if (debug->image->name.empty())
-                throw std::runtime_error("The property 'debug.image.name' is required if an image is to be built.");
-            if (debug->image->format == Image::Format::Undefined)
-                throw std::runtime_error("The property 'debug.image.format' is required if an image is to be built.");
-            if (source_type == SourceType::App && debug->image->app_filename.empty())
-                throw std::runtime_error("The property 'debug.image.app_filename' is required if an image is to be built.");
-        }
+    if (sources.empty())
+        throw std::runtime_error("At least one source is required.");
+    
+    auto it = std::find_if(sources.begin(), sources.end(), [this](Source const& s) { return s.source == rom; });
+    if (it == sources.end())
+        throw std::runtime_error("'rom' value doesn't refer to one of the sources.");
+    
+    std::map<std::string, bool> duplicates;
+    for (auto const& source: sources) {
+        std::string name = source.alias.value_or(source.source);
+        auto it2 = duplicates.find(name);
+        if (it2 != duplicates.end())
+            throw std::runtime_error("Filename '" + name + "' is repeated on the sources.");
     }
 }
