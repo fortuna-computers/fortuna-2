@@ -3,17 +3,43 @@
         ld      a, '.'          ; print 1st dot
         out     (I_TERMINAL), a
 
-        ld      hl, 0x200
-        ld      de, 0x400
+;
+; Copy boot area to 0x200
+;
 
-next:
-        dec     hl
-        dec     de
+copy_boot_area:
+        ld      hl, 0x0         ; HL - origin
+        ld      de, 0x200       ; DE - destination
 
-        ld      a, (hl)
+        ld      b, 0            ; counter (up to 0x200) - dual loop
+        ld      c, 2
+.loop:
+        inc     hl
+        inc     de
+
+        ld      a, (hl)         ; copy byte
         ld      (de), a
+        
+        djnz    .loop
+        dec     c
+        jp      nz, .loop
 
-        cp      hl
-        jr      nz, next
+        jp      load_bootsector ; jump to new location
+
+;
+; Start of ROM code
+; 
+
+        rorg     0x21b
+
+load_bootsector:
+        ld      a, 0
+        out     (I_SD_B0), a
+        out     (I_SD_B1), a
+        out     (I_SD_B2), a
+        out     (I_SD_B3), a
+        out     (I_SD_ACTION), a
+
+hlt:    jp      hlt
 
 ; vim: ts=8:sts=8:sw=8:expandtab
