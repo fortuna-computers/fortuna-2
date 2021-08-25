@@ -5,8 +5,9 @@
 
 void FileSelectWindow::draw()
 {
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, { 0, 150 });
-    if (ImGui::Begin("Choose file", &visible_)) {
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, { 100, 250 });
+    ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, { 0.5f, 0.5f });
+    if (ImGui::BeginPopupModal(title(), &visible_)) {
         ImGui::Text("Choose a file to go to:");
         
         static int tbl_flags = ImGuiTableFlags_BordersOuterH
@@ -22,6 +23,7 @@ void FileSelectWindow::draw()
                                | ImGuiTableFlags_SortTristate;
         
         if (ImGui::BeginTable("##file", 1, tbl_flags)) {
+            
             if (emulator_.stopped() && code_model_) {
                 ImGui::TableSetupScrollFreeze(0, 1); // Make top row always visible
                 ImGui::TableSetupColumn("File Name", ImGuiTableColumnFlags_WidthStretch);
@@ -40,8 +42,10 @@ void FileSelectWindow::draw()
             
             ImGui::EndTable();
         }
+        ImGui::EndPopup();
     }
-    ImGui::End();
     ImGui::PopStyleVar();
+    
+    if (visible_)
+        ImGui::OpenPopup(title());
 }
-

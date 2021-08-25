@@ -5,8 +5,9 @@
 
 void SymbolSelectWindow::draw()
 {
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, { 0, 150 });
-    if (ImGui::Begin("Choose symbol", &visible_)) {
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, { 100, 250 });
+    ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, { 0.5f, 0.5f });
+    if (ImGui::BeginPopupModal(title(), &visible_)) {
         ImGui::Text("Choose a symbol to go to:");
         
         static int tbl_flags = ImGuiTableFlags_BordersOuterH
@@ -48,8 +49,10 @@ void SymbolSelectWindow::draw()
             }
             ImGui::EndTable();
         }
+        ImGui::EndPopup();
     }
-    ImGui::End();
     ImGui::PopStyleVar();
     
+    if (visible_)
+        ImGui::OpenPopup(title());
 }

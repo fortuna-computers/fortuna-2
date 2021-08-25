@@ -150,8 +150,9 @@ void CodeWindow::draw_footer()
             on_recompile_project_();
         }
         ImGui::SameLine();
-        if (ImGui::Button("Go to file... (F)") || ImGui::IsKeyPressed('F', false))
+        if (ImGui::Button("Go to file... (F)") || ImGui::IsKeyPressed('F', false)) {
             file_select_window_.set_visible(true);
+        }
         ImGui::SameLine();
         if (ImGui::Button("Go to symbol... (S)") || ImGui::IsKeyPressed('S', false))
             symbol_select_window_.set_visible(true);

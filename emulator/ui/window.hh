@@ -9,7 +9,7 @@ public:
     explicit Window(Emulator& emulator) : emulator_(emulator) {}
     
     [[nodiscard]] bool visible() const { return visible_; }
-    void set_visible(bool visible) { visible_ = visible; }
+    virtual void set_visible(bool visible) { visible_ = visible; }
     
     // implement this
     virtual void draw() = 0;

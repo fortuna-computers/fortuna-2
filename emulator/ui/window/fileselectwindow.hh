@@ -12,6 +12,7 @@ public:
     void draw() override;
     
     std::string name() const override { return "file_select"; }
+    static const char* title() { return "Choose file"; }
     
     void set_code_model(CodeModel& code_model) { code_model_ = &code_model; }
 

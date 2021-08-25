@@ -40,6 +40,8 @@ ImageFile::~ImageFile()
 
 void ImageFile::create_image(size_t size_in_mb)
 {
+    unlink(filename_.c_str());
+    
     char buf[4096];
     snprintf(buf, sizeof buf, "mkfs.vfat -C -F32 -n MINIZ80 %s %zu",
              filename_.c_str(), size_in_mb * 1024);
