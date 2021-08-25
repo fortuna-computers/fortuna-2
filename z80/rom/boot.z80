@@ -1,0 +1,19 @@
+        include mini.z80
+
+        ld      a, '.'          ; print 1st dot
+        out     (I_TERMINAL), a
+
+        ld      hl, 0x200
+        ld      de, 0x400
+
+next:
+        dec     hl
+        dec     de
+
+        ld      a, (hl)
+        ld      (de), a
+
+        cp      hl
+        jr      nz, next
+
+; vim: ts=8:sts=8:sw=8:expandtab

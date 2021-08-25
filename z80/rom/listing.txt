@@ -1,0 +1,65 @@
+F00:0001               include mini.z80
+F01:0001       I_TERMINAL  = 0x1
+F01:0002       I_SD_B0     = 0x2
+F01:0003       I_SD_B1     = 0x3
+F01:0004       I_SD_B2     = 0x4
+F01:0005       I_SD_B3     = 0x5
+F01:0006       I_SD_ACTION = 0x6
+F01:0007       
+F01:0008       SD_WRITE = 1
+F01:0009       SD_READ  = 0
+F01:0010       
+F00:0002       
+F00:0003               ld      a, '.'          ; print 1st dot
+               S01:00000000:  3E 2E
+F00:0004               out     (I_TERMINAL), a
+               S01:00000002:  D3 01
+F00:0005       
+F00:0006               ld      hl, 0x200
+               S01:00000004:  21 00 02
+F00:0007               ld      de, 0x400
+               S01:00000007:  11 00 04
+F00:0008       
+F00:0009       next:
+F00:0010               dec     hl
+               S01:0000000A:  2B
+F00:0011               dec     de
+               S01:0000000B:  1B
+F00:0012       
+F00:0013               ld      a, (hl)
+               S01:0000000C:  7E
+F00:0014               ld      (de), a
+               S01:0000000D:  12
+F00:0015       
+F00:0016 E0001         cp      hl
+F00:0017               jr      nz, next
+               S01:0000000E:  20 FA [R]
+F00:0018       
+F00:0019       ; vim: ts=8:sts=8:sw=8:expandtab
+F00:0020       
+
+
+Sections:
+S01  .text
+
+
+Sources:
+F00  boot.z80
+F01  mini.z80
+
+
+Symbols:
+next LAB (0xa) EXPORT REF sec=.text 
+SD_READ EXPR(0=0x0) UNUSED EXPORT EQU 
+SD_WRITE EXPR(1=0x1) UNUSED EXPORT EQU 
+I_SD_ACTION EXPR(6=0x6) UNUSED EXPORT EQU 
+I_SD_B3 EXPR(5=0x5) UNUSED EXPORT EQU 
+I_SD_B2 EXPR(4=0x4) UNUSED EXPORT EQU 
+I_SD_B1 EXPR(3=0x3) UNUSED EXPORT EQU 
+I_SD_B0 EXPR(2=0x2) UNUSED EXPORT EQU 
+I_TERMINAL EXPR(1=0x1) EXPORT EQU 
+__RPTCNT EXPR(-1=0xffff) INTERNAL 
+__VASM EXPR(0=0x0) INTERNAL 
+__UNIXFS EXPR(0=0x0) INTERNAL 
+
+There have been 1 errors!

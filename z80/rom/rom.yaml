@@ -1,0 +1,13 @@
+sources:
+  - source: boot.z80
+    address: 0x0
+  - source: boot.z80
+    address: 0x200
+    alias: boot.z80.bak
+  - source: os.z80
+    address: 0x400
+
+rom: boot.z80
+
+image:
+  format: fat32
