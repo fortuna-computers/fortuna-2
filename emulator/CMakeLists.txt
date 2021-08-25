@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.17)
 project(emulator)
 
 set(CMAKE_CXX_STANDARD 20)
+add_compile_options(-DIMGUI_IMPL_OPENGL_LOADER_GLAD2)
 
 # COMPILER FLAGS
 
