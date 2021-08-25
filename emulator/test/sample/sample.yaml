@@ -14,4 +14,4 @@ sources:
 rom: boot.z80
 
 image:
-  format: fat16
+  format: fat32

@@ -38,8 +38,8 @@ ImageFile::ImageFile(CompilationResult const& result, bool use_in_emulator, std:
     if (!file_.is_open())
         throw std::runtime_error("Unable to create image file " + filename_);
     
-    if (result.project_file.image.format != ProjectFile::Image::Format::Fat16)
-        throw std::runtime_error("Sorry, only FAT16 images are supported right now.");
+    if (result.project_file.image.format != ProjectFile::Image::Format::Fat32)
+        throw std::runtime_error("Sorry, only FAT32 images are supported right now.");
     
     // add boot
     add_bootsector();
