@@ -76,7 +76,7 @@ void Manager::load_project(std::string const& project_name)
     } else {
         // initialize emulator
         auto& rom = result.binaries.at(result.project_file.rom).data;
-        image_file.emplace(result, true);
+        image_file.emplace(64, result, true);
         emulator_.initialize(rom, image_file);
     
         // open windows

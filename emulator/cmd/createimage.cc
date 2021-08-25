@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
     Options options = get_options(argc, argv);
     try {
         CompilationResult result = Compiler().compile_from_project_file(options.input);
-        ImageFile(result, false, options.output);
+        ImageFile(64, result, false, options.output);
     } catch (std::exception& e) {
         std::cerr << e.what() << "\n";
         exit(EXIT_FAILURE);

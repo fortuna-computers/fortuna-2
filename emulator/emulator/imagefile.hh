@@ -6,7 +6,7 @@
 
 class ImageFile {
 public:
-    ImageFile(CompilationResult const& result, bool use_in_emulator, std::string const& path="");
+    ImageFile(size_t size_in_mb, CompilationResult const& result, bool use_in_emulator, std::string const& path="");
     ~ImageFile();
     
     ImageFile(ImageFile const&)            = delete;
@@ -22,7 +22,7 @@ public:
     size_t disk_size() const { return file_size_; }
 
 private:
-    void add_bootsector();
+    void create_image(size_t i);
     void add_file(std::string const& filename, Binary const& binary);
     
     size_t                file_size_ = 16 * 1024 * 1024;
