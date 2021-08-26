@@ -3,6 +3,7 @@
 ;                   after that this is the data exchange area with SD Card
 ;    0200 - 03FF: after code is copied, it continues running from here
 ;    0400 - 3EFF: operating system to be loaded
+;    3E00 - 3EFF: stack
 ;    3F00 - 3FFF: variables
 ;    4000 - 7FFF: cluster loading area (max 16 kB)
 
@@ -14,6 +15,7 @@ CLUSTER_SIZE     = 0x0d
 RESERVED_SECTORS = 0x0e
 SECTORS_PER_FAT  = 0x16
 
+STACK_AREA           = 0x3e00
 VARIABLE_AREA        = 0x3f00
 CLUSTER_LOADING_AREA = 0x4000
 
@@ -22,6 +24,8 @@ CLUSTER_LOADING_AREA = 0x4000
 ;---------------------------------------
 
         include mini.z80
+
+        ld      sp, STACK_AREA
 
         ld      a, '.'          ; print status
         out     (I_TERMINAL), a
@@ -57,7 +61,8 @@ copy_boot_area:
 ; START OF CODE (AFTER COPY)
 ;---------------------------------------
 
-        rorg    0x21f
+        org     0x30
+        rorg    0x230
 
 rom_code:
         ld      a, '.'          ; print status
@@ -88,7 +93,7 @@ find_root_directory:
 
         ld      bc, (RESERVED_SECTORS)
         ld      hl, (SECTORS_PER_FAT)
-        add     hl, hl                          ; result * 2
+        add     hl, hl                  ; result * 2
         add     hl, bc
 
 ;
@@ -105,18 +110,50 @@ find_root_directory:
 
 
 hlt:    jp      hlt
-        rend
 
 ;---------------------------------------
 ; SUBROUTINES
 ;---------------------------------------
 
+;
+; Copy a cluster from the SDCard block to CLUSTER_LOADING_AREA
+;  - HL = SDCard block
+;
+
 copy_cluster:
+
+        ld      de, CLUSTER_LOADING_AREA  ; DE - block destination
+
+        ld      a, (fat_cluster_size)   ; B = number of blocks to transfer
+        add     a, a
+        ld      b, a
+
+        ld      a, l                    ; load cluster to exchange area
+        out     (I_SD_B0), a
+        ld      a, h
+        out     (I_SD_B1), a
+        ld      a, 0
+        out     (I_SD_B2), a
+        out     (I_SD_B3), a
+        out     (I_SD_ACTION), a
+
+        call    copy_block              ; copy block
+
+        ret
+
+;
+; Copy memory from SDCard exchange area to destination
+;  - DE = destination
+;
+
+copy_block:
         ret
 
 ;---------------------------------------
 ; VARIABLES
 ;---------------------------------------
+
+        rend
 
         dsect
         rorg VARIABLE_AREA
