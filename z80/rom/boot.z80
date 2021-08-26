@@ -79,13 +79,13 @@ rom_code:
         call    print_status
 
         ld      hl, (root_directory)
-        call    copy_cluster
+        call    copy_rootdir_cluster
 
         call    find_kernel_cluster     ; result stored in HL
 
         call    copy_os
 
-hlt:    jp      hlt
+stp:    jp      stp
 
 ;---------------------------------------
 ; SUBROUTINES
@@ -99,6 +99,11 @@ print_status:
         ld      a, '.'          ; print status
         out     (I_TERMINAL), a
         ret
+
+error:
+        ld      a, 'X'
+        out     (I_TERMINAL), a
+.hlt:   jp      .hlt
 
 ;
 ; Load bootsector
@@ -156,7 +161,7 @@ find_fat_parameters:
 ;  - HL = SDCard block
 ;
 
-copy_cluster:
+copy_rootdir_cluster:
 
         ld      de, CLUSTER_LOADING_AREA  ; DE - block destination
 
@@ -221,16 +226,44 @@ copy_block:
 ; 
 ; Find cluster of the file called "KERNEL.BIN"
 ;  - result stored in HL
+;
 
 find_kernel_cluster:
 
         ld      hl, CLUSTER_LOADING_AREA ; HL = current pointer
 
+.next:
         ld      a, (hl)         ; load first byte, if 0 then error
+        cp      a
+        jr      nz, .continue
+        jp      error
+.continue:
 
-        ; TODO
-
+        call    is_kernel_bin   ; A = 1 if KERNEL.BIN
+        cp      a
+        jr      z, .continue2
         ret
+.continue2:
+
+        ld      de, 0x20        ; advance pointer
+        add     hl, de
+        jp      .next
+
+;
+; Check if current file entry is KERNEL.BIN
+;   - return values:
+;      - HL: file cluster
+;      - A: 1 if found, 0 if not found
+;
+
+is_kernel_bin:
+        ld      a, 0
+        ret
+
+;
+; Copy operating system to memory
+;  - HL = initial cluster
+;
 
 copy_os:
         ret
