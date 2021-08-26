@@ -1,6 +1,29 @@
+; Memory map for boot loading:
+;    0000 - 01FF: code is initially loaded here
+;                   after that this is the data exchange area with SD Card
+;    0200 - 03FF: after code is copied, it continues running from here
+;    0400 - 3EFF: operating system to be loaded
+;    3F00 - 3FFF: variables
+;    4000 - 7FFF: cluster loading area (max 16 kB)
+
+;
+; FAT relevant locations
+;
+
+CLUSTER_SIZE     = 0x0d
+RESERVED_SECTORS = 0x0e
+SECTORS_PER_FAT  = 0x16
+
+VARIABLE_AREA        = 0x3f00
+CLUSTER_LOADING_AREA = 0x4000
+
+;---------------------------------------
+; START OF CODE (BEFORE COPY)
+;---------------------------------------
+
         include mini.z80
 
-        ld      a, '.'          ; print 1st dot
+        ld      a, '.'          ; print status
         out     (I_TERMINAL), a
 
 ;
@@ -8,6 +31,7 @@
 ;
 
 copy_boot_area:
+
         ld      hl, 0x0         ; HL - origin
         ld      de, 0x200       ; DE - destination
 
@@ -24,15 +48,25 @@ copy_boot_area:
         dec     c
         jp      nz, .loop
 
-        jp      load_bootsector ; jump to new location
+        ld      a, '.'          ; print status
+        out     (I_TERMINAL), a
+
+        jp      rom_code        ; jump to new location
+
+;---------------------------------------
+; START OF CODE (AFTER COPY)
+;---------------------------------------
+
+        rorg    0x21f
+
+rom_code:
+        ld      a, '.'          ; print status
+        out     (I_TERMINAL), a
 
 ;
-; Start of ROM code
-; 
+; Load bootsector
+;
 
-        rorg     0x21b
-
-load_bootsector:
         ld      a, 0
         out     (I_SD_B0), a
         out     (I_SD_B1), a
@@ -40,19 +74,57 @@ load_bootsector:
         out     (I_SD_B3), a
         out     (I_SD_ACTION), a
 
+; 
+; Get FAT16 data from bootsector
+
+        ld      a, (CLUSTER_SIZE)
+        ld      (fat_cluster_size), a
+
 ;
 ; Find root directory
 ;
 
-RESERVED_SECTORS = 0x0e
-SECTORS_PER_FAT  = 0x16
-
 find_root_directory:
+
         ld      bc, (RESERVED_SECTORS)
         ld      hl, (SECTORS_PER_FAT)
         add     hl, hl                          ; result * 2
         add     hl, bc
 
+;
+; Copy root directory cluster
+;
+
+        call    copy_cluster
+
+; TODO - find kernel cluster
+
+; TODO - copy file cluster
+
+
+
+
 hlt:    jp      hlt
+        rend
+
+;---------------------------------------
+; SUBROUTINES
+;---------------------------------------
+
+copy_cluster:
+        ret
+
+;---------------------------------------
+; VARIABLES
+;---------------------------------------
+
+        dsect
+        rorg VARIABLE_AREA
+
+fat_cluster_size:       db      0  
+
+        rend
+        dend
+
 
 ; vim: ts=8:sts=8:sw=8:expandtab
