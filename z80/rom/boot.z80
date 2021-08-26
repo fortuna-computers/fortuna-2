@@ -128,6 +128,8 @@ copy_cluster:
         add     a, a
         ld      b, a
 
+.loop:
+
         ld      a, l                    ; load cluster to exchange area
         out     (I_SD_B0), a
         ld      a, h
@@ -138,6 +140,14 @@ copy_cluster:
         out     (I_SD_ACTION), a
 
         call    copy_block              ; copy block
+
+        inc     hl                      ; increment BL (block number)
+
+        ld      a, d                    ; DE += 512
+        add     a, 2
+        ld      d, a
+
+        djnz    .loop
 
         ret
 
