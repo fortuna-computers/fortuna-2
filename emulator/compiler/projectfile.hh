@@ -7,7 +7,7 @@
 
 struct ProjectFile {
     struct Image {
-        enum class Format { Undefined, Fat32 };
+        enum class Format { Undefined, Fat16 };
         Format      format = Format::Undefined;
     };
     

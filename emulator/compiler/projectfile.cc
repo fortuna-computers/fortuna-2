@@ -23,8 +23,8 @@ ProjectFile ProjectFile::import(std::string const& contents)
     
     if (node["image"]) {
         auto image_format = node["image"]["format"].as<std::string>();
-        if (image_format == "fat32")
-            p.image.format = Image::Format::Fat32;
+        if (image_format == "fat16")
+            p.image.format = Image::Format::Fat16;
         else
             p.image.format = Image::Format::Undefined;
     }

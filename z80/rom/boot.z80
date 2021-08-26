@@ -40,6 +40,19 @@ load_bootsector:
         out     (I_SD_B3), a
         out     (I_SD_ACTION), a
 
+;
+; Find root directory
+;
+
+RESERVED_SECTORS = 0x0e
+SECTORS_PER_FAT  = 0x16
+
+find_root_directory:
+        ld      bc, (RESERVED_SECTORS)
+        ld      hl, (SECTORS_PER_FAT)
+        add     hl, hl                          ; result * 2
+        add     hl, bc
+
 hlt:    jp      hlt
 
 ; vim: ts=8:sts=8:sw=8:expandtab

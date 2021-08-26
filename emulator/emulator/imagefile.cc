@@ -11,10 +11,10 @@ ImageFile::ImageFile(size_t size_in_mb, CompilationResult const& result, bool us
     : filename_(use_in_emulator ? EMULATOR_IMAGE_FILENAME : path),
       use_in_emulator_(use_in_emulator)
 {
-    if (result.project_file.image.format != ProjectFile::Image::Format::Fat32)
+    if (result.project_file.image.format != ProjectFile::Image::Format::Fat16)
         throw std::runtime_error("Sorry, only FAT32 images are supported right now.");
     
-    if (result.project_file.image.format != ProjectFile::Image::Format::Fat32 && size_in_mb < 64)
+    if (result.project_file.image.format != ProjectFile::Image::Format::Fat16 && size_in_mb < 64)
         throw std::runtime_error("The minimum size for FAT32 is 64 Mb");
     
     // add boot
@@ -43,7 +43,7 @@ void ImageFile::create_image(size_t size_in_mb)
     unlink(filename_.c_str());
     
     char buf[4096];
-    snprintf(buf, sizeof buf, "mkfs.vfat -C -F32 -n MINIZ80 %s %zu",
+    snprintf(buf, sizeof buf, "mkfs.vfat -C -F16 -n MINIZ80 %s %zu",
              filename_.c_str(), size_in_mb * 1024);
     if (std::system(buf) != 0) {
         std::string err(std::istreambuf_iterator<char>(std::ifstream(TMP_FILE_OUTPUT).rdbuf()), std::istreambuf_iterator<char>());

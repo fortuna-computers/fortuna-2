@@ -20,7 +20,7 @@ TEST_CASE("Full project file", "[ProjectFile]") {
         rom: boot.z80
 
         image:
-          format: fat32
+          format: fat16
     )";
     
     ProjectFile project_file = ProjectFile::import(contents);
@@ -29,5 +29,5 @@ TEST_CASE("Full project file", "[ProjectFile]") {
     REQUIRE(project_file.sources.at(1).alias.value() == "boot.z80.bak");
     REQUIRE(project_file.sources.at(2).add_to_image.value() == "KERNEL.BIN");
     REQUIRE(project_file.rom == "boot.z80");
-    REQUIRE(project_file.image.format == ProjectFile::Image::Format::Fat32);
+    REQUIRE(project_file.image.format == ProjectFile::Image::Format::Fat16);
 }
