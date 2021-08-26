@@ -22,7 +22,7 @@ VARIABLE_AREA        = 0x3f00
 CLUSTER_LOADING_AREA = 0x4000
 
 ;---------------------------------------
-; START OF CODE (BEFORE COPY)
+; LOAD ROM INTO 0x200
 ;---------------------------------------
 
         include mini.z80
@@ -60,7 +60,7 @@ copy_boot_area:
         jp      rom_code        ; jump to new location
 
 ;---------------------------------------
-; START OF CODE (AFTER COPY)
+; MAIN PROCEDURE
 ;---------------------------------------
 
         org     0x30
@@ -225,7 +225,7 @@ copy_block:
 
 ; 
 ; Find cluster of the file called "KERNEL.BIN"
-;  - result stored in HL
+;  - result stored in BC
 ;
 
 find_kernel_cluster:
@@ -234,14 +234,19 @@ find_kernel_cluster:
 
 .next:
         ld      a, (hl)         ; load first byte, if 0 then error
-        cp      a
+        cp      0
         jr      nz, .continue
         jp      error
 .continue:
 
         call    is_kernel_bin   ; A = 1 if KERNEL.BIN
-        cp      a
+        cp      0
         jr      z, .continue2
+
+        ld      hl, (data_region)
+        add     hl, bc          ; add result to data region
+        ld      bc, -2          ; minus 2
+        add     hl, bc
         ret
 .continue2:
 
@@ -251,14 +256,52 @@ find_kernel_cluster:
 
 ;
 ; Check if current file entry is KERNEL.BIN
+;      - HL: pointer to the entry
 ;   - return values:
-;      - HL: file cluster
 ;      - A: 1 if found, 0 if not found
+;      - BC: file cluster, if found
 ;
 
 is_kernel_bin:
+        push    de
+        push    hl
+        ld      de, .kernel_bin
+
+        push    hl                      ; IX = original HL
+        pop     ix
+
+.next:
+        ld      a, (de)                 ; A = comparison char
+        ld      b, (hl)                 ; B = current char in entry
+
+        cp      0                       ; if (A == 0) /* end of string */
+        jr      z, .found               ;       return 1
+
+        cp      b                       ; if (A != B)
+        jr      nz, .not_found          ;       return 0
+
+        inc     de                      ; advance pointers
+        inc     hl
+
+        jp      .next
+
+.found:
+        ld      b, (ix + 0x1b)          ; load cluster number in BC
+        ld      c, (ix + 0x1a)
+        ld      a, 1
+        jp      .done
+
+.not_found:
         ld      a, 0
+
+.done:
+        pop     hl
+        pop     de
+
         ret
+
+.kernel_bin:
+        asciiz  "KERNEL  BIN"
 
 ;
 ; Copy operating system to memory
