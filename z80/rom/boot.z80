@@ -147,6 +147,29 @@ copy_cluster:
 ;
 
 copy_block:
+        push    bc
+        push    hl
+        push    de
+
+        ld      hl, 0x0         ; HL - origin
+
+        ld      b, 0            ; counter (up to 0x200) - dual loop
+        ld      c, 2
+.loop:
+        ld      a, (hl)         ; copy byte
+        ld      (de), a
+        
+        inc     hl
+        inc     de
+
+        djnz    .loop
+        dec     c
+        jp      nz, .loop
+
+        pop     de
+        pop     hl
+        pop     bc
+
         ret
 
 ;---------------------------------------
