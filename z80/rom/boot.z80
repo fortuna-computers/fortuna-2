@@ -13,6 +13,8 @@
 
 CLUSTER_SIZE     = 0x0d
 RESERVED_SECTORS = 0x0e
+NUMBER_OF_FATS   = 0x10
+ROOT_ENTRIES     = 0x11
 SECTORS_PER_FAT  = 0x16
 
 STACK_AREA           = 0x3e00
@@ -65,12 +67,43 @@ copy_boot_area:
         rorg    0x230
 
 rom_code:
+        call    print_status
+
+        ; find data about the disk
+
+        call    load_bootsector
+        call    find_fat_parameters
+
+        ; load operating system
+
+        call    print_status
+
+        ld      hl, (root_directory)
+        call    copy_cluster
+
+        call    find_kernel_cluster     ; result stored in HL
+
+        call    copy_os
+
+hlt:    jp      hlt
+
+;---------------------------------------
+; SUBROUTINES
+;---------------------------------------
+
+;
+; Print a dot for status
+; 
+
+print_status:
         ld      a, '.'          ; print status
         out     (I_TERMINAL), a
+        ret
 
 ;
 ; Load bootsector
 ;
+load_bootsector:
 
         ld      a, 0
         out     (I_SD_B0), a
@@ -78,42 +111,45 @@ rom_code:
         out     (I_SD_B2), a
         out     (I_SD_B3), a
         out     (I_SD_ACTION), a
+        ret
 
-; 
-; Get FAT16 data from bootsector
+;
+; Find FAT variables
+;
+
+find_fat_parameters:
+
+        ; get FAT16 data from bootsector
 
         ld      a, (CLUSTER_SIZE)
         ld      (fat_cluster_size), a
 
-;
-; Find root directory
-;
+        ; find root directory
+        ;   -> RootDirectory = ReservedSectors + (NumberOfFATs * SectorsPerFAT)
 
-find_root_directory:
-
-        ld      bc, (RESERVED_SECTORS)
+        ld      de, (RESERVED_SECTORS)
         ld      hl, (SECTORS_PER_FAT)
-        add     hl, hl                  ; result * 2
-        add     hl, bc
+        ld      a, (NUMBER_OF_FATS)
 
-;
-; Copy root directory cluster
-;
+        ld      b, a            ; NumberOfFats * SectorsPerFat
+        dec     b
+        jr      z, .done
+.multiply:
+        add     hl, hl          
+        djnz    .multiply
+.done:
 
-        call    copy_cluster
+        add     hl, de          ; + ReservedSectors
+        ld      (root_directory), hl
 
-; TODO - find kernel cluster
+        ; calculate DataRegion start
+        ;   -> DataRegion = RootDirectory + ((RootEntriesCount * 32) / BytesPerSector)
 
-; TODO - copy file cluster
+        ld      de, 0x20        ; let's assume RootEntriesCount and BytesPerSector are both 512
+        add     hl, de
+        ld      (data_region), hl
 
-
-
-
-hlt:    jp      hlt
-
-;---------------------------------------
-; SUBROUTINES
-;---------------------------------------
+        ret
 
 ;
 ; Copy a cluster from the SDCard block to CLUSTER_LOADING_AREA
@@ -182,6 +218,23 @@ copy_block:
 
         ret
 
+; 
+; Find cluster of the file called "KERNEL.BIN"
+;  - result stored in HL
+
+find_kernel_cluster:
+
+        ld      hl, CLUSTER_LOADING_AREA ; HL = current pointer
+
+        ld      a, (hl)         ; load first byte, if 0 then error
+
+        ; TODO
+
+        ret
+
+copy_os:
+        ret
+
 ;---------------------------------------
 ; VARIABLES
 ;---------------------------------------
@@ -192,6 +245,8 @@ copy_block:
         rorg VARIABLE_AREA
 
 fat_cluster_size:       db      0  
+root_directory:         dw      0
+data_region:            dw      0
 
         rend
         dend
