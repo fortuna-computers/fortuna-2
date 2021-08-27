@@ -83,7 +83,8 @@ void CpuWindow::draw()
         ImGui::Text("SD Card register: ");
         ImGui::SameLine();
         char buf[16];
-        sprintf(buf, "0x%08X", emulator_.sdcard_register());
+        sprintf(buf, "0x%02X%02X%02X%02X",
+                emulator_.sdcard_register[3], emulator_.sdcard_register[2], emulator_.sdcard_register[1], emulator_.sdcard_register[0]);
         ImGui::Button(buf);
     }
     ImGui::End();

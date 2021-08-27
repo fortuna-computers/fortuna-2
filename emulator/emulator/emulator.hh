@@ -69,11 +69,10 @@ public:
     
     bool last_action_was_next() const { return last_action_was_next_; }
     
-    void     set_sdcard_register(uint32_t value) { sdcard_register_ = value; }
-    uint32_t sdcard_register() const { return sdcard_register_; }
-    
     void     sdcard_write() const;
     void     sdcard_read();
+    
+    uint8_t sdcard_register[4] = { 0 };
 
 private:
     Terminal                          terminal_ { 25, 40 };
@@ -86,7 +85,6 @@ private:
     ImageFile*                        image_file_ = nullptr;
     std::unordered_set<uint16_t>      breakpoints_;
     time_point<system_clock>          execute_until_;
-    uint32_t                          sdcard_register_;
 };
 
 #endif //EMULATOR_EMULATOR_HH

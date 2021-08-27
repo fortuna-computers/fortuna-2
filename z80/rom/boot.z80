@@ -17,9 +17,10 @@ NUMBER_OF_FATS   = 0x10
 ROOT_ENTRIES     = 0x11
 SECTORS_PER_FAT  = 0x16
 
-STACK_AREA           = 0x3e00
-VARIABLE_AREA        = 0x3f00
-CLUSTER_LOADING_AREA = 0x4000
+OPERATING_SYSTEM_AREA =  0x400
+STACK_AREA            = 0x3e00
+VARIABLE_AREA         = 0x3f00
+CLUSTER_LOADING_AREA  = 0x4000
 
 ;---------------------------------------
 ; LOAD ROM INTO 0x200
@@ -74,18 +75,28 @@ rom_code:
         call    load_bootsector
         call    find_fat_parameters
 
-        ; load operating system
+        ; find kernel
 
         call    print_status
 
+        ld      de, CLUSTER_LOADING_AREA        ; copy rootdir cluster
         ld      hl, (root_directory)
-        call    copy_rootdir_cluster
+        call    copy_cluster
 
-        call    find_kernel_cluster     ; result stored in HL
+        call    print_status
 
-        call    copy_os
+        call    find_kernel_cluster             ; find out in which cluster the kernel lives
+                                                ;   result stored in HL
+        call    print_status
 
-stp:    jp      stp
+        ; load operating system
+
+        ld      de, OPERATING_SYSTEM_AREA
+        call    copy_cluster                    ; copy operating system
+
+        call    print_status
+
+stp:    jp      OPERATING_SYSTEM_AREA
 
 ;---------------------------------------
 ; SUBROUTINES
@@ -158,12 +169,11 @@ find_fat_parameters:
 
 ;
 ; Copy a cluster from the SDCard block to CLUSTER_LOADING_AREA
+;  - DE = destination
 ;  - HL = SDCard block
 ;
 
-copy_rootdir_cluster:
-
-        ld      de, CLUSTER_LOADING_AREA  ; DE - block destination
+copy_cluster:
 
         ld      a, (fat_cluster_size)   ; B = number of blocks to transfer
         add     a, a
@@ -225,7 +235,7 @@ copy_block:
 
 ; 
 ; Find cluster of the file called "KERNEL.BIN"
-;  - result stored in BC
+;  - result stored in HL
 ;
 
 find_kernel_cluster:
@@ -303,14 +313,6 @@ is_kernel_bin:
 .kernel_bin:
         asciiz  "KERNEL  BIN"
 
-;
-; Copy operating system to memory
-;  - HL = initial cluster
-;
-
-copy_os:
-        ret
-
 ;---------------------------------------
 ; VARIABLES
 ;---------------------------------------
@@ -327,5 +329,7 @@ data_region:            dw      0
         rend
         dend
 
+; Reference:
+;  - http://www.maverick-os.dk/FileSystemFormats/FAT16_FileSystem.html
 
 ; vim: ts=8:sts=8:sw=8:expandtab

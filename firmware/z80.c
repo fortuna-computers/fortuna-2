@@ -13,7 +13,7 @@
 extern uint16_t   last_pressed_key;
 
 volatile int      next_interrupt = -1;
-volatile uint32_t sdcard_block = 0;
+volatile uint8_t  sdcard_block[4] = { 0 };
 
 void z80_init()
 {
@@ -84,11 +84,15 @@ void z80_request_bus()
 
 static void sd_read_to_ram()
 {
+    uint32_t block = (uint32_t) sdcard_block[0]
+                     | ((uint32_t) sdcard_block[1]) << 8
+                     | ((uint32_t) sdcard_block[2]) << 16
+                     | ((uint32_t) sdcard_block[3]) << 24;
 #ifdef DEBUG
-    printf_P(PSTR("Reading block %02X from SDCard to RAM.\n"), sdcard_block);
+    printf_P(PSTR("Reading block %02X from SDCard to RAM.\n"), block);
 #endif
     z80_release_bus();
-    bool ok = sdcard_read_page(sdcard_block);
+    bool ok = sdcard_read_page(block);
 #ifdef DEBUG
     for (int i = 0; i < 512; ++i)
         printf_P(PSTR("%02X"), buffer[i]);
@@ -108,8 +112,12 @@ static void sd_read_to_ram()
 
 static void sd_write_from_ram()
 {
+    uint32_t block = (uint32_t) sdcard_block[0]
+                   | ((uint32_t) sdcard_block[1]) << 8
+                   | ((uint32_t) sdcard_block[2]) << 16
+                   | ((uint32_t) sdcard_block[3]) << 24;
 #ifdef DEBUG
-    printf_P(PSTR("Writing from RAM to SDCard block %02X.\n"), sdcard_block);
+    printf_P(PSTR("Writing from RAM to SDCard block %02X.\n"), block);
 #endif
     z80_release_bus();
     ram_read_buffer();
@@ -118,7 +126,7 @@ static void sd_write_from_ram()
         printf_P(PSTR("%02X"), buffer[i]);
     putchar('\n');
 #endif
-    bool ok = sdcard_write_page(sdcard_block);
+    bool ok = sdcard_write_page(block);
     z80_request_bus();
 #ifdef DEBUG
     if (ok) 
@@ -139,16 +147,16 @@ static void z80_out(uint8_t port)
             putchar(data);
             break;
         case I_SD_B0:
-            sdcard_block |= data;
+            sdcard_block[0] = data;
             break;
         case I_SD_B1:
-            sdcard_block |= ((uint32_t) data << 8);
+            sdcard_block[1] = data;
             break;
         case I_SD_B2:
-            sdcard_block |= ((uint32_t) data << 16);
+            sdcard_block[2] = data;
             break;
         case I_SD_B3:
-            sdcard_block |= ((uint32_t) data << 24);
+            sdcard_block[3] = data;
             break;
         case I_SD_ACTION:
             if (data & 1)

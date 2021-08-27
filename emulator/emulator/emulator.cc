@@ -55,16 +55,16 @@ void OutZ80(word Port,byte Value)
             emulator->terminal().add_char(Value);
             break;
         case I_SD_B0:
-            emulator->set_sdcard_register(emulator->sdcard_register() | Value);
+            emulator->sdcard_register[0] = Value;
             break;
         case I_SD_B1:
-            emulator->set_sdcard_register(emulator->sdcard_register() | (((uint32_t) Value) << 8));
+            emulator->sdcard_register[1] = Value;
             break;
         case I_SD_B2:
-            emulator->set_sdcard_register(emulator->sdcard_register() | (((uint32_t) Value) << 16));
+            emulator->sdcard_register[2] = Value;
             break;
         case I_SD_B3:
-            emulator->set_sdcard_register(emulator->sdcard_register() | (((uint32_t) Value) << 24));
+            emulator->sdcard_register[3] = Value;
             break;
         case I_SD_ACTION:
             if (Value & 1)
@@ -176,7 +176,10 @@ void Emulator::soft_reset()
 {
     terminal_.reset();
     ResetZ80(&z80_);
-    sdcard_register_ = 0;
+    sdcard_register[0] = 0;
+    sdcard_register[1] = 0;
+    sdcard_register[2] = 0;
+    sdcard_register[3] = 0;
     
     last_keypress_ = 0;
     keyboard_interrupt_ = false;
@@ -220,12 +223,20 @@ bool Emulator::is_breakpoint(uint16_t addr) const
 
 void Emulator::sdcard_write() const
 {
+    uint32_t block = (uint32_t) sdcard_register[0]
+                     | ((uint32_t) sdcard_register[1]) << 8
+                     | ((uint32_t) sdcard_register[2]) << 16
+                     | ((uint32_t) sdcard_register[3]) << 24;
     if (image_file_)
-        image_file_->write_block_to_image(sdcard_register_, ram_);
+        image_file_->write_block_to_image(block, ram_);
 }
 
 void Emulator::sdcard_read()
 {
+    uint32_t block = (uint32_t) sdcard_register[0]
+                     | ((uint32_t) sdcard_register[1]) << 8
+                     | ((uint32_t) sdcard_register[2]) << 16
+                     | ((uint32_t) sdcard_register[3]) << 24;
     if (image_file_)
-        image_file_->read_block_from_image(sdcard_register_, ram_);
+        image_file_->read_block_from_image(block, ram_);
 }
