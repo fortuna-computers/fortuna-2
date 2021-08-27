@@ -1,3 +1,6 @@
+; TODO - only the first cluster is loaded. This will cause problems if the
+;        OS is larger than the cluster.
+
 ; Memory map for boot loading:
 ;    0000 - 01FF: code is initially loaded here
 ;                   after that this is the data exchange area with SD Card
@@ -95,6 +98,8 @@ rom_code:
         call    copy_cluster                    ; copy operating system
 
         call    print_status
+        ld      a, '.'                          ; print enter
+        out     (I_TERMINAL), a
 
 stp:    jp      OPERATING_SYSTEM_AREA
 
