@@ -1,4 +1,18 @@
-        ld      a, 0x42
-stop:   jp      stop
+        include mini.z80
+
+        ld      hl, .msg
+
+.loop:
+        ld      a, (hl)
+        cp      0
+        jr      z, .done
+
+        out     (I_TERMINAL), a
+        inc     hl
+        jp      .loop
+
+.done:  jp      .done
+
+.msg:   asciiz  "Welcome to MiniZ80-OS!"
 
 ; vim: ts=8:sts=8:sw=8:expandtab
