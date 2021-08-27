@@ -73,7 +73,7 @@ void CodeWindow::draw_code()
     
     ImVec2 size = ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - 42);
     if (ImGui::BeginTable("##code", 3, tbl_flags, size)) {
-        
+    
         ImGui::TableSetupScrollFreeze(0, 1); // Make top row always visible
         ImGui::TableSetupColumn("Address", ImGuiTableColumnFlags_WidthFixed);
         ImGui::TableSetupColumn("Bytes", ImGuiTableColumnFlags_WidthFixed);
@@ -83,6 +83,7 @@ void CodeWindow::draw_code()
         if (emulator_.stopped()) {
             size_t nline = 1;
             for (auto const& line: code_model_->lines()) {
+                
                 ImGui::TableNextRow();
                 
                 if (line.address.has_value()) {
@@ -114,15 +115,20 @@ void CodeWindow::draw_code()
                             code_model_->add_breakpoint(nline);
                     }
                 }
-                
+    
                 ImGui::TableSetColumnIndex(1);
-                char buf[30] = { 0 };
+                char buf[256] = { 0 };
                 int pos = 0;
-                for (auto b: line.bytes)
+    
+                for (auto b: line.bytes) {
+                    if (pos > sizeof(buf) - 5)
+                        break;
                     pos += sprintf(&buf[pos], "%02X ", b);
+                }
+                
                 if (!line.bytes.empty())
                     ImGui::Text("%s", buf);
-                
+    
                 ImGui::TableSetColumnIndex(2);
                 ImGui::Text("%s", line.code.c_str());
                 

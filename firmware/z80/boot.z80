@@ -1,45 +1,340 @@
-TERMINAL  equ 0x1
-SD_B0     equ 0x2
-SD_B1     equ 0x3
-SD_B2     equ 0x4
-SD_B3     equ 0x5
-SD_ACTION equ 0x6
+; TODO - only the first cluster is loaded. This will cause problems if the
+;        OS is larger than the cluster.
 
-SD_READ   equ 0
-SD_WRITE  equ 1
+; Memory map for boot loading:
+;    0000 - 01FF: code is initially loaded here
+;                   after that this is the data exchange area with SD Card
+;    0200 - 03FF: after code is copied, it continues running from here
+;    0400 - 3EFF: operating system to be loaded
+;    3E00 - 3EFF: stack
+;    3F00 - 3FFF: variables
+;    4000 - 7FFF: cluster loading area (max 16 kB)
 
-ISR       equ 0x8
+;
+; FAT relevant locations
+;
 
-    ;
-    ; initialization
-    ;
-    im  0
-    ei
-    jp  skip_interrupt_routine
+CLUSTER_SIZE     = 0x0d
+RESERVED_SECTORS = 0x0e
+NUMBER_OF_FATS   = 0x10
+ROOT_ENTRIES     = 0x11
+SECTORS_PER_FAT  = 0x16
 
-    ; 
-    ; keyboard handling routine
-    ;
-    org ISR
-    di
-    in  a, (TERMINAL)
-    out (TERMINAL), a
-    ei
-    reti
-    
-    ;
-    ; regular code
-    ;
-skip_interrupt_routine
-    ld  a, 1
-    out (SD_B0), a
-    ld  a, 0
-    out (SD_B1), a
-    out (SD_B2), a
-    out (SD_B3), a
-    ld  a, SD_WRITE
-    out (SD_ACTION), a
-    ; ld  a, (510)
-    ;out (0xee), a
-hang:
-    jp hang
+OPERATING_SYSTEM_AREA =  0x400
+STACK_AREA            = 0x3e00
+VARIABLE_AREA         = 0x3f00
+CLUSTER_LOADING_AREA  = 0x4000
+
+;---------------------------------------
+; LOAD ROM INTO 0x200
+;---------------------------------------
+
+        include mini.z80
+
+        ld      sp, STACK_AREA
+
+        ld      a, '.'          ; print status
+        out     (I_TERMINAL), a
+
+;
+; Copy boot area to 0x200
+;
+
+copy_boot_area:
+
+        ld      hl, 0x0         ; HL - origin
+        ld      de, 0x200       ; DE - destination
+
+        ld      b, 0            ; counter (up to 0x200) - dual loop
+        ld      c, 2
+.loop:
+        inc     hl
+        inc     de
+
+        ld      a, (hl)         ; copy byte
+        ld      (de), a
+        
+        djnz    .loop
+        dec     c
+        jp      nz, .loop
+
+        ld      a, '.'          ; print status
+        out     (I_TERMINAL), a
+
+        jp      rom_code        ; jump to new location
+
+;---------------------------------------
+; MAIN PROCEDURE
+;---------------------------------------
+
+        org     0x30
+        rorg    0x230
+
+rom_code:
+        call    print_status
+
+        ; find data about the disk
+
+        call    load_bootsector
+        call    find_fat_parameters
+
+        ; find kernel
+
+        call    print_status
+
+        ld      de, CLUSTER_LOADING_AREA        ; copy rootdir cluster
+        ld      hl, (root_directory)
+        call    copy_cluster
+
+        call    print_status
+
+        call    find_kernel_cluster             ; find out in which cluster the kernel lives
+                                                ;   result stored in HL
+        call    print_status
+
+        ; load operating system
+
+        ld      de, OPERATING_SYSTEM_AREA
+        call    copy_cluster                    ; copy operating system
+
+        call    print_status
+        ld      a, 13                           ; print enter
+        out     (I_TERMINAL), a
+
+stp:    jp      OPERATING_SYSTEM_AREA
+
+;---------------------------------------
+; SUBROUTINES
+;---------------------------------------
+
+;
+; Print a dot for status
+; 
+
+print_status:
+        ld      a, '.'          ; print status
+        out     (I_TERMINAL), a
+        ret
+
+error:
+        ld      a, 'X'
+        out     (I_TERMINAL), a
+.hlt:   jp      .hlt
+
+;
+; Load bootsector
+;
+load_bootsector:
+
+        ld      a, 0
+        out     (I_SD_B0), a
+        out     (I_SD_B1), a
+        out     (I_SD_B2), a
+        out     (I_SD_B3), a
+        out     (I_SD_ACTION), a
+        ret
+
+;
+; Find FAT variables
+;
+
+find_fat_parameters:
+
+        ; get FAT16 data from bootsector
+
+        ld      a, (CLUSTER_SIZE)
+        ld      (fat_cluster_size), a
+
+        ; find root directory
+        ;   -> RootDirectory = ReservedSectors + (NumberOfFATs * SectorsPerFAT)
+
+        ld      de, (RESERVED_SECTORS)
+        ld      hl, (SECTORS_PER_FAT)
+        ld      a, (NUMBER_OF_FATS)
+
+        ld      b, a            ; NumberOfFats * SectorsPerFat
+        dec     b
+        jr      z, .done
+.multiply:
+        add     hl, hl          
+        djnz    .multiply
+.done:
+
+        add     hl, de          ; + ReservedSectors
+        ld      (root_directory), hl
+
+        ; calculate DataRegion start
+        ;   -> DataRegion = RootDirectory + ((RootEntriesCount * 32) / BytesPerSector)
+
+        ld      de, 0x20        ; let's assume RootEntriesCount and BytesPerSector are both 512
+        add     hl, de
+        ld      (data_region), hl
+
+        ret
+
+;
+; Copy a cluster from the SDCard block to CLUSTER_LOADING_AREA
+;  - DE = destination
+;  - HL = SDCard block
+;
+
+copy_cluster:
+
+        ld      a, (fat_cluster_size)   ; B = number of blocks to transfer
+        add     a, a
+        ld      b, a
+
+.loop:
+
+        ld      a, l                    ; load cluster to exchange area
+        out     (I_SD_B0), a
+        ld      a, h
+        out     (I_SD_B1), a
+        ld      a, 0
+        out     (I_SD_B2), a
+        out     (I_SD_B3), a
+        out     (I_SD_ACTION), a
+
+        call    copy_block              ; copy block
+
+        inc     hl                      ; increment BL (block number)
+
+        ld      a, d                    ; DE += 512
+        add     a, 2
+        ld      d, a
+
+        djnz    .loop
+
+        ret
+
+;
+; Copy memory from SDCard exchange area to destination
+;  - DE = destination
+;
+
+copy_block:
+        push    bc
+        push    hl
+        push    de
+
+        ld      hl, 0x0         ; HL - origin
+
+        ld      b, 0            ; counter (up to 0x200) - dual loop
+        ld      c, 2
+.loop:
+        ld      a, (hl)         ; copy byte
+        ld      (de), a
+        
+        inc     hl
+        inc     de
+
+        djnz    .loop
+        dec     c
+        jp      nz, .loop
+
+        pop     de
+        pop     hl
+        pop     bc
+
+        ret
+
+; 
+; Find cluster of the file called "KERNEL.BIN"
+;  - result stored in HL
+;
+
+find_kernel_cluster:
+
+        ld      hl, CLUSTER_LOADING_AREA ; HL = current pointer
+
+.next:
+        ld      a, (hl)         ; load first byte, if 0 then error
+        cp      0
+        jr      nz, .continue
+        jp      error
+.continue:
+
+        call    is_kernel_bin   ; A = 1 if KERNEL.BIN
+        cp      0
+        jr      z, .continue2
+
+        ld      hl, (data_region)
+        add     hl, bc          ; add result to data region
+        ld      bc, -2          ; minus 2
+        add     hl, bc
+        ret
+.continue2:
+
+        ld      de, 0x20        ; advance pointer
+        add     hl, de
+        jp      .next
+
+;
+; Check if current file entry is KERNEL.BIN
+;      - HL: pointer to the entry
+;   - return values:
+;      - A: 1 if found, 0 if not found
+;      - BC: file cluster, if found
+;
+
+is_kernel_bin:
+        push    de
+        push    hl
+        ld      de, .kernel_bin
+
+        push    hl                      ; IX = original HL
+        pop     ix
+
+.next:
+        ld      a, (de)                 ; A = comparison char
+        ld      b, (hl)                 ; B = current char in entry
+
+        cp      0                       ; if (A == 0) /* end of string */
+        jr      z, .found               ;       return 1
+
+        cp      b                       ; if (A != B)
+        jr      nz, .not_found          ;       return 0
+
+        inc     de                      ; advance pointers
+        inc     hl
+
+        jp      .next
+
+.found:
+        ld      b, (ix + 0x1b)          ; load cluster number in BC
+        ld      c, (ix + 0x1a)
+        ld      a, 1
+        jp      .done
+
+.not_found:
+        ld      a, 0
+
+.done:
+        pop     hl
+        pop     de
+
+        ret
+
+.kernel_bin:
+        asciiz  "KERNEL  BIN"
+
+;---------------------------------------
+; VARIABLES
+;---------------------------------------
+
+        rend
+
+        dsect
+        rorg VARIABLE_AREA
+
+fat_cluster_size:       db      0  
+root_directory:         dw      0
+data_region:            dw      0
+
+        rend
+        dend
+
+; Reference:
+;  - http://www.maverick-os.dk/FileSystemFormats/FAT16_FileSystem.html
+
+; vim: ts=8:sts=8:sw=8:expandtab

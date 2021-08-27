@@ -28,7 +28,7 @@ void FileSelectWindow::draw()
                 ImGui::TableSetupScrollFreeze(0, 1); // Make top row always visible
                 ImGui::TableSetupColumn("File Name", ImGuiTableColumnFlags_WidthStretch);
                 ImGui::TableHeadersRow();
-                
+    
                 for (auto const& [filename, _]: code_model_->debug().files) {
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
