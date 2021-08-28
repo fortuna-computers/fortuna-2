@@ -8,7 +8,7 @@ F_CPU=16500000UL
 CC=avr-gcc
 CPPFLAGS=-std=c11 -Wall -Wextra -Os -DF_CPU=${F_CPU} -mmcu=${MCU} -ffunction-sections -fdata-sections -I../common
 # CPPFLAGS+=-DRUN_TESTS  # execute tests on initialization
-CPPFLAGS+=-DDEBUG      # print debugging information during execution
+# CPPFLAGS+=-DDEBUG      # print debugging information during execution
 # CPPFLAGS+=-DSTEP       # wait for a keypress before each step
 
 all: ${PROJECT}.hex
