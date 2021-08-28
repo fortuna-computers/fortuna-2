@@ -1,0 +1,13 @@
+;
+; Print prompt ([sd]/> )
+;
+
+shell_print_prompt:
+        ld      hl, .prompt
+        call    print
+        ret
+
+.prompt:
+        asciiz  "[sd]/> "
+
+; vim: ts=8:sts=8:sw=8:expandtab

@@ -1,5 +1,5 @@
 ; TODO - only the first cluster is loaded. This will cause problems if the
-;        OS is larger than the cluster.
+;        kernel is larger than the cluster (usually 4K).
 
 ; Memory map for boot loading:
 ;    0000 - 01FF: code is initially loaded here
@@ -20,6 +20,10 @@ NUMBER_OF_FATS   = 0x10
 ROOT_ENTRIES     = 0x11
 SECTORS_PER_FAT  = 0x16
 
+;
+; Memory map for the boot
+;
+
 OPERATING_SYSTEM_AREA =  0x400
 STACK_AREA            = 0x3e00
 VARIABLE_AREA         = 0x3f00
@@ -28,6 +32,11 @@ CLUSTER_LOADING_AREA  = 0x4000
 ;---------------------------------------
 ; LOAD ROM INTO 0x200
 ;---------------------------------------
+
+; The computer will put the code below into RAM position 0x0.
+; However, we need to use this memory area to exchange data with
+; the SDCard. So, the kernel will copy itself in 0x200 and jump
+; there.
 
         include mini.z80
 
@@ -39,8 +48,6 @@ CLUSTER_LOADING_AREA  = 0x4000
 ;
 ; Copy boot area to 0x200
 ;
-
-copy_boot_area:
 
         ld      hl, 0x0         ; HL - origin
         ld      de, 0x200       ; DE - destination
@@ -70,15 +77,18 @@ copy_boot_area:
         org     0x30
         rorg    0x230
 
+; Here, we start running the code that was already
+; copied to 0x200.
+
 rom_code:
         call    print_status
 
-        ; find data about the disk
+        ; find out information about the disk (FAT16)
 
         call    load_bootsector
         call    find_fat_parameters
 
-        ; find kernel
+        ; find the cluster on disk that contains the file KERNEL.BIN
 
         call    print_status
 
@@ -92,7 +102,7 @@ rom_code:
                                                 ;   result stored in HL
         call    print_status
 
-        ; load operating system
+        ; load operating system from KERNEL.BIN and jump to it
 
         ld      de, OPERATING_SYSTEM_AREA
         call    copy_cluster                    ; copy operating system
@@ -124,6 +134,7 @@ error:
 ;
 ; Load bootsector
 ;
+
 load_bootsector:
 
         ld      a, 0

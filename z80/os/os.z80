@@ -1,0 +1,43 @@
+; This is the operating system that'll run on MiniZ80. It should
+; be compiled and stored in a file called KERNEL.BIN.
+;
+; The memory map for the operating system is this:
+;
+;  0400 - 3EFF : operating system code
+;         TODO : FAT cluster loading area
+;  3F00 - 3FFF : operating system stack
+;  4000 - 7FFF : application area (16K)
+
+OPERATING_SYSTEM_CODE_AREA = 0x400
+OPERATING_SYSTEM_STACK     = 0x3f00
+APPLICATION_AREA           = 0x4000
+
+        org     OPERATING_SYSTEM_CODE_AREA
+
+;---------------------------------------
+; INITIALIZATION
+;---------------------------------------
+
+        ld      sp, OPERATING_SYSTEM_STACK
+        jp      os_start
+
+        include mini.z80
+        include print.z80
+        include shell.z80
+
+os_start:
+        ld      hl, welcome_message
+        call    print
+
+;---------------------------------------
+; MAIN LOOP
+;---------------------------------------
+
+        call    shell_print_prompt
+
+.halt:  jp      .halt
+
+welcome_message:
+        asciiz  "Welcome to MiniZ80-OS!", 13
+
+; vim: ts=8:sts=8:sw=8:expandtab

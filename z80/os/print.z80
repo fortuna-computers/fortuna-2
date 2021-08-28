@@ -1,0 +1,18 @@
+;
+; Print a zero-terminated string.
+;  - HL: string pointer
+;
+
+print:
+        ld      a, (hl)
+        cp      0
+        jr      z, .done
+
+        out     (I_TERMINAL), a
+        inc     hl
+        jp      print
+
+.done:
+        ret
+
+; vim: ts=8:sts=8:sw=8:expandtab
