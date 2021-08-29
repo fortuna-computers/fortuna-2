@@ -1,13 +1,70 @@
+;---------------------------------------
+; SUBROUTINES
+;---------------------------------------
+
 ;
 ; Print prompt ([sd]/> )
 ;
 
 shell_print_prompt:
+
         ld      hl, .prompt
         call    print
         ret
-
 .prompt:
         asciiz  "[sd]/> "
+
+;
+; Install shell interrupt handler on interrupt vector
+;
+
+shell_install_interrupt_handler:
+
+        ld      hl, shell_interrupt_handler
+        ld      (keyboard_interrupt_handler), hl
+        ret
+
+;
+; Execute shell command
+;
+
+shell_execute:
+        
+        ld      hl, .not_found
+        call    print
+        ret
+.not_found:
+        asciiz  "Command not found.", 13
+
+;
+; Read a line from the user
+;
+
+shell_read_line:
+
+        call    shell_install_interrupt_handler
+.next_key:
+        halt                            ; wait for keypress
+        ld      a, (shell_last_keypress)
+        cp      13
+        jr      z, .done                ; exit if ENTER
+        jp      .next_key
+.done:
+        ret
+
+;
+; Keyboard interrupt handler for the shell
+;
+
+shell_interrupt_handler:
+
+        nop
+        ret
+
+;---------------------------------------
+; VARIABLES
+;---------------------------------------
+
+shell_last_keypress:    db      0
 
 ; vim: ts=8:sts=8:sw=8:expandtab
