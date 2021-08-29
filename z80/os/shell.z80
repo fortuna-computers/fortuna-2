@@ -58,8 +58,11 @@ shell_read_line:
 
 shell_interrupt_handler:
 
-        nop
-        ret
+        di
+        in      a, (I_TERMINAL)
+        out     (I_TERMINAL), a
+        ei
+        reti
 
 ;---------------------------------------
 ; VARIABLES

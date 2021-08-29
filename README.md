@@ -24,10 +24,34 @@ Keyboard interrupts will put the value `0x4` on the data bus. This can be handle
 Interrupts can be activated with the following code:
 
 ```Assembly
-ld a, MSB_OF_INTERRUPT_VECTOR
-ld i, a
-im 2
-ei
+    include mini.z80         ; contains hardware definitions
+
+    INTERRUPT_VECTOR = 0x100
+
+    ;
+    ; INITIALIZATION
+    ;
+    ld a, INTERRUPT_VECTOR / 0x100  ; set MSB of interrupt vector (register I)
+    ld i, a
+    im 2                     ; interrupt mode 2
+    ei                       ; initialize interrupts
+    jp skip_interrupt_routine
+
+    ;
+    ; KEYBOARD HANDLING ROUTINE
+    ;
+    org 0x104                ; interrupt routine in 0x104
+    di                       ; disable interrupts
+    in  a, (I_TERMINAL)      ; place last pressed key in `A`
+    ; do something with the key that was loaded...
+    ei                       ; re-enable interrupts
+    reti
+
+    ; 
+    ; REGULAR CODE
+    ; 
+skip_interrupt_routine:
+    ; rest of the code...
 ```
 
 ## Terminal output (video text out)
