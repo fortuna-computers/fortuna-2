@@ -13,6 +13,8 @@ typedef enum {
     I_SD_ACTION     = 0x6,  // 0 = read, 1 = write
 } IORQ;
 
+#define KEYBOARD_DEVICE 0x4   // when a keyboard interrupt happens, this will be put on the data bus
+
 void z80_init();
 void z80_powerup();
 void z80_release_bus();

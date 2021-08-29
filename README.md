@@ -18,12 +18,15 @@ jump there to start executing the operating system.
 
 ## Interrupts
 
-Mini-Z80 uses the [Z80 interrupt mode 0](https://z80journal.wordpress.com/2015/04/15/z80-interrupts/). This means that any 
-interrupts will be redirected to an interrupt handling routine, which the location is dependent on the device.
+Keyboard interrupts will put the value `0x4` on the data bus. This can be handled with 
+[Z80 interrupt mode 2](https://z80journal.wordpress.com/2015/04/15/z80-interrupts/) and a interrupt vector.
+
 Interrupts can be activated with the following code:
 
 ```Assembly
-im 0
+ld a, MSB_OF_INTERRUPT_VECTOR
+ld i, a
+im 2
 ei
 ```
 

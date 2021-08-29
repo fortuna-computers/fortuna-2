@@ -15,17 +15,50 @@ APPLICATION_AREA           = 0x4000
         org     OPERATING_SYSTEM_CODE_AREA
 
 ;---------------------------------------
-; INITIALIZATION
+; INTERRUPT VECTOR
 ;---------------------------------------
 
-        ld      sp, OPERATING_SYSTEM_STACK
-        jp      os_start
+; The interrupt vector contains a list of 16-bit addresses for all the possible interrupts.
+
+        jp      os_start                ; skip the interrupt vector
+
+        org     0x404
+        dw      key                     ; so keyboard interrupt is number 0x4
+                                        
+
+;---------------------------------------
+; IMPORTS
+;---------------------------------------
 
         include mini.z80
         include print.z80
         include shell.z80
 
+;---------------------------------------
+; INITIALIZATION
+;---------------------------------------
+
 os_start:
+
+        ;
+        ; setup stack
+        ;
+
+        ld      sp, OPERATING_SYSTEM_STACK
+
+        ;
+        ; setup interrupt vector
+        ;
+
+        ld      a, 0x4                  ; interrupt vector starts at 0x400
+        ld      i, a
+        im      2                       ; use interrupt move 2 (the one with the vector table)
+        ei                              ; enable interrupts
+
+        ;
+        ; print welcome message
+        ;
+
         ld      hl, welcome_message
         call    print
 
@@ -36,6 +69,10 @@ os_start:
         call    shell_print_prompt
 
 .halt:  jp      .halt
+
+key:
+        nop
+        ret
 
 welcome_message:
         asciiz  "Welcome to MiniZ80-OS!", 13

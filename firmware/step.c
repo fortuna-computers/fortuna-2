@@ -35,7 +35,7 @@ void step()
     switch (getchar()) {
         case 'k':
             last_pressed_key = 'k';
-            z80_interrupt(0xcf);
+            z80_interrupt(KEYBOARD_DEVICE);
             break;
         default:
             z80_cycle();

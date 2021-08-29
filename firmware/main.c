@@ -92,5 +92,5 @@ ISR(INT1_vect)   // interrupt: execute on IORQ
 ISR(USART_RXC_vect)   // interrupt: execute on keypress
 {
     last_pressed_key = serial_recv();
-    z80_interrupt(0xcf);
+    z80_interrupt(KEYBOARD_DEVICE);
 }
