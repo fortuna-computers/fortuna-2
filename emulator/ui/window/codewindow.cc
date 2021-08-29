@@ -1,6 +1,7 @@
 #include "codewindow.hh"
 
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "../gui/gui.hh"
 
 void CodeWindow::draw()
@@ -18,17 +19,19 @@ void CodeWindow::draw()
 void CodeWindow::draw_buttons()
 {
     if (emulator_.stopped()) {
-        if (ImGui::Button("Step (F7)") || ImGui::IsKeyPressed(F7, false)) {
+        ImGui::PushButtonRepeat(true);
+        if (ImGui::Button("Step (F7)") || ImGui::IsKeyPressed(F7, true)) {
             emulator_.step();
             scroll_to_pc_ = true;
             code_model_->update();
         }
         ImGui::SameLine();
-        if (ImGui::Button("Next (F8)") || ImGui::IsKeyPressed(F8, false)) {
+        if (ImGui::Button("Next (F8)") || ImGui::IsKeyPressed(F8, true)) {
             emulator_.next();
             scroll_to_pc_ = true;
             code_model_->update();
         }
+        ImGui::PopButtonRepeat();
         ImGui::SameLine();
         if (ImGui::Button("Run (F9)") || ImGui::IsKeyPressed(F9, false)) {
             scroll_to_pc_ = true;
@@ -105,7 +108,9 @@ void CodeWindow::draw_code()
                     if (*line.address == emulator_.pc()) {
                         ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, pc_row_color);
                         if (scroll_to_pc_) {
-                            ImGui::SetScrollHereY();
+                            ImRect rect { ImGui::GetItemRectMin(), ImGui::GetItemRectMin() };
+                            rect.Expand({ 0, 60 });
+                            ImGui::ScrollToBringRectIntoView(ImGui::GetCurrentWindow(), rect);
                             scroll_to_pc_ = false;
                         }
                     }

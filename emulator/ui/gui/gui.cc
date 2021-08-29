@@ -53,7 +53,7 @@ GUI::GUI()
     ImGui_ImplGlfw_InitForOpenGL(window_, true);
     ImGui_ImplOpenGL3_Init(glsl_version.c_str());
     ImGui::StyleColorsDark();
-    
+    io_->KeyRepeatRate = 0.1f;
 }
 
 GUI::~GUI()
