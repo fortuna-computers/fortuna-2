@@ -31,6 +31,7 @@ void CodeWindow::draw_buttons()
         }
         ImGui::SameLine();
         if (ImGui::Button("Run (F9)") || ImGui::IsKeyPressed(F9, false)) {
+            scroll_to_pc_ = true;
             emulator_.continue_();
         }
     } else {
@@ -165,8 +166,9 @@ void CodeWindow::draw_footer()
         ImGui::SameLine();
         if (ImGui::Button("Soft Reset")) {
             emulator_.soft_reset();
-            update();
+            code_model_->update();
             scroll_to_pc_ = true;
+            update();
         }
         ImGui::SameLine();
         if (ImGui::Button("Go to symbol... (S)") || ImGui::IsKeyPressed('S', false))

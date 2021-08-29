@@ -25,7 +25,7 @@ void CodeModel::add_breakpoint(size_t line)
     auto it = debug_.reverse_location.find({ *file_selected_, line });
     if (it != debug_.reverse_location.end())
         emulator_.add_breakpoint(it->second);
-    update();
+    update(false);
 }
 
 void CodeModel::remove_breakpoint(size_t line)
@@ -35,7 +35,7 @@ void CodeModel::remove_breakpoint(size_t line)
     auto it = debug_.reverse_location.find({ *file_selected_, line });
     if (it != debug_.reverse_location.end())
         emulator_.remove_breakpoint(it->second);
-    update();
+    update(false);
 }
 
 std::optional<SourceLine> CodeModel::find_pc_location(bool update_file_selected)
