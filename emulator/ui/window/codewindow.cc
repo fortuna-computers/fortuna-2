@@ -2,7 +2,6 @@
 
 #include "imgui.h"
 #include "../gui/gui.hh"
-#include "../../emulator/emulator.hh"
 
 void CodeWindow::draw()
 {
@@ -43,22 +42,36 @@ void CodeWindow::draw_buttons()
     }
 }
 
+void CodeWindow::draw_files_combo()
+{
+    if (emulator_.stopped()) {
+        int selected_file = -1;
+        auto it = std::find(files_.begin(),  files_.end(), code_model_->file_selected());
+        if (it != files_.end())
+            selected_file = (int) (it - files_.begin());
+        
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
+        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
+        ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
+        ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
+        
+        if (ImGui::Combo("##file", &selected_file, files_.data(), (int) files_.size()))
+            code_model_->set_file(files_.at(selected_file));
+        
+        ImGui::PopStyleColor(6);
+    } else {
+        ImGui::Button("Code in execution...");
+    }
+}
+
 void CodeWindow::draw_code()
 {
     if (!code_model_)
         return;
     
-    // filename
-    ImGui::PushID(0);
-    ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0 / 7.0f, 0.6f, 0.6f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
-    if (emulator_.stopped())
-        ImGui::Button(code_model_->file_selected() ? code_model_->file_selected()->c_str() : "No file selected");
-    else
-        ImGui::Button("Code in execution...");
-    ImGui::PopStyleColor(3);
-    ImGui::PopID();
+    draw_files_combo();
     
     // table
     static int tbl_flags = ImGuiTableFlags_BordersOuterH
@@ -146,18 +159,14 @@ void CodeWindow::draw_footer()
     if (emulator_.stopped()) {
         ImGui::Text("Click on the address to set a breakpoint.");
         
-        if (ImGui::Button("Soft Reset")) {
-            emulator_.soft_reset();
-            update();
-            scroll_to_pc_ = true;
-        }
-        ImGui::SameLine();
         if (ImGui::Button("Recompile project (Ctrl+R)") || (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed('R', false))) {
             on_recompile_project_();
         }
         ImGui::SameLine();
-        if (ImGui::Button("Go to file... (F)") || ImGui::IsKeyPressed('F', false)) {
-            file_select_window_.set_visible(true);
+        if (ImGui::Button("Soft Reset")) {
+            emulator_.soft_reset();
+            update();
+            scroll_to_pc_ = true;
         }
         ImGui::SameLine();
         if (ImGui::Button("Go to symbol... (S)") || ImGui::IsKeyPressed('S', false))
@@ -168,4 +177,14 @@ void CodeWindow::draw_footer()
 void CodeWindow::set_show_this_line_on_next_frame(size_t line)
 {
     show_this_line_on_next_frame_ = line;
+}
+
+void CodeWindow::set_code_model(CodeModel& code_model)
+{
+    code_model_ = &code_model;
+    
+    files_.clear();
+    for (auto const& file: code_model_->debug().files)
+        files_.push_back(file.first.c_str());
+    std::sort(files_.begin(),  files_.end(), [](const char* a, const char* b) { return strcmp(a, b) < 0; });
 }

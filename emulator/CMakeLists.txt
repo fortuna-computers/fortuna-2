@@ -24,7 +24,7 @@ set(GUI_SRC
     ui/modal/messagebox.cc ui/modal/messagebox.hh ui/window/ramwindow.cc ui/window/ramwindow.hh ui/window/menuwindow.cc ui/window/menuwindow.hh
     ui/window.hh ui/gui/gui.cc ui/gui/gui.hh ui/window/cpuwindow.cc ui/window/cpuwindow.hh ui/window/terminalwindow.cc ui/window/terminalwindow.hh
     ui/modal/sendkeypressmodal.cc ui/modal/sendkeypressmodal.hh ui/window/codewindow.cc ui/window/codewindow.hh ui/model/codemodel.cc
-    ui/model/codemodel.hh ui/window/fileselectwindow.cc ui/window/fileselectwindow.hh ui/gui/properties.cc ui/gui/properties.hh
+    ui/model/codemodel.hh ui/gui/properties.cc ui/gui/properties.hh
     ui/window/symbolselectwindow.cc ui/window/symbolselectwindow.hh ui/window/storagewindow.cc ui/window/storagewindow.hh)
 
 set(SOURCES

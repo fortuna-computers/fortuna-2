@@ -12,7 +12,6 @@
 #include "ui/window/terminalwindow.hh"
 #include "ui/modal/sendkeypressmodal.hh"
 #include "ui/window/codewindow.hh"
-#include "ui/window/fileselectwindow.hh"
 #include "ui/window/symbolselectwindow.hh"
 #include "ui/window/storagewindow.hh"
 
@@ -36,7 +35,6 @@ private:
     RamWindow          ram_window_;
     CpuWindow          cpu_window_;
     TerminalWindow     terminal_window_;
-    FileSelectWindow   file_select_window_;
     SymbolSelectWindow symbol_select_window_;
     CodeWindow         code_window_;
     StorageWindow      storage_window_;
@@ -44,7 +42,7 @@ private:
     MenuWindow         menu_window_;
     
     const std::vector<Window*> menu_windows_ = { &code_window_, &ram_window_, &demo_window_, &cpu_window_, &terminal_window_, &storage_window_ },
-                               other_windows_ = { &load_project_window_, &menu_window_, &message_box_, &send_keypress_window_, &file_select_window_, &symbol_select_window_ };
+                               other_windows_ = { &load_project_window_, &menu_window_, &message_box_, &send_keypress_window_, &symbol_select_window_ };
     
     std::optional<CodeModel> code_model_ {};
     
