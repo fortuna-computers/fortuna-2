@@ -65,7 +65,7 @@ void CodeModel::create_lines(std::string const& filename)
     
     for (size_t i = 1; i <= number_of_lines; ++i) {
         SourceAddress const& sa = source_addresses.at(i);
-        lines_.emplace_back(sa.source, sa.address, sa.bytes);
+        lines_.emplace_back(sa.source, sa.address, sa.bytes, find_comment_start(sa.source));
     }
 }
 
@@ -88,4 +88,14 @@ std::optional<uint16_t> CodeModel::go_to_symbol(std::string const& symbol)
     SourceLine const& sl = it_loc->second;
     set_file(sl.filename);
     return sl.line;
+}
+
+std::optional<size_t> CodeModel::find_comment_start(std::string const& line) const
+{
+    // TODO - is naive
+    int f = line.find(';');
+    if (f == std::string::npos)
+        return {};
+    else
+        return f;
 }

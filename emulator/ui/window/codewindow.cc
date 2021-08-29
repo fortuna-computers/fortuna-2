@@ -58,6 +58,7 @@ void CodeWindow::draw_files_combo()
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0 / 7.0f, 0.7f, 0.7f));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0 / 7.0f, 0.8f, 0.8f));
         
+        ImGui::SetNextItemWidth(180.f);
         if (ImGui::Combo("##file", &selected_file, files_.data(), (int) files_.size()))
             code_model_->set_file(files_.at(selected_file));
         
@@ -139,12 +140,19 @@ void CodeWindow::draw_code()
                         break;
                     pos += sprintf(&buf[pos], "%02X ", b);
                 }
-                
+    
                 if (!line.bytes.empty())
                     ImGui::Text("%s", buf);
     
                 ImGui::TableSetColumnIndex(2);
-                ImGui::Text("%s", line.code.c_str());
+                
+                if (line.comment_start) {
+                    ImGui::Text("%s", line.code.substr(0, *line.comment_start).c_str());
+                    ImGui::SameLine(0, 0);
+                    ImGui::TextColored(ImVec4(1.0f, 0.7f, 1.0f, 1.0f), "%s", line.code.substr(*line.comment_start).c_str());
+                } else {
+                    ImGui::Text("%s", line.code.c_str());
+                }
                 
                 ++nline;
             }

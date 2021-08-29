@@ -7,12 +7,13 @@
 enum class Order { Source, Alphabetical };
 
 struct CodeViewLine {
-    CodeViewLine(std::string code, std::optional<uint16_t> const& address, std::vector<uint8_t> bytes)
-            : code(std::move(code)), address(address), bytes(std::move(bytes)) {}
+    CodeViewLine(std::string code, std::optional<uint16_t> const& address, std::vector<uint8_t> bytes, std::optional<size_t> comment_start)
+            : code(std::move(code)), address(address), bytes(std::move(bytes)), comment_start(comment_start) {}
     
     std::string             code;
     std::optional<uint16_t> address;
     std::vector<uint8_t>    bytes;
+    std::optional<size_t>   comment_start;
 };
 
 
@@ -41,6 +42,7 @@ private:
     
     std::optional<SourceLine> find_pc_location(bool update_file_selected);
     void                      create_lines(std::string const& filename);
+    std::optional<size_t>     find_comment_start(std::string const& line) const;
 };
 
 #endif
