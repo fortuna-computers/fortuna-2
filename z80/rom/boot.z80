@@ -2,13 +2,13 @@
 ;        kernel is larger than the cluster (usually 4K).
 
 ; Memory map for boot loading:
-;    0000 - 01FF: code is initially loaded here
-;                   after that this is the data exchange area with SD Card
-;    0200 - 03FF: after code is copied, it continues running from here
-;    0400 - 3EFF: operating system to be loaded
-;    3E00 - 3EFF: stack
-;    3F00 - 3FFF: variables
-;    4000 - 7FFF: cluster loading area (max 16 kB)
+;
+;    0000: code is initially loaded here
+;            after that this is the data exchange area with SD Card
+;    0200: after code is copied, it continues running from here
+;    1000: cluster loading area (max 16 kB)
+;    6000: operating system to be loaded
+;    7E00: stack
 
 ;
 ; FAT relevant locations
@@ -24,10 +24,9 @@ SECTORS_PER_FAT  = 0x16
 ; Memory map for the boot
 ;
 
-OPERATING_SYSTEM_AREA =  0x400
-STACK_AREA            = 0x3e00
-VARIABLE_AREA         = 0x3f00
-CLUSTER_LOADING_AREA  = 0x4000
+CLUSTER_LOADING_AREA  = 0x1000
+OPERATING_SYSTEM_AREA = 0x6000
+STACK_AREA            = 0x0
 
 ;---------------------------------------
 ; LOAD ROM INTO 0x200
@@ -333,17 +332,11 @@ is_kernel_bin:
 ; VARIABLES
 ;---------------------------------------
 
-        rend
-
-        dsect
-        rorg VARIABLE_AREA
-
 fat_cluster_size:       db      0  
 root_directory:         dw      0
 data_region:            dw      0
 
         rend
-        dend
 
 ; Reference:
 ;  - http://www.maverick-os.dk/FileSystemFormats/FAT16_FileSystem.html

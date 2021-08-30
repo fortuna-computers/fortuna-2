@@ -2,15 +2,10 @@
 ; be compiled and stored in a file called KERNEL.BIN.
 ;
 ; The memory map for the operating system is this:
-;
-;  0400 - 3EFF : operating system code
-;         TODO : FAT cluster loading area
-;  3F00 - 3FFF : operating system stack
-;  4000 - 7FFF : application area (16K)
 
-OPERATING_SYSTEM_CODE_AREA = 0x400
-OPERATING_SYSTEM_STACK     = 0x3f00
-APPLICATION_AREA           = 0x4000
+APPLICATION_AREA           = 0x200
+OPERATING_SYSTEM_CODE_AREA = 0x6000
+OPERATING_SYSTEM_STACK     = 0x0
 
 ;---------------------------------------
 ; INTERRUPT VECTOR
