@@ -10,7 +10,7 @@ print:
 
         out     (I_TERMINAL), a
         inc     hl
-        jp      print
+        jr      print
 
 .done:
         ret

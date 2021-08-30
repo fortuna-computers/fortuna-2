@@ -101,7 +101,7 @@ word LoopZ80(Z80 *R)
     // check for interrupts
     if (emulator->keyboard_interrupt()) {
         emulator->reset_keyboard_interrupt();
-        return 4;
+        return 0x0;  // KEYBOARD_DEVICE
     }
     
     if (emulator->continue_mode()) {

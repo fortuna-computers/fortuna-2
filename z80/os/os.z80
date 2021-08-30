@@ -3,25 +3,13 @@
 ;
 ; The memory map for the operating system is this:
 
-APPLICATION_AREA           = 0x200
-OPERATING_SYSTEM_CODE_AREA = 0x6000
-OPERATING_SYSTEM_STACK     = 0x0
+APPLICATION_AREA       = 0x200
+OPERATING_SYSTEM_CODE  = 0x6000
+INTERRUPT_VECTOR       = 0x7E00
+OPERATING_SYSTEM_STACK = 0x0
 
-;---------------------------------------
-; INTERRUPT VECTOR
-;---------------------------------------
-
-; The interrupt vector contains a list of 16-bit addresses for all the possible interrupts.
-
-        org     OPERATING_SYSTEM_CODE_AREA
-
-INTERRUPT_VECTOR
-
-        jp      os_start                ; skip the interrupt vector (command with 3 bytes)
-        db      0                       ; use one more byte to make things even
-
-keyboard_interrupt_handler:
-        dw      0x0000                  ; this will be replaced by the interrupt handler installer
+        org     OPERATING_SYSTEM_CODE
+        jp      os_start
 
 ;---------------------------------------
 ; IMPORTS
@@ -69,7 +57,7 @@ main_loop:
         call    shell_read_line
         call    shell_execute
 
-        jp      main_loop
+        jr      main_loop
 
 ;---------------------------------------
 ; CONSTANTS

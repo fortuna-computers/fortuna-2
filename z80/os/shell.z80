@@ -12,7 +12,7 @@ shell_print_prompt:
         call    print
         ret
 .prompt:
-        asciiz  "[sd]/> "
+        asciiz  "[SD0]/> "
 
 ;
 ; Install shell interrupt handler on interrupt vector
@@ -21,7 +21,7 @@ shell_print_prompt:
 shell_install_interrupt_handler:
 
         ld      hl, shell_interrupt_handler
-        ld      (keyboard_interrupt_handler), hl
+        ld      (INTERRUPT_VECTOR + 0), hl
         ret
 
 ;
@@ -48,7 +48,7 @@ shell_read_line:
         ld      a, (shell_last_keypress)
         cp      13
         jr      z, .done                ; exit if ENTER
-        jp      .next_key
+        jr      .next_key
 .done:
         ret
 
