@@ -43,9 +43,12 @@ Manager::~Manager()
         properties_.set_property_bool(mwindow->name(), mwindow->visible());
 }
 
-void Manager::run()
+void Manager::run(std::optional<std::string> const& project_to_load)
 {
     try {
+        if (project_to_load)
+            load_project(*project_to_load);
+        
         while (gui_.continue_executing()) {
             gui_.step();
             emulator_.execute();
@@ -59,7 +62,7 @@ void Manager::run()
         gui_.force_end_frame();
         std::cerr << e.what() << "\n";
         message_box_.set_message(MessageBox::Error, e.what());
-        run();
+        run(project_to_load);
     }
 }
 

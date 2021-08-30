@@ -20,7 +20,7 @@ public:
     Manager();
     ~Manager();
     
-    void run();
+    void run(std::optional<std::string> const& project_to_load);
     
 private:
     Properties         properties_;
@@ -50,9 +50,8 @@ private:
     
     std::optional<ImageFile> image_file;
     
-    void load_project(std::string const& project_name);
-    
     void open_windows_from_last_time();
+    void load_project(std::string const& project_name);
 };
 
 #endif
