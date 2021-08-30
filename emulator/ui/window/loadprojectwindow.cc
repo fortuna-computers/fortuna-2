@@ -24,7 +24,8 @@ void LoadProjectWindow::draw()
     
     ImGui::Separator();
     
-    if (ImGui::Button("Start execution (F12)") || ImGui::IsKeyPressed(F12, false)) {
+    if (ImGui::Button("Start execution (F12)") || ImGui::IsKeyPressed(F12, false) || load_project_on_next_frame_) {
+        load_project_on_next_frame_ = false;
         properties_.set_property("project_file", project_file_);
         on_start_executing_(project_file_);
     }
@@ -36,4 +37,10 @@ void LoadProjectWindow::draw()
         strcpy(project_file_, file_browser_.GetSelected().c_str());
         file_browser_.ClearSelected();
     }
+}
+
+void LoadProjectWindow::load_project(std::string const& project_name)
+{
+    strcpy(project_file_, project_name.c_str());
+    load_project_on_next_frame_ = true;
 }

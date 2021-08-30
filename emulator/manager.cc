@@ -46,8 +46,9 @@ Manager::~Manager()
 void Manager::run(std::optional<std::string> const& project_to_load)
 {
     try {
+        gui_.step();
         if (project_to_load)
-            load_project(*project_to_load);
+            load_project_window_.load_project(*project_to_load);
         
         while (gui_.continue_executing()) {
             gui_.step();
@@ -62,7 +63,7 @@ void Manager::run(std::optional<std::string> const& project_to_load)
         gui_.force_end_frame();
         std::cerr << e.what() << "\n";
         message_box_.set_message(MessageBox::Error, e.what());
-        run(project_to_load);
+        run({});
     }
 }
 

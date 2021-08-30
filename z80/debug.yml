@@ -1,8 +1,6 @@
 sources:
   - source: rom/boot.z80
-    address: 0x0
   - source: os/os.z80
-    address: 0x0
     add_to_image: KERNEL.BIN
 
 rom: rom/boot.z80

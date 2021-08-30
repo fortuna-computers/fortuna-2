@@ -8,9 +8,12 @@ ProjectFile ProjectFile::import(std::string const& contents)
     YAML::Node node = YAML::Load(contents);
     
     for (const auto &item : node["sources"]) {
+        uint16_t address = 0;
+        if (item["address"])
+            address = item["address"].as<uint16_t>();
         Source source = {
-     item["source"].as<std::string>(),
-     item["address"].as<uint16_t>()
+            item["source"].as<std::string>(),
+            address
         };
         if (item["alias"])
             source.alias = item["alias"].as<std::string>();
