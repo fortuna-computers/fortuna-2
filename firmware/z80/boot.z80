@@ -1,14 +1,14 @@
 ; TODO - only the first cluster is loaded. This will cause problems if the
-;        OS is larger than the cluster.
+;        kernel is larger than the cluster (usually 4K).
 
 ; Memory map for boot loading:
-;    0000 - 01FF: code is initially loaded here
-;                   after that this is the data exchange area with SD Card
-;    0200 - 03FF: after code is copied, it continues running from here
-;    0400 - 3EFF: operating system to be loaded
-;    3E00 - 3EFF: stack
-;    3F00 - 3FFF: variables
-;    4000 - 7FFF: cluster loading area (max 16 kB)
+;
+;    0000: code is initially loaded here
+;            after that this is the data exchange area with SD Card
+;    0200: after code is copied, it continues running from here
+;    1000: cluster loading area (max 16 kB)
+;    6000: operating system to be loaded
+;    7E00: stack
 
 ;
 ; FAT relevant locations
@@ -20,14 +20,22 @@ NUMBER_OF_FATS   = 0x10
 ROOT_ENTRIES     = 0x11
 SECTORS_PER_FAT  = 0x16
 
-OPERATING_SYSTEM_AREA =  0x400
-STACK_AREA            = 0x3e00
-VARIABLE_AREA         = 0x3f00
-CLUSTER_LOADING_AREA  = 0x4000
+;
+; Memory map for the boot
+;
+
+CLUSTER_LOADING_AREA  = 0x1000
+OPERATING_SYSTEM_AREA = 0x6000
+STACK_AREA            = 0x0
 
 ;---------------------------------------
 ; LOAD ROM INTO 0x200
 ;---------------------------------------
+
+; The computer will put the code below into RAM position 0x0.
+; However, we need to use this memory area to exchange data with
+; the SDCard. So, the kernel will copy itself in 0x200 and jump
+; there.
 
         include mini.z80
 
@@ -39,8 +47,6 @@ CLUSTER_LOADING_AREA  = 0x4000
 ;
 ; Copy boot area to 0x200
 ;
-
-copy_boot_area:
 
         ld      hl, 0x0         ; HL - origin
         ld      de, 0x200       ; DE - destination
@@ -56,7 +62,7 @@ copy_boot_area:
         
         djnz    .loop
         dec     c
-        jp      nz, .loop
+        jr      nz, .loop
 
         ld      a, '.'          ; print status
         out     (I_TERMINAL), a
@@ -70,15 +76,19 @@ copy_boot_area:
         org     0x30
         rorg    0x230
 
-rom_code:
-        call    print_status
+; Here, we start running the code that was already
+; copied to 0x200.
 
-        ; find data about the disk
+rom_code:
+        ld      hl, msg_loading
+        call    print
+
+        ; find out information about the disk (FAT16)
 
         call    load_bootsector
         call    find_fat_parameters
 
-        ; find kernel
+        ; find the cluster on disk that contains the file KERNEL.BIN
 
         call    print_status
 
@@ -92,7 +102,7 @@ rom_code:
                                                 ;   result stored in HL
         call    print_status
 
-        ; load operating system
+        ; load operating system from KERNEL.BIN and jump to it
 
         ld      de, OPERATING_SYSTEM_AREA
         call    copy_cluster                    ; copy operating system
@@ -116,14 +126,31 @@ print_status:
         out     (I_TERMINAL), a
         ret
 
-error:
-        ld      a, 'X'
+;
+; Print a zero-terminated string.
+;  - HL: string pointer
+;
+
+print:
+        ld      a, (hl)
+        cp      0
+        jr      z, .done
+
         out     (I_TERMINAL), a
-.hlt:   jp      .hlt
+        inc     hl
+        jr      print
+
+.done:
+        ret
+
+print_error:
+        call    print
+.hlt:   jr      .hlt
 
 ;
 ; Load bootsector
 ;
+
 load_bootsector:
 
         ld      a, 0
@@ -230,7 +257,7 @@ copy_block:
 
         djnz    .loop
         dec     c
-        jp      nz, .loop
+        jr      nz, .loop
 
         pop     de
         pop     hl
@@ -251,7 +278,8 @@ find_kernel_cluster:
         ld      a, (hl)         ; load first byte, if 0 then error
         cp      0
         jr      nz, .continue
-        jp      error
+        ld      hl, msg_not_found
+        jr      print_error
 .continue:
 
         call    is_kernel_bin   ; A = 1 if KERNEL.BIN
@@ -267,7 +295,7 @@ find_kernel_cluster:
 
         ld      de, 0x20        ; advance pointer
         add     hl, de
-        jp      .next
+        jr      .next
 
 ;
 ; Check if current file entry is KERNEL.BIN
@@ -298,13 +326,13 @@ is_kernel_bin:
         inc     de                      ; advance pointers
         inc     hl
 
-        jp      .next
+        jr      .next
 
 .found:
         ld      b, (ix + 0x1b)          ; load cluster number in BC
         ld      c, (ix + 0x1a)
         ld      a, 1
-        jp      .done
+        jr      .done
 
 .not_found:
         ld      a, 0
@@ -319,20 +347,21 @@ is_kernel_bin:
         asciiz  "KERNEL  BIN"
 
 ;---------------------------------------
-; VARIABLES
+; MESSAGES
 ;---------------------------------------
 
-        rend
+msg_loading:    asciiz  " Loading KERNEL.BIN "
+msg_not_found:  asciiz  " KERNEL.BIN not found"
 
-        dsect
-        rorg VARIABLE_AREA
+;---------------------------------------
+; VARIABLES
+;---------------------------------------
 
 fat_cluster_size:       db      0  
 root_directory:         dw      0
 data_region:            dw      0
 
         rend
-        dend
 
 ; Reference:
 ;  - http://www.maverick-os.dk/FileSystemFormats/FAT16_FileSystem.html
