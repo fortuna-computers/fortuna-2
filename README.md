@@ -14,9 +14,9 @@ It is a work in progress.  The specifications are:
 
 Documentation:
 
-* [Computer schematic]()
-* [Low-level programming guide]()
-* [Application programming guide]()
+* [Computer schematic](https://github.com/andrenho/fortuna/wiki/Fortuna-2:-Schematic)
+* [Low-level programming guide](https://github.com/andrenho/fortuna/wiki/Fortuna-2:-Low-level-programming-guide)
+* [Application programming guide](https://github.com/andrenho/fortuna/wiki/Fortuna-2:-Application-Programming-Guide)
 
 ![Computer](https://raw.githubusercontent.com/andrenho/fortuna/master/fortuna-2/photos/computer.jpg)
 ![Terminal](https://raw.githubusercontent.com/andrenho/fortuna/master/fortuna-2/photos/terminal.jpg)
