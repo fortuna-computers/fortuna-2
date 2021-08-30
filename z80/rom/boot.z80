@@ -80,7 +80,8 @@ STACK_AREA            = 0x0
 ; copied to 0x200.
 
 rom_code:
-        call    print_status
+        ld      hl, msg_loading
+        call    print
 
         ; find out information about the disk (FAT16)
 
@@ -125,9 +126,25 @@ print_status:
         out     (I_TERMINAL), a
         ret
 
-error:
-        ld      a, 'X'
+;
+; Print a zero-terminated string.
+;  - HL: string pointer
+;
+
+print:
+        ld      a, (hl)
+        cp      0
+        jr      z, .done
+
         out     (I_TERMINAL), a
+        inc     hl
+        jp      print
+
+.done:
+        ret
+
+print_error:
+        call    print
 .hlt:   jp      .hlt
 
 ;
@@ -261,7 +278,8 @@ find_kernel_cluster:
         ld      a, (hl)         ; load first byte, if 0 then error
         cp      0
         jr      nz, .continue
-        jp      error
+        ld      hl, msg_not_found
+        jp      print_error
 .continue:
 
         call    is_kernel_bin   ; A = 1 if KERNEL.BIN
@@ -327,6 +345,13 @@ is_kernel_bin:
 
 .kernel_bin:
         asciiz  "KERNEL  BIN"
+
+;---------------------------------------
+; MESSAGES
+;---------------------------------------
+
+msg_loading:    asciiz  " Loading KERNEL.BIN "
+msg_not_found:  asciiz  " KERNEL.BIN not found"
 
 ;---------------------------------------
 ; VARIABLES

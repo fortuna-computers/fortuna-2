@@ -26,6 +26,7 @@ protected:
     static const int F7 = 0x128;
     static const int F8 = 0x129;
     static const int F9 = 0x12a;
+    static const int F10 = 0x12b;
     static const int F12 = 0x12d;
 };
 

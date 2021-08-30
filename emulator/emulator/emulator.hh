@@ -41,6 +41,7 @@ public:
     void continue_();
     void stop();
     void next();
+    void skip_rom();
     void soft_reset();
     
     uint16_t pc() const;
@@ -73,6 +74,8 @@ public:
     void     sdcard_read();
     
     uint8_t sdcard_register[4] = { 0 };
+    bool    running_on_rom = true;
+    bool    skip_rom_area = false;
 
 private:
     Terminal                          terminal_ { 25, 40 };

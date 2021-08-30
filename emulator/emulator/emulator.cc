@@ -88,6 +88,16 @@ byte InZ80(word Port)
 
 word LoopZ80(Z80 *R)
 {
+    // check if we're skipping ROM area (PC < 0x400)
+    if (emulator->running_on_rom && R->PC.W >= 0x400) {
+        emulator->running_on_rom = false;
+        if (emulator->skip_rom_area) {
+            emulator->skip_rom_area = false;
+            emulator->set_continue_mode(false);
+            return INT_QUIT;
+        }
+    }
+    
     // check for interrupts
     if (emulator->keyboard_interrupt()) {
         emulator->reset_keyboard_interrupt();
@@ -172,6 +182,13 @@ void Emulator::next()
     RunZ80(&z80_);
 }
 
+void Emulator::skip_rom()
+{
+    skip_rom_area = true;
+    set_continue_mode(true);
+    RunZ80(&z80_);
+}
+
 void Emulator::soft_reset()
 {
     terminal_.reset();
@@ -185,6 +202,7 @@ void Emulator::soft_reset()
     keyboard_interrupt_ = false;
     continue_mode_ = false;
     last_action_was_next_ = false;
+    running_on_rom = true;
 }
 
 uint16_t Emulator::pc() const

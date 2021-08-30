@@ -6,6 +6,10 @@
 
 void CodeWindow::draw()
 {
+    if (last_state_was_running_ && !emulator_.continue_mode())
+        code_model_->update(true);
+    last_state_was_running_ = emulator_.continue_mode();
+    
     ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, { 0, 250 });
     if (ImGui::Begin(window_title().c_str(), &visible_)) {
         draw_buttons();
@@ -29,13 +33,22 @@ void CodeWindow::draw_buttons()
         if (ImGui::Button("Next (F8)") || ImGui::IsKeyPressed(F8, true)) {
             emulator_.next();
             scroll_to_pc_ = true;
-            code_model_->update();
+            last_state_was_running_ = true;
         }
         ImGui::PopButtonRepeat();
         ImGui::SameLine();
         if (ImGui::Button("Run (F9)") || ImGui::IsKeyPressed(F9, false)) {
             scroll_to_pc_ = true;
             emulator_.continue_();
+            last_state_was_running_ = true;
+        }
+        if (emulator_.running_on_rom) {
+            ImGui::SameLine();
+            if (ImGui::Button("Skip ROM (F10)") || ImGui::IsKeyPressed(F10, false)) {
+                emulator_.skip_rom();
+                scroll_to_pc_ = true;
+                last_state_was_running_ = true;
+            }
         }
     } else {
         if (ImGui::Button("Stop (Ctrl+C)") || (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed('C', false))) {

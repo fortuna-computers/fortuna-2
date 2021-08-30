@@ -37,6 +37,8 @@ private:
     
     std::function<void()> on_recompile_project_;
     std::vector<const char*> files_;
+    
+    bool last_state_was_running_ = false;
 };
 
 #endif
