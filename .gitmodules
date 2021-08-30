@@ -1,12 +1,12 @@
 [submodule "contrib/yaml-cpp"]
-	path = emulator/contrib/yaml-cpp
+	path = fortuna-2/emulator/contrib/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp
 [submodule "emulator/contrib/glfw"]
-	path = emulator/contrib/glfw
+	path = fortuna-2/emulator/contrib/glfw
 	url = https://github.com/glfw/glfw.git
 [submodule "emulator/contrib/imgui"]
-	path = emulator/contrib/imgui
+	path = fortuna-2/emulator/contrib/imgui
 	url = https://github.com/ocornut/imgui.git
 [submodule "emulator/contrib/imgui-filebrowser"]
-	path = emulator/contrib/imgui-filebrowser
+	path = fortuna-2/emulator/contrib/imgui-filebrowser
 	url = https://github.com/AirGuanZ/imgui-filebrowser.git
