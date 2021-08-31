@@ -8,3 +8,14 @@ I_SD_STATUS = 0x7
 
 SD_WRITE = 1
 SD_READ  = 0
+
+; system calls
+SYSCALL_VECTOR = 0x200
+_PRINT         = 0
+_EXIT          = 1
+
+        macro SYS
+        call    SYSCALL_VECTOR + (\0 * 3)
+        endm
+
+; vim: ts=8:sts=8:sw=8:expandtab:syntax=z80

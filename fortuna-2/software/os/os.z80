@@ -3,7 +3,7 @@
 ;
 ; The memory map for the operating system is this:
 
-APPLICATION_AREA       = 0x200
+APPLICATION_AREA       = 0x300
 OPERATING_SYSTEM_CODE  = 0x6000
 INTERRUPT_VECTOR       = 0x7E00
 OPERATING_SYSTEM_STACK = 0x0
@@ -16,7 +16,7 @@ OPERATING_SYSTEM_STACK = 0x0
 ;---------------------------------------
 
         include fortuna2.inc
-        include print.z80
+        include syscall/syscall.z80
         include shell.z80
 
 ;---------------------------------------
@@ -38,14 +38,19 @@ os_start:
         ld      a, INTERRUPT_VECTOR / 0x100 ; interrupt vector starts at 0x400
         ld      i, a
         im      2                       ; use interrupt move 2 (the one with the vector table)
-        ei                              ; enable interrupts
+
+        ;
+        ; install syscall vector
+        ;
+
+        call    syscall_install_vector
 
         ;
         ; print welcome message
         ;
 
         ld      hl, welcome_message
-        call    print
+        SYS     _PRINT
 
 ;---------------------------------------
 ; MAIN LOOP

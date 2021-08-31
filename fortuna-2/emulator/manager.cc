@@ -24,6 +24,7 @@ Manager::Manager()
     
     load_project_window_.on_start_executing([this](std::string const& filename) {
         load_project(filename);
+        open_windows_from_last_time();
     });
     load_project_window_.set_visible(true);
     
@@ -47,8 +48,10 @@ void Manager::run(std::optional<std::string> const& project_to_load)
 {
     try {
         gui_.step();
-        if (project_to_load)
+        if (project_to_load) {
             load_project_window_.load_project(*project_to_load);
+            open_windows_from_last_time();
+        }
         
         while (gui_.continue_executing()) {
             gui_.step();
@@ -85,7 +88,6 @@ void Manager::load_project(std::string const& project_name)
         // open windows
         load_project_window_.set_visible(false);
         menu_window_.set_visible(true);
-        open_windows_from_last_time();
         
         // setup window objects
         code_model_.emplace(emulator_, result.debug);

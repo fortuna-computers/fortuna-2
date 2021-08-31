@@ -3,14 +3,14 @@
 ;  - HL: string pointer
 ;
 
-print:
+terminal_print:
         ld      a, (hl)
         cp      0
         jr      z, .done
 
         out     (I_TERMINAL), a
         inc     hl
-        jr      print
+        jr      terminal_print
 
 .done:
         ret
