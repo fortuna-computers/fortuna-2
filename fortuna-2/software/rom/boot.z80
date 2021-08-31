@@ -37,7 +37,7 @@ STACK_AREA            = 0x0
 ; the SDCard. So, the kernel will copy itself in 0x200 and jump
 ; there.
 
-        include mini.z80
+        include fortuna2.inc
 
         ld      sp, STACK_AREA
 

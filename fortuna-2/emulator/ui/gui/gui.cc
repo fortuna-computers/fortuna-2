@@ -34,7 +34,7 @@ GUI::GUI()
     std::string glsl_version = "#version 150";
     
     // create window
-    window_ = glfwCreateWindow(800, 600, "Mini-Z80 emulator", nullptr, nullptr);
+    window_ = glfwCreateWindow(800, 600, "Fortuna-2 emulator", nullptr, nullptr);
     
     // setup OpenGL
     glfwMakeContextCurrent(window_);

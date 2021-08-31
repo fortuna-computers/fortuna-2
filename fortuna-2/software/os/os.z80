@@ -15,7 +15,7 @@ OPERATING_SYSTEM_STACK = 0x0
 ; IMPORTS
 ;---------------------------------------
 
-        include mini.z80
+        include fortuna2.inc
         include print.z80
         include shell.z80
 

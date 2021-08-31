@@ -34,7 +34,7 @@ int main()
 #endif
 
     // computer initialization
-    printf_P(PSTR("\e[1;1H\e[2JMini-Z80 initialized.\n"));
+    printf_P(PSTR("\e[1;1H\e[2JFortuna-2 initialized.\n"));
 
     // initialize SD card
     bool ok = sdcard_initialize();

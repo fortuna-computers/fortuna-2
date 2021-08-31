@@ -15,7 +15,7 @@ void LoadProjectWindow::draw()
         strcpy(project_file_, properties_.property("project_file").c_str());
     
     ImGui::SetNextWindowSize(ImVec2(600, 82));
-    ImGui::Begin("Welcome to Mini-Z80 debugger", nullptr, ImGuiWindowFlags_NoResize);
+    ImGui::Begin("Welcome to Fortuna-2 debugger", nullptr, ImGuiWindowFlags_NoResize);
     
     ImGui::Text("Select project file"); ImGui::SameLine();
     ImGui::InputText("##b", project_file_, sizeof project_file_); ImGui::SameLine();

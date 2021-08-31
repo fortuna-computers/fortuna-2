@@ -8,7 +8,7 @@
 
 static CompilationResult compile_rom(std::string const& content, std::string const& content2 = {})
 {
-    auto temp = std::filesystem::temp_directory_path() / "mini-z80";
+    auto temp = std::filesystem::temp_directory_path() / "fortuna-2";
     std::filesystem::remove_all(temp);
     std::filesystem::create_directories(temp);
     
