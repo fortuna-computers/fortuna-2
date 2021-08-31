@@ -10,9 +10,10 @@ SD_WRITE = 1
 SD_READ  = 0
 
 ; system calls
-SYSCALL_VECTOR = 0x200
-_PRINT         = 0
-_EXIT          = 1
+SYSCALL_VECTOR  = 0x200
+_PRINT          = 0
+_EXIT           = 1
+_MULTIPLY       = 2
 
         macro SYS
         call    SYSCALL_VECTOR + (\0 * 3)

@@ -1,27 +1,101 @@
+;---------------------------------------
+; CONSTANTS
+;---------------------------------------
+
+FAT16_BYTES_PER_SECTOR    = 0x0b
+FAT16_SECTORS_PER_CLUSTER = 0x0d
+FAT16_RESERVED_SECTORS    = 0x0e
+FAT16_NUMBER_OF_FATS      = 0x10
+FAT16_SECTORS_PER_FAT     = 0x16
+
+;---------------------------------------
+; VARIABLES
+;---------------------------------------
+
+fat16_sectors_per_cluster     dw      0
+fat16_reserved_sectors        db      0
+fat16_number_of_fats          db      0
+fat16_sectors_per_fat         dw      0
+fat16_root_entries            dw      0
+fat16_rootdir_start           dw      0
+
+;---------------------------------------
+; SUBROUTINES
+;---------------------------------------
+
 ;
 ; Initialize file system - read config information about the partition
 ;
 
 fat16_initialize:
-        ld      de, 0                   ; load sector 0 into exchange area
+
+        ;
+        ; load sector 0 into exchange area
+        ;
+
+        ld      de, 0                           ; load sector 0 into exchange area
         ld      hl, 0
         call    fat16_load_sector
 
-        cp      0                       ; check if successful
+        cp      0                               ; check if successful
         jr      z, .load_ok
 
-        ld      hl, .sdcard_load_error
+        ld      hl, .sdcard_load_error          ; error if not
         SYS     _PRINT
-.halt:  jr      .halt
-
-        ; fill out the variables
-
+        jr      .halt
 .load_ok:
+
+        ;
+        ; makes sure that bytes per sector is 512
+        ;
+
+        ld      hl, (FAT16_BYTES_PER_SECTOR)
+        ld      a, h                            ; check MSB
+        cp      2
+        jr      nz, .error_bps
+        ld      a, l                            ; check LSB
+        cp      0
+        jr      nz, .error_bps
         
+        jr      .cont1                          ; if ok
+.error_bps:
+        ld      hl, .sdcard_bps_not_512         ; if not ok
+        SYS     _PRINT
+        jr      .halt
+.cont1:
+
+        ;
+        ; fill out the variables
+        ;
+
+        ld      hl, (FAT16_SECTORS_PER_CLUSTER)
+        ld      (fat16_sectors_per_cluster), hl
+        
+        ld      a, (FAT16_RESERVED_SECTORS)
+        ld      (fat16_reserved_sectors), a
+
+        ld      a, (FAT16_NUMBER_OF_FATS)
+        ld      (fat16_number_of_fats), a
+
+        ld      hl, (FAT16_SECTORS_PER_FAT)
+        ld      (fat16_sectors_per_fat), hl
+
+        ; RootDirectory = FATRegion + (NumberOfFATs * SectorsPerFAT)
+        ; ld      hl, (fat16_sectors_per_fat)      ; NumberOfFats * SectorsPerFat
+        ; ld      b, a
+        ; ld      a, (fat16_number_of_fats)
+        ; SYS     _MULTIPLY
+        ; push    hl                              ; FatRegion + result
+        ; pop     bc
+        ; ld      hl, (fat16_reserved_sectors)
+        ; ld      (fat16_rootdir_start), hl
 
         ret
 
+.halt:  jr      .halt
+
 .sdcard_load_error:     asciiz  "Error loading bootsector from SDCard."
+.sdcard_bps_not_512:    asciiz  "FS error: bytes per sector should be 512."
 
 ; 
 ; Load a sector into SDCard exchange area
@@ -43,20 +117,5 @@ fat16_load_sector:
         out     (I_SD_ACTION), a
         in      a, (I_SD_STATUS)
         ret
-
-;---------------------------------------
-; VARIABLES
-;---------------------------------------
-
-        struct fat16
-sectors_per_cluster     dw      0
-reserved_sectors        db      0
-fat_region              dw      0
-sectors_per_fat         dw      0
-number_of_fats          db      0
-root_entries            dw      0
-rootdir_start           dw      0
-        endstruct
-
 
 ; vim: ts=8:sts=8:sw=8:expandtab
