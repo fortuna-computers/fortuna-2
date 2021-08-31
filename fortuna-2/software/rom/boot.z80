@@ -222,6 +222,13 @@ copy_cluster:
         out     (I_SD_B3), a
         out     (I_SD_ACTION), a
 
+        in      a, (I_SD_STATUS)        ; check if the SD Card access was ok
+        cp      0
+        jp      z, .continue
+        ld      hl, msg_sd_error
+        call    print_error
+
+.continue:
         call    copy_block              ; copy block
 
         inc     hl                      ; increment BL (block number)
@@ -279,7 +286,7 @@ find_kernel_cluster:
         cp      0
         jr      nz, .continue
         ld      hl, msg_not_found
-        jr      print_error
+        call    print_error
 .continue:
 
         call    is_kernel_bin   ; A = 1 if KERNEL.BIN
@@ -351,7 +358,8 @@ is_kernel_bin:
 ;---------------------------------------
 
 msg_loading:    asciiz  " Loading KERNEL.BIN "
-msg_not_found:  asciiz  " KERNEL.BIN not found"
+msg_not_found:  asciiz  " file not found!"
+msg_sd_error:   asciiz  " SDCard error!"
 
 ;---------------------------------------
 ; VARIABLES

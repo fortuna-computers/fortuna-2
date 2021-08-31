@@ -20,6 +20,8 @@ public:
     void read_block(uint32_t block, uint8_t data[512]) const;
     
     size_t disk_size() const { return file_size_; }
+    
+    bool fail_requests = false;
 
 private:
     void create_image(size_t i);

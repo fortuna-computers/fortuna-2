@@ -13,7 +13,7 @@ public:
     void set_image_file(ImageFile& image_file);
 
 private:
-    ImageFile const* image_file_ = nullptr;
+    ImageFile* image_file_ = nullptr;
     
     void draw_storage_table() const;
     void go_to_block_number(ssize_t block);

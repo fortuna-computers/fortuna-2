@@ -75,6 +75,9 @@ void ImageFile::add_file(std::string const& filename, Binary const& binary)
 
 void ImageFile::write_block_to_image(uint32_t block, uint8_t const* data)
 {
+    if (fail_requests)
+        return;
+    
     if (block < file_size_ / 512) {
         file_.seekp(block * 512);
         file_.write((const char*) data, 512);
@@ -84,6 +87,9 @@ void ImageFile::write_block_to_image(uint32_t block, uint8_t const* data)
 
 void ImageFile::read_block_from_image(uint32_t block, uint8_t* data)
 {
+    if (fail_requests)
+        return;
+    
     if (block < file_size_ / 512) {
         file_.seekp(block * 512);
         file_.read((char*) data, 512);
@@ -92,6 +98,9 @@ void ImageFile::read_block_from_image(uint32_t block, uint8_t* data)
 
 void ImageFile::read_block(uint32_t block, uint8_t data[512]) const
 {
+    if (fail_requests)
+        return;
+    
     if (block < file_size_ / 512) {
         file_.seekp(block * 512);
         file_.read((char*) data, 512);

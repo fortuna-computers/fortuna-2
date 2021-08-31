@@ -5,7 +5,7 @@
 
 void StorageWindow::draw()
 {
-    float h = 630;
+    float h = 647;
     ImGui::SetNextWindowSize(ImVec2(590, h));
     if (ImGui::Begin("Storage", &visible_, ImGuiWindowFlags_NoResize)) {
         uint32_t block = block_number_;
@@ -40,6 +40,8 @@ void StorageWindow::draw()
             load_data();
         
         draw_storage_table();
+    
+        ImGui::Checkbox("Fail requests", &image_file_->fail_requests);
     }
     ImGui::End();
 }

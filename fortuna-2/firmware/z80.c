@@ -14,6 +14,7 @@ extern uint16_t   last_pressed_key;
 
 volatile int      next_interrupt = -1;
 volatile uint8_t  sdcard_block[4] = { 0 };
+volatile bool     sdcard_ok = true;
 
 void z80_init()
 {
@@ -92,16 +93,16 @@ static void sd_read_to_ram()
     printf_P(PSTR("Reading block %02X from SDCard to RAM.\n"), block);
 #endif
     z80_release_bus();
-    bool ok = sdcard_read_page(block);
+    sdcard_ok = sdcard_read_page(block);
 #ifdef DEBUG
     for (int i = 0; i < 512; ++i)
         printf_P(PSTR("%02X"), buffer[i]);
     putchar('\n');
 #endif
-    bool ram_ok = ram_write_buffer();
+    bool ram_ok = ram_write_buffer(); (void) ram_ok;
     z80_request_bus();
 #ifdef DEBUG
-    if (ok && ram_ok)
+    if (sdcard_ok && ram_ok)
         printf_P(PSTR("Reading done.\n"));
     else if (!ram_ok)
         printf_P(PSTR("Error writing to RAM.\n"));
@@ -126,10 +127,10 @@ static void sd_write_from_ram()
         printf_P(PSTR("%02X"), buffer[i]);
     putchar('\n');
 #endif
-    bool ok = sdcard_write_page(block);
+    sdcard_ok = sdcard_write_page(block);
     z80_request_bus();
 #ifdef DEBUG
-    if (ok) 
+    if (sdcard_ok) 
         printf_P(PSTR("Writing done.\n"));
     else
         printf_P(PSTR("Writing failed.\n"));
@@ -174,6 +175,9 @@ static void z80_in(uint8_t port)
         case I_TERMINAL:
             data = last_pressed_key;
             last_pressed_key = 0;
+            break;
+        case I_SD_STATUS:
+            data = sdcard_ok ? 0 : 1;
             break;
         default:
             return;

@@ -11,6 +11,7 @@ enum IORQ {
     I_SD_B2         = 0x4,
     I_SD_B3         = 0x5,
     I_SD_ACTION     = 0x6,  // 0 = read, 1 = write
+    I_SD_STATUS     = 0x7,  // 0 = ok, 1 = error
 };
 
 static Emulator* emulator;
@@ -78,10 +79,13 @@ void OutZ80(word Port,byte Value)
 byte InZ80(word Port)
 {
     switch (Port & 0xff) {
-        case I_TERMINAL:
-            auto key = emulator->last_keypress();
-            emulator->keypress(0);
-            return key;
+        case I_TERMINAL: {
+                auto key = emulator->last_keypress();
+                emulator->keypress(0);
+                return key;
+            }
+        case I_SD_STATUS:
+            return emulator->sdcard_status();
     }
     return 0;
 }
@@ -257,4 +261,9 @@ void Emulator::sdcard_read()
                      | ((uint32_t) sdcard_register[3]) << 24;
     if (image_file_)
         image_file_->read_block_from_image(block, ram_);
+}
+
+bool Emulator::sdcard_status() const
+{
+    return image_file_->fail_requests ? 1 : 0;
 }

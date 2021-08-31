@@ -11,6 +11,7 @@ typedef enum {
     I_SD_B2         = 0x4,
     I_SD_B3         = 0x5,
     I_SD_ACTION     = 0x6,  // 0 = read, 1 = write
+    I_SD_STATUS     = 0x7,  // 0 = ok, 1 = error
 } IORQ;
 
 #define KEYBOARD_DEVICE 0x0   // when a keyboard interrupt happens, this will be put on the data bus

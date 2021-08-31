@@ -72,6 +72,7 @@ public:
     
     void     sdcard_write() const;
     void     sdcard_read();
+    bool     sdcard_status() const;
     
     uint8_t sdcard_register[4] = { 0 };
     bool    running_on_rom = true;
