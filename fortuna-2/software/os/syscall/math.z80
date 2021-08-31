@@ -1,0 +1,10 @@
+;
+; Multiply two values
+;  A: first value (small one)
+;  B: second value (large one)
+;  result = HL
+
+math_multiply:
+        ret
+
+; vim: ts=8:sts=8:sw=8:expandtab
