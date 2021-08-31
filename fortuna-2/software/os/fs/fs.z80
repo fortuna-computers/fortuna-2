@@ -1,0 +1,11 @@
+        include fs/fat16.z80
+
+        ;
+        ; Initialize file system - read config information about the partition
+        ;
+
+fs_initialize:
+        call    fat16_initialize
+        ret
+
+; vim: ts=8:sts=8:sw=8:expandtab
