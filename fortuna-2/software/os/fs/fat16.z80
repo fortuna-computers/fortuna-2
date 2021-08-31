@@ -14,7 +14,10 @@ fat16_initialize:
         SYS     _PRINT
 .halt:  jr      .halt
 
+        ; fill out the variables
+
 .load_ok:
+        
 
         ret
 
@@ -40,5 +43,20 @@ fat16_load_sector:
         out     (I_SD_ACTION), a
         in      a, (I_SD_STATUS)
         ret
+
+;---------------------------------------
+; VARIABLES
+;---------------------------------------
+
+        struct fat16
+sectors_per_cluster     dw      0
+reserved_sectors        db      0
+fat_region              dw      0
+sectors_per_fat         dw      0
+number_of_fats          db      0
+root_entries            dw      0
+rootdir_start           dw      0
+        endstruct
+
 
 ; vim: ts=8:sts=8:sw=8:expandtab
