@@ -51,7 +51,7 @@ private:
     std::optional<ImageFile> image_file;
     
     void open_windows_from_last_time();
-    void load_project(std::string const& project_name);
+    bool load_project(std::string const& project_name);
 };
 
 #endif

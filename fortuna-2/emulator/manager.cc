@@ -23,8 +23,8 @@ Manager::Manager()
     symbol_select_window_.set_code_window(&code_window_);
     
     load_project_window_.on_start_executing([this](std::string const& filename) {
-        load_project(filename);
-        open_windows_from_last_time();
+        if (load_project(filename))
+            open_windows_from_last_time();
     });
     load_project_window_.set_visible(true);
     
@@ -70,7 +70,7 @@ void Manager::run(std::optional<std::string> const& project_to_load)
     }
 }
 
-void Manager::load_project(std::string const& project_name)
+bool Manager::load_project(std::string const& project_name)
 {
     CompilationResult result = Compiler().compile_from_project_file(project_name);
     std::cout << result.message;
@@ -79,6 +79,7 @@ void Manager::load_project(std::string const& project_name)
     
     if (result.error.has_value()) {
         message_box_.set_message(MessageBox::Error, result.error.value());
+        return false;
     } else {
         // initialize emulator
         auto& rom = result.binaries.at(result.project_file.rom).data;
@@ -97,6 +98,7 @@ void Manager::load_project(std::string const& project_name)
             storage_window_.set_image_file(*image_file);
         
         last_project_loaded_ = project_name;
+        return true;
     }
 }
 
