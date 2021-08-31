@@ -1,0 +1,41 @@
+; Procedure to create a new system call:
+;   1. Create the subroutine
+;   2. Add jump to .syscall_vector_start (this file)
+;   3. Add call number to fortuna2.inc
+
+        include syscall/process.z80
+        include syscall/terminal.z80
+
+;
+; copy the system call vector to 0x200
+;
+
+syscall_install_vector:
+        ld      hl, .syscall_vector_start
+        ld      de, SYSCALL_VECTOR
+        ld      b, 0
+        
+.next
+        ld      a, (hl)         ; copy byte
+        ld      (de), a
+        
+        inc     b               ; increment pointers
+        inc     de
+        inc     hl
+
+        ld      a, b            ; are we at the end yet?
+        cp      .syscall_vector_end - .syscall_vector_start
+
+        jp      nz, .next
+
+        ret
+    
+.syscall_vector_start:
+
+        jp      terminal_print          ; 0
+        jp      process_exit            ; 1
+
+.syscall_vector_end:
+
+
+; vim: ts=8:sts=8:sw=8:expandtab
