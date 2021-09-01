@@ -35,7 +35,6 @@ syscall_install_vector:
 
         jp      terminal_print          ; 0
         jp      process_exit            ; 1
-        jp      math_multiply           ; 2
 
 .syscall_vector_end:
 

@@ -13,7 +13,6 @@ SD_READ  = 0
 SYSCALL_VECTOR  = 0x200
 _PRINT          = 0
 _EXIT           = 1
-_MULTIPLY       = 2
 
         macro SYS
         call    SYSCALL_VECTOR + (\0 * 3)

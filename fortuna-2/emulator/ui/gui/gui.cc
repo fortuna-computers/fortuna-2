@@ -1,6 +1,7 @@
 #include "gui.hh"
 
 #include <stdexcept>
+#include <thread>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -89,6 +90,8 @@ void GUI::step()
     glfwSwapBuffers(window_);
     
     glfwPollEvents();
+    
+    std::this_thread::sleep_for(std::chrono::milliseconds(16));
 }
 
 void GUI::force_end_frame()

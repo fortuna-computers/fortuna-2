@@ -1,10 +1,17 @@
 ;
 ; Multiply two values
-;  A: first value (small one)
-;  B: second value (large one)
+;  A:  first value (small one)
+;  DE: second value (large one)
 ;  result = HL
 
 math_multiply:
+        ld      b, a
+        ld      hl, 0
+
+.next:
+        add     hl, de
+        djnz    .next
+        
         ret
 
 ; vim: ts=8:sts=8:sw=8:expandtab

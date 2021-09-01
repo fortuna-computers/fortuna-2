@@ -16,7 +16,7 @@ OPERATING_SYSTEM_STACK = 0x0
 ;---------------------------------------
 
         include fortuna2.inc
-        include fs/fs.z80
+        include fs/fat16.z80
         include syscall/syscall.z80
         include shell.z80
 
@@ -42,7 +42,7 @@ os_start:
 
         ; initialize file system
 
-        call    fs_initialize
+        call    fat16_initialize
 
         ; print welcome message
 

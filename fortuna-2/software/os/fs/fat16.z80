@@ -12,15 +12,15 @@ FAT16_SECTORS_PER_FAT     = 0x16
 ; VARIABLES
 ;---------------------------------------
 
-fat16_sectors_per_cluster     dw      0
-fat16_reserved_sectors        db      0
+fat16_sectors_per_cluster     db      0
+fat16_reserved_sectors        dw      0
 fat16_number_of_fats          db      0
 fat16_sectors_per_fat         dw      0
 fat16_root_entries            dw      0
 fat16_rootdir_start           dw      0
 
 ;---------------------------------------
-; SUBROUTINES
+; INITIALIZATION
 ;---------------------------------------
 
 ;
@@ -68,11 +68,11 @@ fat16_initialize:
         ; fill out the variables
         ;
 
-        ld      hl, (FAT16_SECTORS_PER_CLUSTER)
-        ld      (fat16_sectors_per_cluster), hl
+        ld      a, (FAT16_SECTORS_PER_CLUSTER)
+        ld      (fat16_sectors_per_cluster), a
         
-        ld      a, (FAT16_RESERVED_SECTORS)
-        ld      (fat16_reserved_sectors), a
+        ld      hl, (FAT16_RESERVED_SECTORS)
+        ld      (fat16_reserved_sectors), hl
 
         ld      a, (FAT16_NUMBER_OF_FATS)
         ld      (fat16_number_of_fats), a
@@ -81,14 +81,14 @@ fat16_initialize:
         ld      (fat16_sectors_per_fat), hl
 
         ; RootDirectory = FATRegion + (NumberOfFATs * SectorsPerFAT)
-        ; ld      hl, (fat16_sectors_per_fat)      ; NumberOfFats * SectorsPerFat
-        ; ld      b, a
-        ; ld      a, (fat16_number_of_fats)
-        ; SYS     _MULTIPLY
-        ; push    hl                              ; FatRegion + result
-        ; pop     bc
-        ; ld      hl, (fat16_reserved_sectors)
-        ; ld      (fat16_rootdir_start), hl
+        ld      de, (fat16_sectors_per_fat)     ; NumberOfFats * SectorsPerFat
+        ld      a, (fat16_number_of_fats)
+        call    math_multiply
+        ld      b, h                            ; FatRegion + result
+        ld      c, l
+        ld      hl, (fat16_reserved_sectors)
+        add     hl, bc
+        ld      (fat16_rootdir_start), hl
 
         ret
 
@@ -96,6 +96,10 @@ fat16_initialize:
 
 .sdcard_load_error:     asciiz  "Error loading bootsector from SDCard."
 .sdcard_bps_not_512:    asciiz  "FS error: bytes per sector should be 512."
+
+;---------------------------------------
+; DIRECT SECTOR ACCESS
+;---------------------------------------
 
 ; 
 ; Load a sector into SDCard exchange area
