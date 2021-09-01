@@ -137,6 +137,14 @@ static void sd_write_from_ram()
 #endif
 }
 
+static void print_char(uint8_t chr)
+{
+    switch (chr) {
+        case 8:  printf_P(PSTR("\b \b")); break;
+        default: putchar(chr);
+    }
+}
+
 static void z80_out(uint8_t port)
 {
     uint8_t data = get_data();
@@ -145,7 +153,7 @@ static void z80_out(uint8_t port)
 #endif
     switch (port) {
         case I_TERMINAL:
-            putchar(data);
+            print_char(data);
             break;
         case I_SD_B0:
             sdcard_block[0] = data;

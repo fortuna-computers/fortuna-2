@@ -73,7 +73,6 @@ int main()
 #endif
 }
 
-
 ISR(INT1_vect)   // interrupt: execute on IORQ
 {
     TCCR1B = 0;                // stop Z80 cycles
@@ -93,6 +92,8 @@ ISR(USART_RXC_vect)   // interrupt: execute on keypress
 {
     last_pressed_key = serial_recv();
     if (last_pressed_key == 10)
-      last_pressed_key = 13;
+        last_pressed_key = 13;
+    if (last_pressed_key == 127)
+        last_pressed_key = 8;
     z80_interrupt(KEYBOARD_DEVICE);
 }
