@@ -93,7 +93,13 @@ shell_read_line:
         jr      .next_key                       ; continue
 .skip_backspace
 
-        ; TODO - deal with string too large
+        ; is the string too large?
+
+        ld      a, b
+        cp      255
+        jr      z, .next_key
+
+        ; print char
 
         ld      a, (shell_last_keypress)        ; print key
         out     (I_TERMINAL), a
@@ -103,7 +109,10 @@ shell_read_line:
         inc     b
 
         jr      .next_key
+
 .enter_pressed:
+        ld      a, ENTER
+        out     (I_TERMINAL), a
         ret
 
 ;
