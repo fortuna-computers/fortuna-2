@@ -44,7 +44,7 @@ void SymbolSelectWindow::draw()
                     
                     auto it = code_model_->debug().location.find(location);
                     if (it != code_model_->debug().location.end())
-                        ImGui::Text("%s:%d", it->second.filename.c_str(), it->second.line);
+                        ImGui::Text("%s:%zu", it->second.filename.c_str(), it->second.line);
                 }
             }
             ImGui::EndTable();
