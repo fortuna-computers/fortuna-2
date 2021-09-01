@@ -16,6 +16,16 @@ void Terminal::add_char(uint16_t c)
         else
             ++cursor_y_;
         cursor_x_ = 0;
+    
+    } else if (c == Backspace) {
+        if (cursor_x_ == 0 && cursor_y_ > 0) {
+            --cursor_y_;
+            cursor_x_ = columns_ - 1;
+        } else {
+            --cursor_x_;
+        }
+        text_.at(cursor_y_).at(cursor_x_) = ' ';
+        
     } else {
         text_.at(cursor_y_).at(cursor_x_) = (char) c;
         ++cursor_x_;

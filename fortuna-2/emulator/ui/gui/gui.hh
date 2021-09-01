@@ -36,6 +36,8 @@ private:
     ImGuiIO* io_;
     
     static constexpr float background_color[] = { 0.45f, 0.55f, 0.60f };
+    
+    void check_for_keypress();
 };
 
 #endif

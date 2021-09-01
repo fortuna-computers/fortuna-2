@@ -81,7 +81,7 @@ byte InZ80(word Port)
     switch (Port & 0xff) {
         case I_TERMINAL: {
                 auto key = emulator->last_keypress();
-                emulator->keypress(0);
+                emulator->keypress(0);  // clear last keypress
                 return key;
             }
         case I_SD_STATUS:

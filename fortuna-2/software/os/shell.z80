@@ -1,3 +1,6 @@
+ENTER     = 13
+BACKSPACE = 8
+
 ;---------------------------------------
 ; SUBROUTINES
 ;---------------------------------------
@@ -8,11 +11,17 @@
 
 shell_print_prompt:
 
-        ld      hl, .prompt
+        ld      hl, .prompt1
+        SYS     _PRINT
+        ld      hl, current_dir_str
+        SYS     _PRINT
+        ld      hl, .prompt2
         SYS     _PRINT
         ret
-.prompt:
-        asciiz  "[SD0]/> "
+.prompt1:
+        asciiz  "[SD0]"
+.prompt2:
+        asciiz  "> "
 
 ;
 ; Install shell interrupt handler on interrupt vector
@@ -43,14 +52,58 @@ shell_execute:
 
 shell_read_line:
 
-        call    shell_install_interrupt_handler
+        ; clear line
+
+        ld      a, 0
+        ld      hl, shell_cmd_line
+        ld      b, 255
+.next_byte:
+        ld      (hl), a
+        inc     hl
+        djnz    .next_byte
+
+        ; prepare
+
+        call    shell_install_interrupt_handler ; install interrupt handler
+
+        ; read from keyboard
+
+        ld      hl, shell_cmd_line              ; HL = current cursor
+        ld      b, 0                            ; B = number of characters
 .next_key:
-        halt                            ; wait for keypress
-        ld      a, (shell_last_keypress)
-        cp      13
-        jr      z, .done                ; exit if ENTER
+        halt                                    ; wait for keypress
+
+        ; ENTER was pressed?
+
+        ld      a, (shell_last_keypress)        ; exit if ENTER
+        cp      ENTER
+        jr      z, .enter_pressed
+
+        ; BACKSPACE was pressed?
+
+        cp      BACKSPACE                       ; BACKSPACE was pressed
+        jr      nz, .skip_backspace
+        ld      a, b                            ; if #cmdline == 0, skip
+        cp      0
+        jr      z, .next_key
+        dec     hl                              ; rollback one key
+        dec     b
+        ld      a, BACKSPACE
+        out     (I_TERMINAL), a
+        jr      .next_key                       ; continue
+.skip_backspace
+
+        ; TODO - deal with string too large
+
+        ld      a, (shell_last_keypress)        ; print key
+        out     (I_TERMINAL), a
+
+        ld      (hl), a                         ; increment cursor
+        inc     hl
+        inc     b
+
         jr      .next_key
-.done:
+.enter_pressed:
         ret
 
 ;
@@ -61,7 +114,7 @@ shell_interrupt_handler:
 
         di
         in      a, (I_TERMINAL)
-        out     (I_TERMINAL), a
+        ld      (shell_last_keypress), a
         ei
         reti
 
@@ -70,5 +123,6 @@ shell_interrupt_handler:
 ;---------------------------------------
 
 shell_last_keypress:    db      0
+shell_cmd_line:         fill    255
 
 ; vim: ts=8:sts=8:sw=8:expandtab

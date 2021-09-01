@@ -90,6 +90,7 @@ void GUI::step()
     glfwSwapBuffers(window_);
     
     glfwPollEvents();
+    check_for_keypress();
     
     std::this_thread::sleep_for(std::chrono::milliseconds(16));
 }
@@ -112,4 +113,20 @@ std::optional<unsigned int> GUI::last_keypress() const
         return {};
     
     return io().InputQueueCharacters[0];  // TODO - are we losing characters?
+}
+
+void GUI::check_for_keypress()
+{
+    struct {
+        int key_glfw;
+        int key_emulator;
+    } keys[] = {
+            { GLFW_KEY_ENTER, 13 },
+            { GLFW_KEY_KP_ENTER, 13 },
+            { GLFW_KEY_BACKSPACE, 8 },
+    };
+    
+    for (auto const& key: keys)
+        if (ImGui::IsKeyPressed(key.key_glfw))
+            io().AddInputCharacter(key.key_emulator);
 }
