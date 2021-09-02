@@ -3,7 +3,6 @@
 ;
 ; The memory map for the operating system is this:
 
-APPLICATION_AREA       = 0x300
 OPERATING_SYSTEM_CODE  = 0x6000
 INTERRUPT_VECTOR       = 0x7E00
 OPERATING_SYSTEM_STACK = 0x0

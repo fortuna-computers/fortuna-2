@@ -18,4 +18,6 @@ _EXIT           = 1
         call    SYSCALL_VECTOR + (\0 * 3)
         endm
 
+APPLICATION_AREA = 0x300
+
 ; vim: ts=8:sts=8:sw=8:expandtab:syntax=z80

@@ -2,6 +2,8 @@ sources:
   - source: rom/boot.z80
   - source: os/os.z80
     add_to_image: KERNEL.BIN
+  - source: hello/hello.z80
+    add_to_image: HELLO.APP
 
 rom: rom/boot.z80
 

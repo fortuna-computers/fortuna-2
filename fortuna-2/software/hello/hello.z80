@@ -1,0 +1,14 @@
+        include "fortuna2.inc"
+
+        org     APPLICATION_AREA
+
+        ld      hl, .hello_world
+        SYS     _PRINT
+
+        ld      a, 0
+        SYS     _EXIT
+
+.hello_world:
+        asciiz  "Hello world!", 13
+
+; vim: ts=8:sts=8:sw=8:expandtab:syntax=z80
