@@ -1,0 +1,21 @@
+;---------------------------------------
+; Convert character to uppercase
+;---------------------------------------
+;  A - input character
+;  returns A: uppercase character
+
+char_to_upper:
+        cp      'a' - 1         ; if >= 'a'
+        jr      nc, .greater1
+        ret
+
+.greater1:
+        cp      'z' + 1         ; if <= 'z'
+        jr      nc, .greater2
+        sub     32              ; convert to uppercase
+        ret
+
+.greater2
+        ret
+
+; vim: ts=8:sts=8:sw=8:expandtab

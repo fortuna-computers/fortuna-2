@@ -36,6 +36,8 @@ shell_install_interrupt_handler:
 
 shell_execute:
 
+        ; TODO - trim line
+
         call    .line_is_empty                  ; check if line is empty
         cp      0
         jr      nz, .continue1
@@ -48,9 +50,8 @@ shell_execute:
         cp      0
         jr      z, .continue2
         
-        ld      hl, .not_found
-        SYS     _PRINT
-        ret
+        call    .print_not_found
+
 .continue2:
 
         ; TODO - check max file size
@@ -61,20 +62,55 @@ shell_execute:
         call    process_execute
         ret                                     ; END OF PROCEDURE
 
-        ; check if line is empty
+        ;
+        ; check if line is empty (A=0 yes, other value no)
+        ;
 
 .line_is_empty:
-        ; TODO
+        ld      a, (shell_cmd_line)
         ret
 
+        ;
         ; create command line (use `shell_cmd_line`)
+        ;
 
 .create_command_line:
-        ; TODO
+        ld      hl, shell_cmd_line
+.next1:
+        ld      a, (hl)                         ; if EOS, add extension and exit
+        cp      0
+        jr      z, .add_extension
+        
+        call    char_to_upper                   ; convert to uppercase
+        ld      (hl), a
+        
+        inc     hl
+        jr      .next1
+
+.add_extension:
+        ld      (hl), '.'
+        inc     hl
+        ld      (hl), 'A'
+        inc     hl
+        ld      (hl), 'P'
+        inc     hl
+        ld      (hl), 'P'
+        inc     hl
+        ld      (hl), 0
+
         ret
 
-.not_found:
-        asciiz  "Command not found.", 13
+.print_not_found
+        ld      hl, .not_found1                 ; file not found, print message and exit
+        SYS     _PRINT
+        ld      hl, shell_cmd_line
+        SYS     _PRINT
+        ld      hl, .not_found2
+        SYS     _PRINT
+        ret
+
+.not_found1:    asciiz  "Command "
+.not_found2:    asciiz  " not found.", 13
 
 ;---------------------------------------
 ; Read a line from the user
@@ -117,6 +153,7 @@ shell_read_line:
         cp      0
         jr      z, .next_key
         dec     hl                              ; rollback one key
+        ld      (hl), 0
         dec     b
         ld      a, BACKSPACE
         out     (I_TERMINAL), a

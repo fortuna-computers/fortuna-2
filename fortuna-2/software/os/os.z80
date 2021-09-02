@@ -14,10 +14,12 @@ OPERATING_SYSTEM_STACK = 0x0
 ; IMPORTS
 ;---------------------------------------
 
-        include fortuna2.inc
-        include fs/fat16.z80
-        include syscall/syscall.z80
-        include shell.z80
+        include "fortuna2.inc"
+        include "fs/fat16.z80"
+        include "syscall/syscall.z80"
+        include "shell.z80"
+        include "util/math.z80"
+        include "util/string.z80"
 
 ;---------------------------------------
 ; INITIALIZATION

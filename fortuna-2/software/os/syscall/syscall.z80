@@ -3,7 +3,6 @@
 ;   2. Add jump to .syscall_vector_start (this file)
 ;   3. Add call number to fortuna2.inc
 
-        include syscall/math.z80
         include syscall/process.z80
         include syscall/terminal.z80
 

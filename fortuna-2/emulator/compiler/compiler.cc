@@ -49,7 +49,7 @@ std::string Compiler::execute_compiler(std::string const& path, std::string cons
 {
     char buffer[1024];
     
-    std::string commandline = "cd " + path + " && " + compiler_full_path() + " -chklabels -L listing.txt -Fbin -autoexp -o rom.bin " + filename + " 2>&1";
+    std::string commandline = "cd " + path + " && " + compiler_full_path() + " -chklabels -L listing.txt -Llo -nosym -x -Fbin -o rom.bin " + filename + " 2>&1";
     
     FILE* pipe = popen(commandline.c_str(), "r");
     if (!pipe)
