@@ -1,0 +1,83 @@
+;---------------------------------------
+; Execute shell command
+;---------------------------------------
+
+shell_execute:
+
+        ; TODO - trim line
+
+        call    .line_is_empty                  ; check if line is empty
+        cp      0
+        jr      nz, .continue1
+        ret
+.continue1:
+
+        call    .create_command_line            ; find file
+        ld      hl, shell_cmd_line
+        call    fat16_open_file_cur_dir
+        cp      0
+        jr      z, .continue2
+        
+        call    .print_not_found
+
+.continue2:
+
+        ; TODO - check max file size
+
+        ld      a, b
+        ld      de, APPLICATION_AREA            ; load and execute file
+        call    fat16_load_full_file
+        call    process_execute
+        ret                                     ; END OF PROCEDURE
+
+        ;
+        ; check if line is empty (A=0 yes, other value no)
+        ;
+
+.line_is_empty:
+        ld      a, (shell_cmd_line)
+        ret
+
+        ;
+        ; create command line (use `shell_cmd_line`)
+        ;
+
+.create_command_line:
+        ld      hl, shell_cmd_line
+.next1:
+        ld      a, (hl)                         ; if EOS, add extension and exit
+        cp      0
+        jr      z, .add_extension
+        
+        call    char_to_upper                   ; convert to uppercase
+        ld      (hl), a
+        
+        inc     hl
+        jr      .next1
+
+.add_extension:
+        ld      (hl), '.'
+        inc     hl
+        ld      (hl), 'A'
+        inc     hl
+        ld      (hl), 'P'
+        inc     hl
+        ld      (hl), 'P'
+        inc     hl
+        ld      (hl), 0
+
+        ret
+
+.print_not_found
+        ld      hl, .not_found1                 ; file not found, print message and exit
+        SYS     _PRINT
+        ld      hl, shell_cmd_line
+        SYS     _PRINT
+        ld      hl, .not_found2
+        SYS     _PRINT
+        ret
+
+.not_found1:    asciiz  "Command "
+.not_found2:    asciiz  " not found.", 13
+
+; vim: ts=8:sts=8:sw=8:expandtab

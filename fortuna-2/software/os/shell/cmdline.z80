@@ -1,0 +1,105 @@
+ENTER     = 13
+BACKSPACE = 8
+
+;---------------------------------------
+; Install shell interrupt handler on interrupt vector
+;---------------------------------------
+
+shell_install_interrupt_handler:
+
+        ld      hl, shell_interrupt_handler
+        ld      (INTERRUPT_VECTOR + 0), hl
+        ei
+        ret
+
+;---------------------------------------
+; Read a line from the user
+;---------------------------------------
+
+shell_read_line:
+
+        ; clear line
+
+        ld      a, 0
+        ld      hl, shell_cmd_line
+        ld      b, 255
+.next_byte:
+        ld      (hl), a
+        inc     hl
+        djnz    .next_byte
+
+        ; prepare
+
+        call    shell_install_interrupt_handler ; install interrupt handler
+
+        ; read from keyboard
+
+        ld      hl, shell_cmd_line              ; HL = current cursor
+        ld      b, 0                            ; B = number of characters
+.next_key:
+        halt                                    ; wait for keypress
+
+        ; ENTER was pressed?
+
+        ld      a, (shell_last_keypress)        ; exit if ENTER
+        cp      ENTER
+        jr      z, .enter_pressed
+
+        ; BACKSPACE was pressed?
+
+        cp      BACKSPACE                       ; BACKSPACE was pressed
+        jr      nz, .skip_backspace
+        ld      a, b                            ; if #cmdline == 0, skip
+        cp      0
+        jr      z, .next_key
+        dec     hl                              ; rollback one key
+        ld      (hl), 0
+        dec     b
+        ld      a, BACKSPACE
+        out     (I_TERMINAL), a
+        jr      .next_key                       ; continue
+.skip_backspace
+
+        ; is the string too large?
+
+        ld      a, b
+        cp      255
+        jr      z, .next_key
+
+        ; print char
+
+        ld      a, (shell_last_keypress)        ; print key
+        out     (I_TERMINAL), a
+
+        ld      (hl), a                         ; increment cursor
+        inc     hl
+        inc     b
+
+        jr      .next_key
+
+.enter_pressed:
+        ld      a, ENTER
+        out     (I_TERMINAL), a
+        ret
+
+;---------------------------------------
+; Keyboard interrupt handler for the shell
+;---------------------------------------
+
+shell_interrupt_handler:
+
+        di
+        in      a, (I_TERMINAL)
+        ld      (shell_last_keypress), a
+        ei
+        reti
+
+;---------------------------------------
+; VARIABLES
+;---------------------------------------
+
+shell_last_keypress:    db      0
+shell_cmd_line:         fill    255
+
+
+; vim: ts=8:sts=8:sw=8:expandtab

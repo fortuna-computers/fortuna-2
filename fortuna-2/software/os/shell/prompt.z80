@@ -1,0 +1,20 @@
+;---------------------------------------
+; Print prompt ([sd]/> )
+;---------------------------------------
+
+shell_print_prompt:
+
+        ld      hl, .prompt1
+        SYS     _PRINT
+        ld      hl, current_dir_str
+        SYS     _PRINT
+        ld      hl, .prompt2
+        SYS     _PRINT
+        ret
+.prompt1:
+        asciiz  "[SD0]"
+.prompt2:
+        asciiz  "> "
+
+
+; vim: ts=8:sts=8:sw=8:expandtab
