@@ -1,10 +1,20 @@
-;
+;---------------------------------------
+; Run an application loaded in memory
+;---------------------------------------
+
+process_execute:
+        ; TODO
+        ret
+
+;---------------------------------------
 ; Exit current process and return to OS
+;---------------------------------------
 ;   - A: process status
-;
 
 process_exit:
         ; TODO - restore state
         jp      main_loop
+
+
 
 ; vim: ts=8:sts=8:sw=8:expandtab

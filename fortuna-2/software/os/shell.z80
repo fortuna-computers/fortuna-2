@@ -2,12 +2,8 @@ ENTER     = 13
 BACKSPACE = 8
 
 ;---------------------------------------
-; SUBROUTINES
-;---------------------------------------
-
-;
 ; Print prompt ([sd]/> )
-;
+;---------------------------------------
 
 shell_print_prompt:
 
@@ -23,9 +19,9 @@ shell_print_prompt:
 .prompt2:
         asciiz  "> "
 
-;
+;---------------------------------------
 ; Install shell interrupt handler on interrupt vector
-;
+;---------------------------------------
 
 shell_install_interrupt_handler:
 
@@ -34,21 +30,55 @@ shell_install_interrupt_handler:
         ei
         ret
 
-;
+;---------------------------------------
 ; Execute shell command
-;
+;---------------------------------------
 
 shell_execute:
+
+        call    .line_is_empty                  ; check if line is empty
+        cp      0
+        jr      nz, .continue1
+        ret
+.continue1:
+
+        call    .create_command_line            ; find file
+        ld      hl, shell_cmd_line
+        call    fat16_open_file_cur_dir
+        cp      0
+        jr      z, .continue2
         
         ld      hl, .not_found
         SYS     _PRINT
         ret
+.continue2:
+
+        ; TODO - check max file size
+
+        ld      a, b
+        ld      de, APPLICATION_AREA            ; load and execute file
+        call    fat16_load_full_file
+        call    process_execute
+        ret                                     ; END OF PROCEDURE
+
+        ; check if line is empty
+
+.line_is_empty:
+        ; TODO
+        ret
+
+        ; create command line (use `shell_cmd_line`)
+
+.create_command_line:
+        ; TODO
+        ret
+
 .not_found:
         asciiz  "Command not found.", 13
 
-;
+;---------------------------------------
 ; Read a line from the user
-;
+;---------------------------------------
 
 shell_read_line:
 
@@ -115,9 +145,9 @@ shell_read_line:
         out     (I_TERMINAL), a
         ret
 
-;
+;---------------------------------------
 ; Keyboard interrupt handler for the shell
-;
+;---------------------------------------
 
 shell_interrupt_handler:
 

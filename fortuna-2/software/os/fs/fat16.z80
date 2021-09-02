@@ -166,4 +166,26 @@ fat16_load_sector:
         in      a, (I_SD_STATUS)
         ret
 
+;---------------------------------------
+; OPEN FILE IN CURRENT DIRECTORY
+;---------------------------------------
+;  - HL: filename
+;  - returns A: 0 = ok, other values = error
+;            B: file pointer
+
+fat16_open_file_cur_dir:
+        ; TODO
+        ld      a, 1
+        ret
+
+;---------------------------------------
+; LOAD FULL FILE IN MEMORY
+;---------------------------------------
+;  - A: file pointer
+;  - DE: memory location
+
+fat16_load_full_file:
+        ; TODO
+        ret
+
 ; vim: ts=8:sts=8:sw=8:expandtab
