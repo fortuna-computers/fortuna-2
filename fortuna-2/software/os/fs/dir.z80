@@ -1,0 +1,12 @@
+;---------------------------------------
+; FIND FILE CLUSTER IN CURRENT DIRECTORY
+;---------------------------------------
+;  - HL: filename
+;  - returns A: 0 = ok, other values = error
+;            HL: cluster number
+
+fat16_find_file_cluster_cur_dir:
+        ; TODO
+        ld      a, 1
+        ret
+

@@ -1,0 +1,27 @@
+;---------------------------------------
+; DIRECT SECTOR ACCESS
+;---------------------------------------
+
+; 
+; Load a sector into SDCard exchange area
+;  - HL: LSB sector number
+;  - DE: MSB sector number
+;  - returns A -> 0 = success
+;
+
+fat16_load_sector:
+        ld      a, l
+        out     (I_SD_B0), a
+        ld      a, h
+        out     (I_SD_B1), a
+        ld      a, e
+        out     (I_SD_B2), a
+        ld      a, e
+        out     (I_SD_B3), a
+        ld      a, SD_READ
+        out     (I_SD_ACTION), a
+        in      a, (I_SD_STATUS)
+        ret
+
+
+; vim: ts=8:sts=8:sw=8:expandtab

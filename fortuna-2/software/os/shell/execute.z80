@@ -14,7 +14,7 @@ shell_execute:
 
         call    .create_command_line            ; find file
         ld      hl, shell_cmd_line
-        call    fat16_open_file_cur_dir
+        call    fat16_find_file_cluster_cur_dir
         cp      0
         jr      z, .continue2
         
@@ -68,7 +68,11 @@ shell_execute:
 
         ret
 
-.print_not_found
+        ;
+        ; Print FILE NOT FOUND message
+        ;
+
+.print_not_found:
         ld      hl, .not_found1                 ; file not found, print message and exit
         SYS     _PRINT
         ld      hl, shell_cmd_line
@@ -79,5 +83,6 @@ shell_execute:
 
 .not_found1:    asciiz  "Command "
 .not_found2:    asciiz  " not found.", 13
+
 
 ; vim: ts=8:sts=8:sw=8:expandtab

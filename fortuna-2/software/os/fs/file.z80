@@ -1,0 +1,11 @@
+;---------------------------------------
+; LOAD FULL FILE IN MEMORY
+;---------------------------------------
+;  - A: file pointer
+;  - DE: memory location
+
+fat16_load_full_file:
+        ; TODO
+        ret
+
+; vim: ts=8:sts=8:sw=8:expandtab
