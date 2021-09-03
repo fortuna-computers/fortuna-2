@@ -6,7 +6,17 @@
 ;            HL: cluster number
 
 fat16_find_file_cluster_cur_dir:
+
+        ; for each sector in cluster
+        ;   for each file
+        ;     compare_name
+        ;     if match, return cluster
+
+        ld      b, 0            ; B = sector
+        ld      hl, (current_dir_cluster)
+
         ; TODO
         ld      a, 1
         ret
 
+; vim: ts=8:sts=8:sw=8:expandtab

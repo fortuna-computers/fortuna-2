@@ -1,17 +1,58 @@
-;
 ; Multiply two values
 ;  A:  first value (small one)
 ;  DE: second value (large one)
-;  result = HL
+;  result = AHL
 
-math_multiply:
-        ld      b, a
-        ld      hl, 0
+mult_a_de:
+	ld	c, 0
+	ld	h, c
+	ld	l, h
 
-.next:
-        add     hl, de
-        djnz    .next
-        
-        ret
+	add	a, a		; optimised 1st iteration
+	jr	nc, $+4
+	ld	h,d
+	ld	l,e
+
+	ld b, 7
+.loop:
+	add	hl, hl
+	rla
+	jr	nc, $+4
+	add	hl, de
+	adc	a, c            ; yes this is actually adc a, 0 but since c is free we set it to zero and so we can save 1 byte and up to 3 T-states per iteration
+
+	djnz	.loop
+
+	ret
+
+; Multiply two values
+;  BC: first value
+;  DE: second value
+;  result = DEHL
+
+mult_de_bc:
+	ld	hl, 0
+
+	sla	e		; optimised 1st iteration
+	rl	d
+	jr	nc, $+4
+	ld	h, b
+	ld	l, c
+
+	ld	a, 15
+.loop:
+	add	hl, hl
+	rl	e
+	rl	d
+	jr	nc, $+6
+	add	hl, bc
+	jr	nc, $+3
+	inc	de
+
+	dec	a
+	jr	nz, .loop
+
+	ret
+ 
 
 ; vim: ts=8:sts=8:sw=8:expandtab

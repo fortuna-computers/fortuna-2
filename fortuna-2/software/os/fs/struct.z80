@@ -65,7 +65,7 @@ fat16_initialize:
         ; RootDirectory = FATRegion + (NumberOfFATs * SectorsPerFAT)
         ld      de, (fat16_sectors_per_fat)     ; NumberOfFats * SectorsPerFat
         ld      a, (fat16_number_of_fats)
-        call    math_multiply
+        call    mult_a_de
         ld      b, h                            ; FatRegion + result
         ld      c, l
         ld      hl, (fat16_reserved_sectors)
