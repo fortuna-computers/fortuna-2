@@ -44,6 +44,8 @@ fat16_initialize:
         call    .confirm_512
         ld      hl, (FAT16_NUMBER_OF_ROOT_ENTRIES)
         ld      de, .sdcard_nre_not_512
+        ld      hl, 512
+        ld      (fat16_rootentries_count), hl
         call    .confirm_512
 
         ;
@@ -80,7 +82,11 @@ fat16_initialize:
 
         ; setup current dir
         ld      hl, (fat16_rootdir_start)
-        ld      (current_dir_sector_ptr), hl
+        ld      a, (fat16_sectors_per_cluster)
+        ld      c, a
+        call    div_hl_c
+        ld      (current_dir_cluster_ptr), hl
+
         ld      hl, (fat16_fat_start)
         ld      (current_dir_fat_ptr), hl
 
@@ -138,7 +144,7 @@ fat16_fat_start = fat16_reserved_sectors
 
 current_dir_str                 db      '/'
                                 fill    254
-current_dir_sector_ptr          dw      0
+current_dir_cluster_ptr         dw      0
 current_dir_fat_ptr             dw      0
 
 

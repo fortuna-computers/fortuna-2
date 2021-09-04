@@ -72,7 +72,7 @@ GUI::~GUI()
 // MAIN LOOP
 //
 
-void GUI::step()
+void GUI::step(bool emulator_stopped)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
@@ -92,7 +92,8 @@ void GUI::step()
     glfwPollEvents();
     check_for_keypress();
     
-    std::this_thread::sleep_for(std::chrono::milliseconds(16));
+    if (emulator_stopped)
+        std::this_thread::sleep_for(std::chrono::milliseconds(32));
 }
 
 void GUI::force_end_frame()

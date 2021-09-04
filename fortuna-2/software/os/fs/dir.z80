@@ -7,16 +7,36 @@
 
 fat16_find_file_cluster_cur_dir:
 
-        ; for each sector in cluster
-        ;   for each file
-        ;     compare_name
-        ;     if match, return cluster
+        ; for sector = 0 to sectors_per_cluster
+        ;   load_sector(current_cluster, sector)
+        ;   for entry = 0 to root_entries_count
+        ;     file_ptr = (entry * 32)
+        ;     compare_filename(file_ptr)
+        ;     if match
+        ;       return cluster
+        ; return error
 
-        ld      b, 0            ; B = sector
-        ld      hl, (current_dir_cluster)
+        ld      b, 0                            ; B = sectors_per_cluster
+
+.loop1:
+        ;
+        ; load sector
+        ;
+
+        ld      hl, (current_dir_cluster_ptr)   ; HL = current_cluster
+        ld      a, b
+        push    bc
+        call    fat16_load_cluster
+        pop     bc
 
         ; TODO
-        ld      a, 1
+
+        inc     b                               ; go to next sector
+        ld      a, (fat16_sectors_per_cluster)
+        cp      b
+        jr      nz, .loop1
+
+        ld      a, 1                            ; not found, return error
         ret
 
 ; vim: ts=8:sts=8:sw=8:expandtab

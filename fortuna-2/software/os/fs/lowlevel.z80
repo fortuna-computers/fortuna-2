@@ -32,22 +32,25 @@ fat16_load_sector:
 ;  - returns A -> 0 = success
 
 fat16_load_cluster:
-        ld      b, 0                    ; BC = A, DE = HL
-	ld	c, a
+        ld      b, a                    ; DEHL = cluster * sectors_per_cluster
+        ld      a, (fat16_sectors_per_cluster)
         ld      d, h
-	ld	e, l
-	call	mult_de_bc	        ; DEHL = cluster * sector
-        ld      a, l                    ; access SDCard
-        out     (I_SD_B0), a
-        ld      a, h
-        out     (I_SD_B1), a
-        ld      a, e
-        out     (I_SD_B2), a
-        ld      a, d
-        out     (I_SD_B3), a
-        ld      a, SD_READ
-        out     (I_SD_ACTION), a
-        in      a, (I_SD_STATUS)
+        ld      e, l
+        push    bc
+        call    mult_a_de
+        pop     bc
+        ld      d, 0
+        ld      e, a
+        ld      a, b
+
+        ld      b, 0                    ; + sector number
+        ld      c, a
+        add     hl, bc
+        jp      nc, .not_carry
+        inc     de
+.not_carry:
+
+        call    fat16_load_sector       ; load sector
         ret
 
 ; vim: ts=8:sts=8:sw=8:expandtab

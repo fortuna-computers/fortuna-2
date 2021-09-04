@@ -20,7 +20,7 @@ public:
     void add_window(Window& window) { children_.push_back(&window); }
     
     bool continue_executing() const;
-    void step();
+    void step(bool emulator_stopped);
 
     void force_end_frame();
     

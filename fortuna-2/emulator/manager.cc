@@ -47,14 +47,14 @@ Manager::~Manager()
 void Manager::run(std::optional<std::string> const& project_to_load)
 {
     try {
-        gui_.step();
+        gui_.step(true);
         if (project_to_load) {
             load_project_window_.load_project(*project_to_load);
             open_windows_from_last_time();
         }
         
         while (gui_.continue_executing()) {
-            gui_.step();
+            gui_.step(emulator_.stopped());
             emulator_.execute();
             if (!emulator_.stopped()) {
                 auto key = gui_.last_keypress();
