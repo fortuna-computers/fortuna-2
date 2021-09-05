@@ -1,3 +1,13 @@
+; Multiply HL by 32
+
+mult_hl_32:
+        add     hl, hl
+        add     hl, hl
+        add     hl, hl
+        add     hl, hl
+        add     hl, hl
+        ret
+
 ; Multiply two values
 ;  A:  first value (small one)
 ;  DE: second value (large one)

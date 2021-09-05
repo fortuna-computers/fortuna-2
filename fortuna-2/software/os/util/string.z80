@@ -18,4 +18,29 @@ char_to_upper:
 .greater2
         ret
 
+
+;-------------------------------------------
+; MEMCMP - compare N characters in a string
+;-------------------------------------------
+;  HL - string 1
+;  DE - string 2
+;  A - number of bytes
+;  returns A: 0 - equal
+
+memcmp:
+        ld      b, a
+.next:
+        ld      a, (de)         ; A = char from string 1
+        ld      c, (hl)         ; C = char from string 2
+        cp      c               ; A == C
+        jr      z, .continue    ; if equal, continue
+        ld      a, 1            ; if not, return 1
+        ret
+.continue:
+        inc     de
+        inc     hl
+        djnz    .next
+        ld      a, 0            ; all chars were checked, return 0
+        ret
+
 ; vim: ts=8:sts=8:sw=8:expandtab

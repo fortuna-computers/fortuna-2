@@ -41,24 +41,26 @@ shell_execute:
         ;
         ; create command line (use `shell_cmd_line`)
         ;
-
 .create_command_line:
         ld      hl, shell_cmd_line
-.next1:
-        ld      a, (hl)                         ; if EOS, add extension and exit
+        ld      b, 8
+.next_1:
+        ld      a, (hl)                         ; if char == 0, add space
         cp      0
-        jr      z, .add_extension
-        
+        jr      z, .add_space
+
         call    char_to_upper                   ; convert to uppercase
         ld      (hl), a
-        
-        inc     hl
-        jr      .next1
+        jr      .next_2
 
-.add_extension:
-        ld      (hl), '.'
+.add_space:
+        ld      (hl), ' '                       ; add space
+
+.next_2:
         inc     hl
-        ld      (hl), 'A'
+        djnz    .next_1
+
+        ld      (hl), 'A'                       ; add extension
         inc     hl
         ld      (hl), 'P'
         inc     hl
@@ -73,16 +75,11 @@ shell_execute:
         ;
 
 .print_not_found:
-        ld      hl, .not_found1                 ; file not found, print message and exit
-        SYS     _PRINT
-        ld      hl, shell_cmd_line
-        SYS     _PRINT
-        ld      hl, .not_found2
+        ld      hl, .not_found                  ; file not found, print message and exit
         SYS     _PRINT
         ret
 
-.not_found1:    asciiz  "Command "
-.not_found2:    asciiz  " not found.", 13
+.not_found:     asciiz  "Command not found.", 13
 
 
 ; vim: ts=8:sts=8:sw=8:expandtab

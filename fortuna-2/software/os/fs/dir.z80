@@ -16,9 +16,10 @@ fat16_find_file_cluster_cur_dir:
         ;       return cluster
         ; return error
 
+        ld      (.filename), hl                 ; store filename
         ld      b, 0                            ; B = sectors_per_cluster
 
-.loop1:
+.loop_sector:
         ;
         ; load sector
         ;
@@ -26,17 +27,84 @@ fat16_find_file_cluster_cur_dir:
         ld      hl, (current_dir_cluster_ptr)   ; HL = current_cluster
         ld      a, b
         push    bc
-        call    fat16_load_cluster
+        call    fat16_load_cluster              ; load sector (cluster HL, sector B)
         pop     bc
+        
+        ld      de, 0                           ; DE = entry
 
-        ; TODO
+        ld      a, b                            ; save B = current_sector
+        ld      (.current_sector), a
 
+.loop_entry:
+        
+        ld      h, d                            ; HL = entry number
+        ld      l, e
+        push    de
+        ld      de, (.filename)                 ; DE = filename
+        call    .match_filename_and_return_cluster
+        pop     de
+
+        cp      0                               ; if matched,
+        jr      nz, .next_entry
+        ret                                     ;   return A=0 and HL=cluster
+
+.next_entry:
+        ld      hl, (current_dir_cluster_ptr)   ; HL = restore HL
+
+        inc     de                              ; if entry = 0x200, break
+        ld      a, d
+        cp      2
+        jr      z, .next_sector
+
+        jr      .loop_entry                     ; go to next entry
+
+.next_sector:
+        ld      a, (.current_sector)            ; restore B = current_sector
+        ld      b, a
         inc     b                               ; go to next sector
         ld      a, (fat16_sectors_per_cluster)
         cp      b
-        jr      nz, .loop1
+        jr      nz, .loop_sector
 
         ld      a, 1                            ; not found, return error
         ret
+
+.current_sector: db     0
+.filename:       dw     0
+
+;
+; If file in filesystem entry is equal to filename passed as argument,
+; loads the cluster number of that file.
+;   HL: number of file entry
+;   DE: pointer to filename to compare
+;   returns: A - 0 if filenames match
+;            HL - the file cluster number
+;
+
+.match_filename_and_return_cluster:
+        call    mult_hl_32                      ; HL = entry number * 32 (entry size)
+
+        ld      a, 11                           ; A = number of chars
+        push    hl
+        push    de
+        call    memcmp                          ; compare filenames (HL vs DE)
+        pop     de
+        pop     hl
+        cp      0                               
+
+        jr      z, .found                       ; if not equal, return 1
+        ld      a, 1
+        ret
+
+.found:                                         ; if equal
+        ld      de, 0x1a                        ; HL += cluster location (0x1A)
+        add     hl, de
+        ld      e, (hl)                         ; load cluster number (16-bit)
+        inc     hl
+        ld      d, (hl)
+        ld      h, d
+        ld      l, e
+        ld      a, 0
+        ret                                     ;   and return 0
 
 ; vim: ts=8:sts=8:sw=8:expandtab
