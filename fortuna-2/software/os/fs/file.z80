@@ -1,10 +1,23 @@
 ;---------------------------------------
 ; LOAD FULL FILE IN MEMORY
 ;---------------------------------------
-;  - A: file pointer
-;  - DE: memory location
+;  Max 46 sectors.
+;  - HL: cluster number
+;  - DE: memory location destination
 
 fat16_load_full_file:
+        
+        ; do
+        ;   sector_counter = 0
+        ;   for sector in cluster:
+        ;     ++sector_counter
+        ;     if sector_counter > 45 then error
+        ;     load_sector(DE)
+        ;     DE += 512
+        ;     if sector_in_fat >= 0xf8 then return
+        ;   next
+        ; end
+
         ; TODO
         ret
 
