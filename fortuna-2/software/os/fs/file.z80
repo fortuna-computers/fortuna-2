@@ -10,15 +10,37 @@ fat16_load_full_file:
         ; do
         ;   sector_counter = 0
         ;   for sector in cluster:
-        ;     ++sector_counter
         ;     if sector_counter > 45 then error
         ;     load_sector(DE)
         ;     DE += 512
-        ;     if sector_in_fat >= 0xf8 then return
         ;   next
+        ;   if sector_in_fat >= 0xf8 then return
+        ;   go to next cluster
+        ;   restart
         ; end
 
-        ; TODO
-        ret
+        ld      b, 0                    ; B = current_sector
+
+.next_sector:
+        ; TODO - if sector_counter > 45 then error
+
+        ; TODO - load sector
+
+        inc     b                       ; current_sector += 1
+        inc     d                       ; DE += 512
+        inc     d
+
+        ld      a, (fat16_sectors_per_cluster) ; go to next sector
+        cp      b
+        jr      z, .sectors_done
+
+        jr      .next_sector
+
+.sectors_done:
+        ; TODO - if sector_in_fat >= 0xf8 then return
+
+        ; TODO - go to next cluster
+
+        jr      fat16_load_full_file
 
 ; vim: ts=8:sts=8:sw=8:expandtab
