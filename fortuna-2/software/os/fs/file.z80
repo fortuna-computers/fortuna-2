@@ -27,8 +27,9 @@ fat16_load_full_file:
 
 .next_sector:
         
-        ld      a, 45                   ; max sector count that fits in memory
-        jr      c, .file_too_large
+        ld      a, c                    ; max sector count that fits in memory
+        cp      45  
+        jr      nc, .file_too_large
 
         push    bc
         push    hl
@@ -57,10 +58,16 @@ fat16_load_full_file:
         jr      .next_sector
 
 .sectors_done:
-        ; TODO - if sector_in_fat >= 0xf8 then return
+        call    fat16_load_cluster_from_fat     ; load FAT cluster 
+        inc     hl                              ; if sector_in_fat >= 0xf8 then return success
+        call    hl_is_zero
+        cp      0
+        jr      nz, .next_cluster
+        ld      a, 0                            ; return success
+        ret
 
-        ; TODO - go to next cluster in FAT
-
+.next_cluster
+        dec     hl                              ; go to next cluster in HL
         jr      fat16_load_full_file
 
 .file_too_large:

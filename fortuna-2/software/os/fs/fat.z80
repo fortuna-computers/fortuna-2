@@ -1,0 +1,18 @@
+;--------------------------------
+; LOAD CLUSTER INFO FROM FAT
+;--------------------------------
+; HL = cluster number
+; return HL = cluster value
+
+fat16_load_cluster_from_fat:
+        ; TODO - find right sector to load from FAT
+
+        ; TODO - load sector
+
+        ; TODO - find cluster info and put on HL
+
+        ld      hl, 0xffff  ; TODO - replace this
+
+        ret
+
+; vim: ts=8:sts=8:sw=8:expandtab

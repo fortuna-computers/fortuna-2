@@ -19,6 +19,7 @@ shell_execute:
         jr      z, .continue2
         
         call    .print_not_found
+        ret
 
 .continue2:
 

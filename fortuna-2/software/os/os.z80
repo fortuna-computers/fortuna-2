@@ -16,9 +16,10 @@ OPERATING_SYSTEM_STACK = 0x0
 
         include "fortuna2.inc"
         include "fs/dir.z80"
+        include "fs/fat.z80"
+        include "fs/file.z80"
         include "fs/lowlevel.z80"
         include "fs/struct.z80"
-        include "fs/file.z80"
         include "syscall/syscall.z80"
         include "shell/prompt.z80"
         include "shell/cmdline.z80"

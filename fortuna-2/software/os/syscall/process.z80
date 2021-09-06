@@ -3,6 +3,7 @@
 ;---------------------------------------
 
 process_execute:
+        jp      APPLICATION_AREA
         ; TODO
         ret
 

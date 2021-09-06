@@ -85,6 +85,23 @@ div_hl_c:
 
         ret
 
+; Return A=0 if HL is zero
+
+hl_is_zero:
+        ld      a, h
+        cp      0
+        jr      nz, .false
+        ld      a, l
+        cp      0
+        jr      nz, .false
+
+        ld      a, 0
+        ret
+
+.false:
+        ld      a, 1
+        ret
+
 ; code gotten from
 ;  - https://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Division
 ;  - https://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Multiplication

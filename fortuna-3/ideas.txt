@@ -39,7 +39,7 @@
     - Includes MMU, DMA controller, UART, timers
   - Clock divider logic
   - Wait on IRQ (?)
-  - SRAM Memory 512k (IS62WV5128EALL-55TLI)
+  - SRAM Memory 512k (IS62WV5128EALL-55TLI) (or memory board)
   - Controller board for SDCard, without timers or serial
     - Add wall clock
   - VGA32
