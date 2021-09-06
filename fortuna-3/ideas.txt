@@ -1,7 +1,7 @@
 - Hardware
   - Multiple boards
     - Motherboard
-      - Z80 (alternative: Z180)
+      - Z80
       - Clock generator
       - Clock selector (0.5, 1, 2, 4 Mhz)
       - Clock divider
@@ -21,6 +21,7 @@
         - Serial input/output
           - Interrupt
         - Timers
+        - Wall clock
         - VGA32 (?)
     - SDCard
       - Microcontroller for the SDCard
@@ -32,6 +33,17 @@
         - Z80 DMA?
     - Sound (?)
       - AY-3-8910
+
+- Hardware (alternative design)
+  - Microprocessor: Z80180 or Z80182 (alternative HD64180R1, same as Z180)
+    - Includes MMU, DMA controller, UART, timers
+  - Clock divider logic
+  - Wait on IRQ (?)
+  - SRAM Memory 512k (IS62WV5128EALL-55TLI)
+  - Controller board for SDCard, without timers or serial
+    - Add wall clock
+  - VGA32
+  - Maybe sound (?) - AY-3-8910
 
 - Buy a PS/2 keyboard
 

@@ -79,6 +79,10 @@ fat16_initialize:
         ld      bc, 32                          ; (RootEntriesCount * 32 / BytesPerSector)
         add     hl, bc
         ld      (fat16_dataregion_start), hl
+        ld      a, (fat16_sectors_per_cluster)  ; DataRegionCluster = DataRegionStart / SectorsPerCluster
+        ld      c, a
+        call    div_hl_c
+        ld      (fat16_dataregion_cluster), hl
 
         ; setup current dir
         ld      hl, (fat16_rootdir_start)
@@ -140,6 +144,7 @@ fat16_sectors_per_fat           dw      0
 fat16_rootdir_start             dw      0
 fat16_rootentries_count         dw      0
 fat16_dataregion_start          dw      0
+fat16_dataregion_cluster        dw      0
 fat16_fat_start = fat16_reserved_sectors
 
 current_dir_str                 db      '/'

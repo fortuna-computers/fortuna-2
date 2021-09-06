@@ -53,4 +53,23 @@ fat16_load_cluster:
         call    fat16_load_sector       ; load sector
         ret
 
+;---------------------------------------
+; LOAD DATA CLUSTER IN EXCHANGE AREA
+;---------------------------------------
+
+; Load a cluster into SDCard exchange area, starting from data sector
+;  - HL: cluster number
+;  - A: sector number
+;  - returns A -> 0 = success
+
+fat16_load_data_cluster:
+        ld      b, h                            ; BC = cluster number
+        ld      c, l
+        ld      hl, (fat16_dataregion_cluster)  ; HL = dataregion cluster start
+        add     hl, bc
+        ld      bc, -2                          ; N - 2
+        add     hl, bc
+        call    fat16_load_cluster
+        ret
+
 ; vim: ts=8:sts=8:sw=8:expandtab

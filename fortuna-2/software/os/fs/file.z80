@@ -30,16 +30,19 @@ fat16_load_full_file:
         ld      a, 45                   ; max sector count that fits in memory
         jr      c, .file_too_large
 
-        ld      a, b                    ; load sector into exchange area...
-        call    fat16_load_cluster
-
-        push    bc                      ; ...and copy to memory
-        push    de
+        push    bc
         push    hl
-        ld      bc, 512
-        call    memcpy
-        pop     hl
+
+        push    de                      
+        ld      a, b                    ; load sector into exchange area...
+        call    fat16_load_data_cluster
         pop     de
+
+        ld      hl, 0
+        ld      bc, 512                 ; ...and copy to memory
+        call    memcpy
+
+        pop     hl
         pop     bc
 
         inc     b                       ; ++current_sector
