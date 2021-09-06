@@ -4,6 +4,7 @@
 ;  Max 46 sectors.
 ;  - HL: cluster number
 ;  - DE: memory location destination
+;  Return A: 0 = success
 
 fat16_load_full_file:
         
@@ -19,14 +20,30 @@ fat16_load_full_file:
         ;   restart
         ; end
 
+        ; TODO calculate correct position of cluster
+
         ld      b, 0                    ; B = current_sector
+        ld      c, 0                    ; C = sector total counter
 
 .next_sector:
-        ; TODO - if sector_counter > 45 then error
+        
+        ld      a, 45                   ; max sector count that fits in memory
+        jr      c, .file_too_large
 
-        ; TODO - load sector
+        ld      a, b                    ; load sector into exchange area...
+        call    fat16_load_cluster
 
-        inc     b                       ; current_sector += 1
+        push    bc                      ; ...and copy to memory
+        push    de
+        push    hl
+        ld      bc, 512
+        call    memcpy
+        pop     hl
+        pop     de
+        pop     bc
+
+        inc     b                       ; ++current_sector
+        inc     c                       ; ++sector_total_counter
         inc     d                       ; DE += 512
         inc     d
 
@@ -39,8 +56,18 @@ fat16_load_full_file:
 .sectors_done:
         ; TODO - if sector_in_fat >= 0xf8 then return
 
-        ; TODO - go to next cluster
+        ; TODO - go to next cluster in FAT
 
         jr      fat16_load_full_file
+
+.file_too_large:
+        ld      hl, .file_too_large_msg
+        SYS     _PRINT
+        ld      a, 1
+        ret
+
+.file_too_large_msg:
+        asciiz  "Executable too large.", 13
+
 
 ; vim: ts=8:sts=8:sw=8:expandtab

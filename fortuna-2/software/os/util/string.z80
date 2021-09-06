@@ -43,4 +43,25 @@ memcmp:
         ld      a, 0            ; all chars were checked, return 0
         ret
 
+;-------------------------------------------
+; MEMCPY - copy bytes from one location to the other
+;-------------------------------------------
+;  HL - origin
+;  DE - destination
+;  BC - n bytes
+
+memcpy:
+        ld      a, b
+        or      c
+        jr      nz, .skip
+        ret
+        
+.skip
+        ld      a, (hl)
+        ld      (de), a
+        inc     hl
+        inc     de
+        dec     bc
+        jr      memcpy
+
 ; vim: ts=8:sts=8:sw=8:expandtab
