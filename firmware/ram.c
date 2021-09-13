@@ -86,10 +86,11 @@ uint16_t ram_buffer_checksum()
     return (sum2 << 8) | sum1;
 }
 
-void ram_initialize_boot_sector(uint8_t* data, uint16_t size)
+void ram_initialize_boot_sector(PGM_VOID_P data, uint16_t size)
 {
-    for (size_t i = 0; i < 512; ++i)
-        buffer[i] = (i < size) ? data[i] : 0;
+    for (size_t i = 0; i < 512; ++i) {
+        buffer[i] = (i < size) ? pgm_read_byte(data + i) : 0;
+    }
     if (!ram_write_buffer()) {
         printf_P(PSTR("Memory error initializing boot sector.\n"));
         for (;;);

@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include <avr/pgmspace.h>
+
 extern uint8_t buffer[512];
 
 void ram_init();
@@ -16,6 +18,6 @@ void    ram_read_buffer();
 
 uint16_t ram_buffer_checksum();
 
-void    ram_initialize_boot_sector(uint8_t* data, uint16_t size);
+void    ram_initialize_boot_sector(PGM_VOID_P data, uint16_t size);
 
 #endif

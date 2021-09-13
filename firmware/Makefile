@@ -21,7 +21,11 @@ ${PROJECT}.elf: ${OBJECTS}
 	$(CC) -mmcu=${MCU} -o $@ $^ -Wl,--gc-sections
 	avr-size -C --mcu=${MCU} ${PROJECT}.elf	
 
-boot.c: z80/boot.rom
+boot.c: boot.tmp
+	echo "$$(tail -n +2 $^)" > $^
+	cat boot.template $^ > $@
+
+boot.tmp: z80/boot.rom
 	xxd -i $^ > $@
 
 z80/boot.rom: z80/boot.z80
@@ -31,7 +35,7 @@ test-connection:
 	sudo avrdude ${AVRDUDE_FLAGS}
 
 clean:
-	rm -f boot.c *.elf *.o *.hex z80/*.rom
+	rm -f boot.tmp boot.c *.elf *.o *.hex z80/*.rom
 
 upload: ${PROJECT}.hex
 	sudo avrdude ${AVRDUDE_FLAGS} -U flash:w:$<:i
