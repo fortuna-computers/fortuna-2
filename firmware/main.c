@@ -13,28 +13,39 @@
 #include "spi.h"
 #include "step.h"
 #include "tests.h"
+#include "fatfs/ff.h"
 
 static const Z80_Speed z80_speed = T_550KHZ;
 
 volatile uint16_t last_pressed_key = 0x0;
+FATFS fat_fs;
 
 int main()
 {
     _delay_ms(100);
 
-    // microcontroller initialization
     serial_init();
+
+    // microcontroller initialization
+
     io_init();
     z80_init();
     ram_init();
     spi_init();
+
+    printf_P(PSTR("\e[1;1H\e[2J"));
+
+    if (f_mount(&fat_fs, "", 0) != FR_OK) {
+        printf_P(PSTR("Could not mount SD Card.\n"));
+        for (;;);
+    }
 
 #ifdef RUN_TESTS
     run_tests();
 #endif
 
     // computer initialization
-    printf_P(PSTR("\e[1;1H\e[2JFortuna-2 initialized.\n"));
+    printf_P(PSTR("Fortuna-2 initialized.\n"));
 
     // initialize SD card
     bool ok = sdcard_initialize();
