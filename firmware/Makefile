@@ -6,7 +6,7 @@ MCU=atmega16
 F_CPU=16500000UL
 
 CC=avr-gcc
-CPPFLAGS=-std=c11 -Wall -Wextra -Os -DF_CPU=${F_CPU} -mmcu=${MCU} -ffunction-sections -fdata-sections -I../common
+CPPFLAGS=-std=c11 -Wall -Wextra -Os -DF_CPU=${F_CPU} -mmcu=${MCU} -ffunction-sections -fdata-sections -mcall-prologues -I../common
 # CPPFLAGS+=-DRUN_TESTS  # execute tests on initialization
 # CPPFLAGS+=-DDEBUG      # print debugging information during execution
 # CPPFLAGS+=-DSTEP       # wait for a keypress before each step
@@ -42,5 +42,12 @@ upload: ${PROJECT}.hex
 
 fuse:
 	sudo avrdude ${AVRDUDE_FLAGS} ${FUSES}
+
+size: ${PROJECT}.elf
+	avr-size -C --mcu=${MCU} ${PROJECT}.elf	
+
+talk:
+	@echo "To exit, type ~."
+	cu -l /dev/ttyAMA0 -s 38400
 
 # vim: set ts=8 sts=8 sw=8 noexpandtab:
