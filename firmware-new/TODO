@@ -1,0 +1,17 @@
+- Basic infra
+  - Plan I/O calls for FAT
+  - Get MCUCR
+  - Setup BAD vector
+  - Setup UART
+  - Add FatFS
+  - Plan memory buffer
+- RAM
+- Initial memory on EEPROM
+- SPI code
+- SD Card routines
+- FAT routines
+- Basic Z80
+- Z80 power / bus management
+- Z80 interrupts & I/O
+- Improve Z80 speed
+- Implement timers
