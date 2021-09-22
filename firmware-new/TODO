@@ -1,5 +1,5 @@
 - Basic infra
-  - Plan I/O calls for FAT
+  - Plan I/O calls for FAT (ok)
   - Get MCUCR
   - Setup BAD vector
   - Setup UART
