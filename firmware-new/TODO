@@ -1,8 +1,8 @@
 - Basic infra
   - Plan I/O calls for FAT (ok)
-  - Setup UART
-  - Get MCUCR
-  - Setup BAD vector
+  - Setup UART (ok)
+  - Get MCUCR (ok)
+  - Setup BAD vector (ok)
   - Add FatFS
   - Plan memory buffer
 - RAM

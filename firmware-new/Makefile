@@ -1,12 +1,13 @@
 PROJECT=fortuna-2
-OBJECTS=main.o
+OBJECTS=main.o uart.o
 AVRDUDE_FLAGS=-p atmega16 -C +./avrdude_gpio.conf -c pi_1 -V
 FUSES=-U lfuse:w:0xff:m -U hfuse:w:0xd9:m    # external crystal
 MCU=atmega16
 F_CPU=16500000UL
+BAUD=38400
 
 CC=avr-gcc
-CPPFLAGS=-std=c11 -Wall -Wextra -Os -DF_CPU=${F_CPU} -mmcu=${MCU} -ffunction-sections -fdata-sections -mcall-prologues -I../common
+CPPFLAGS=-std=c11 -Wall -Wextra -Os -DF_CPU=${F_CPU} -DBAUD=${BAUD} -mmcu=${MCU} -ffunction-sections -fdata-sections -mcall-prologues -I../common
 # CPPFLAGS+=-DRUN_TESTS  # execute tests on initialization
 # CPPFLAGS+=-DDEBUG      # print debugging information during execution
 # CPPFLAGS+=-DSTEP       # wait for a keypress before each step
@@ -25,7 +26,7 @@ test-connection:
 	sudo avrdude ${AVRDUDE_FLAGS}
 
 clean:
-	rm -f boot.tmp boot.c *.elf *.o *.hex z80/*.rom
+	rm -f boot.tmp boot.c *.elf *.o **/*.o *.hex z80/*.rom
 
 upload: ${PROJECT}.hex
 	sudo avrdude ${AVRDUDE_FLAGS} -U flash:w:$<:i
