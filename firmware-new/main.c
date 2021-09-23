@@ -1,12 +1,15 @@
-#include "uart.h"
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <avr/sfr_defs.h>
 #include <util/delay.h>
 
+#include "ram.h"
+#include "random.h"
+#include "uart.h"
+
 uint8_t buffer[512] = { 0 };
+int     seed;
 
 static void check_mcucsr();
 
@@ -16,8 +19,10 @@ int main()
     uart_init();
 
     check_mcucsr();
+    seed = rnd_seed();
+    ram_init();
 
-    uart_putchar('@');
+    uart_puthex(seed);
 
     for(;;);
 }

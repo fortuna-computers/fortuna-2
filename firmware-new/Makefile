@@ -1,5 +1,5 @@
 PROJECT=fortuna-2
-OBJECTS=main.o uart.o
+OBJECTS=main.o uart.o ram.o random.o
 AVRDUDE_FLAGS=-p atmega16 -C +./avrdude_gpio.conf -c pi_1 -V
 FUSES=-U lfuse:w:0xff:m -U hfuse:w:0xd9:m    # external crystal
 MCU=atmega16
