@@ -8,9 +8,6 @@ BAUD=38400
 
 CC=avr-gcc
 CPPFLAGS=-std=c11 -Wall -Wextra -Os -DF_CPU=${F_CPU} -DBAUD=${BAUD} -mmcu=${MCU} -ffunction-sections -fdata-sections -mcall-prologues -I../common
-# CPPFLAGS+=-DRUN_TESTS  # execute tests on initialization
-# CPPFLAGS+=-DDEBUG      # print debugging information during execution
-# CPPFLAGS+=-DSTEP       # wait for a keypress before each step
 
 all: ${PROJECT}.hex
 
@@ -25,9 +22,6 @@ ${PROJECT}.elf: ${OBJECTS}
 test-connection:
 	sudo avrdude ${AVRDUDE_FLAGS}
 
-clean:
-	rm -f boot.tmp boot.c *.elf *.o **/*.o *.hex z80/*.rom
-
 upload: ${PROJECT}.hex
 	sudo avrdude ${AVRDUDE_FLAGS} -U flash:w:$<:i
 
@@ -37,8 +31,14 @@ fuse:
 size: ${PROJECT}.elf
 	avr-size -C --mcu=${MCU} ${PROJECT}.elf	
 
+assembly: ${PROJECT}.elf
+assembly: CFLAGS += -save-temps
+
 talk:
 	@echo "To exit, type ~."
 	cu -l /dev/ttyAMA0 -s 38400
+
+clean:
+	rm -f *.elf *.o **/*.o *.hex z80/*.roma *.i *.s
 
 # vim: set ts=8 sts=8 sw=8 noexpandtab:

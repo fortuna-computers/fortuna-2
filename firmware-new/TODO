@@ -3,12 +3,14 @@
   - Setup UART (ok)
   - Get MCUCR (ok)
   - Setup BAD vector (ok)
-  - Add FatFS
+  - Generate assembly
   - Plan memory buffer
 - RAM
+  - Check RAM on initialization
 - Initial memory on EEPROM
 - SPI code
 - SD Card routines
+  - Check SDCard access on initialization
 - FAT routines
 - Basic Z80
 - Z80 power / bus management

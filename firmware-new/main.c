@@ -6,6 +6,8 @@
 #include <avr/sfr_defs.h>
 #include <util/delay.h>
 
+uint8_t buffer[512] = { 0 };
+
 static void check_mcucsr();
 
 int main()
