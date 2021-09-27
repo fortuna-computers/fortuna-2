@@ -21,6 +21,7 @@ void initialize_fortuna();
 int main()
 {
     initialize_fortuna();
+    
     post_run();
     
     uart_puthex(seed);
@@ -33,6 +34,7 @@ static void initialize_fortuna()
     // initialize serial
     _delay_ms(50);
     uart_init();
+    uart_putstr(PSTR("\033[2J\033[H"));  // clear screen
     
     // check last status
     check_mcucsr();
