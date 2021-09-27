@@ -36,7 +36,7 @@ static void ram_bus_takeover(bool for_writing)
     if (for_writing)
         DDRC = 0xff; // data
     
-    _delay_us(20);  // TODO - is this really needed?
+    _delay_ms(20);  // TODO - is this really needed?
 }
 
 static void ram_bus_release()
