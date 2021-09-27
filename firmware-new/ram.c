@@ -22,6 +22,7 @@ extern volatile uint8_t buffer[512];
 #define set_ADDR(n)   PORTA = n
 #define set_DATA(n)   PORTC = n
 #define get_DATA()    PINC
+#define WAIT()        _delay_ms(1)
 
 static void ram_bus_takeover(bool for_writing)
 {
@@ -68,10 +69,10 @@ void ram_write_buffer(uint16_t until)
         set_A8((addr >> 8) & 1);
         set_MREQ(0);
         set_WR(0);
-        _NOP(); _NOP();
+        WAIT();
         set_WR(1);
         set_MREQ(1);
-        _NOP(); _NOP();
+        WAIT();
     }
     
     ram_bus_release();
@@ -86,11 +87,11 @@ void ram_read_buffer(uint16_t until)
         set_A8((addr >> 8) & 1);
         set_MREQ(0);
         set_RD(0);
-        _NOP(); _NOP();
+        WAIT();
         buffer[addr] = get_DATA();
         set_RD(1);
         set_MREQ(1);
-        _NOP(); _NOP();
+        WAIT();
     }
     
     ram_bus_release();
