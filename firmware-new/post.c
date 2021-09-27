@@ -23,6 +23,7 @@ static void post_ram()
     uart_putstr(PSTR("* * *\r\n"));
     
     ram_write_buffer(32);
+    ram_write_buffer(32);
     
     for (uint8_t i = 0; i < 8; ++i)
         ram_dump(RAM_COUNT);
