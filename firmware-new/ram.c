@@ -19,8 +19,8 @@ extern volatile uint8_t buffer[512];
 #define clear_RD()    PORTD &= ~(1 << PD7)
 #define set_A8()      PORTB |= (1 << PB3)
 #define clear_A8()    PORTB &= ~(1 << PB3)
-#define set_ADDR(n)   PORTA = n
-#define set_DATA(n)   PORTC = n
+#define set_ADDR(n)   PORTA = (n)
+#define set_DATA(n)   PORTC = (n)
 #define get_DATA()    PINC
 #define WAIT()        _delay_ms(1)
 
@@ -33,10 +33,12 @@ static void ram_bus_takeover(bool for_writing)
     set_WR();
     set_RD();
     
-    if (for_writing)
+    if (for_writing) {
         DDRC = 0xff; // data
-    else
+    } else {
         DDRC = 0x0;
+        set_DATA(0);
+    }
     
     _delay_ms(20);  // TODO - is this really needed?
 }
@@ -66,29 +68,30 @@ void ram_write_buffer(uint16_t until)
     ram_bus_takeover(true);
     
     for (uint16_t addr = 0; addr < until; ++addr) {
-try_again:
-        set_DATA(buffer[addr]);
-        set_ADDR(addr & 0xff);
-        if (addr >= 0x100) set_A8(); else clear_A8();
-        clear_MREQ();
-        clear_WR();
-        WAIT();
-        set_WR();
-        set_MREQ();
-        WAIT();
-        
-        // verify  (TODO - remove this?)
-        DDRC = 0x0;
-        clear_MREQ();
-        clear_RD();
-        WAIT();
-        uint8_t data = get_DATA();
-        set_RD();
-        set_MREQ();
-        WAIT();
-        DDRC = 0xff;
-        if (data != buffer[addr])
-            goto try_again;
+        uint8_t data;
+        do {
+            // write data
+            set_DATA(buffer[addr]);
+            set_ADDR(addr & 0xff);
+            if (addr >= 0x100) set_A8(); else clear_A8();
+            clear_MREQ();
+            clear_WR();
+            WAIT();
+            set_WR();
+            set_MREQ();
+            WAIT();
+            
+            // verify  (TODO - remove this?)
+            DDRC = 0x0;
+            clear_MREQ();
+            clear_RD();
+            WAIT();
+            data = get_DATA();
+            set_RD();
+            set_MREQ();
+            WAIT();
+            DDRC = 0xff;
+        } while (data != buffer[addr]);
     }
     
     ram_bus_release();

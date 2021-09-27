@@ -21,8 +21,6 @@ int main()
     
     post_run();
     
-    uart_puthex(seed);
-
     for(;;);
 }
 
