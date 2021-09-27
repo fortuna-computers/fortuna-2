@@ -24,7 +24,7 @@ static void post_ram()
     
     ram_write_buffer(32);
     
-    for (uint8_t i = 0; i < 32; ++i)
+    for (uint8_t i = 0; i < 8; ++i)
         ram_dump(RAM_COUNT);
 }
 
