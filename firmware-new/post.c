@@ -14,6 +14,17 @@ extern volatile uint8_t buffer[512];
 
 static void post_ram()
 {
+    buffer[0] = seed = rnd_next(seed);
+    buffer[1] = seed = rnd_next(seed);
+    buffer[2] = seed = rnd_next(seed);
+    buffer[3] = seed = rnd_next(seed);
+    buffer[4] = seed = rnd_next(seed);
+    buffer[5] = seed = rnd_next(seed);
+    buffer[6] = seed = rnd_next(seed);
+    buffer[7] = seed = rnd_next(seed);
+    
+    ram_write_buffer(8);
+    
     ram_dump(RAM_COUNT); uart_putenter();
     ram_dump(RAM_COUNT); uart_putenter();
     ram_dump(RAM_COUNT); uart_putenter();
