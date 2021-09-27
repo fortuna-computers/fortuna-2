@@ -11,8 +11,8 @@
 
 extern volatile uint8_t buffer[512];
 
-#define set_MREQ(n)   PORTB |= (1 << PB2)
-#define clear_MREQ(n) PORTB &= ~(1 << PB2)
+#define set_MREQ(n)   PORTB |= (1 << PB3)
+#define clear_MREQ(n) PORTB &= ~(1 << PB3)
 #define set_WR(n)     PORTD |= (1 << PD6)
 #define clear_WR(n)   PORTD &= ~(1 << PD6)
 #define set_RD(n)     PORTD |= (1 << PD7)
@@ -22,12 +22,12 @@ extern volatile uint8_t buffer[512];
 #define set_ADDR(n)   PORTA = n
 #define set_DATA(n)   PORTC = n
 #define get_DATA()    PINC
-#define WAIT()        _delay_ms(10)
+#define WAIT()        _delay_ms(1)
 
 static void ram_bus_takeover(bool for_writing)
 {
     DDRA = 0xff;                      // address low
-    DDRB |= (1 << PB3) | (1 << PB2);  // A8 and MREQ
+    DDRB |= (1 << PB3) | (1 << PB3);  // A8 and MREQ
     DDRD |= (1 << PD6) | (1 << PD7);  // WR and RD
     set_MREQ(1);
     set_WR(1);
@@ -43,7 +43,7 @@ static void ram_bus_release()
 {
     DDRC = 0x0;                           // data
     DDRA = 0x0;                           // address low
-    DDRB &= ~((1 << PB3) | (1 << PB2));   // A8 and MREQ
+    DDRB &= ~((1 << PB3) | (1 << PB3));   // A8 and MREQ
     DDRD &= ~((1 << PD6) | (1 << PD7));   // WR and RD
     
     set_MREQ(0);
