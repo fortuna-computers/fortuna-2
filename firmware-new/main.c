@@ -13,7 +13,6 @@ volatile uint8_t buffer[512] = { 0 };
 volatile uint8_t seed;
 
 static void initialize_fortuna();
-static void run_post_tests();
 static void check_mcucsr();
 
 void initialize_fortuna();
