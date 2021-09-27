@@ -11,14 +11,14 @@
 
 extern volatile uint8_t buffer[512];
 
-#define set_MREQ(n)   PORTB |= (1 << PB3)
-#define clear_MREQ(n) PORTB &= ~(1 << PB3)
-#define set_WR(n)     PORTD |= (1 << PD6)
-#define clear_WR(n)   PORTD &= ~(1 << PD6)
-#define set_RD(n)     PORTD |= (1 << PD7)
-#define clear_RD(n)   PORTD &= ~(1 << PD7)
-#define set_A8(n)     PORTB |= (1 << PB3)
-#define clear_A8(n)   PORTB &= ~(1 << PB3)
+#define set_MREQ()    PORTB |= (1 << PB2)
+#define clear_MREQ()  PORTB &= ~(1 << PB2)
+#define set_WR()      PORTD |= (1 << PD6)
+#define clear_WR()    PORTD &= ~(1 << PD6)
+#define set_RD()      PORTD |= (1 << PD7)
+#define clear_RD()    PORTD &= ~(1 << PD7)
+#define set_A8()      PORTB |= (1 << PB3)
+#define clear_A8()    PORTB &= ~(1 << PB3)
 #define set_ADDR(n)   PORTA = n
 #define set_DATA(n)   PORTC = n
 #define get_DATA()    PINC
@@ -27,29 +27,29 @@ extern volatile uint8_t buffer[512];
 static void ram_bus_takeover(bool for_writing)
 {
     DDRA = 0xff;                      // address low
-    DDRB |= (1 << PB3) | (1 << PB3);  // A8 and MREQ
+    DDRB |= (1 << PB3) | (1 << PB2);  // A8 and MREQ
     DDRD |= (1 << PD6) | (1 << PD7);  // WR and RD
-    set_MREQ(1);
-    set_WR(1);
-    set_RD(1);
+    set_MREQ();
+    set_WR();
+    set_RD();
     
     if (for_writing)
         DDRC = 0xff; // data
     
-    _delay_us(20);
+    _delay_us(20);  // TODO - is this really needed?
 }
 
 static void ram_bus_release()
 {
     DDRC = 0x0;                           // data
     DDRA = 0x0;                           // address low
-    DDRB &= ~((1 << PB3) | (1 << PB3));   // A8 and MREQ
+    DDRB &= ~((1 << PB3) | (1 << PB2));   // A8 and MREQ
     DDRD &= ~((1 << PD6) | (1 << PD7));   // WR and RD
     
-    set_MREQ(0);
-    set_WR(0);
-    set_RD(0);
-    set_A8(0);
+    clear_MREQ();
+    clear_WR();
+    clear_RD();
+    clear_A8();
     set_ADDR(0);
     set_DATA(0);
 }
@@ -66,12 +66,12 @@ void ram_write_buffer(uint16_t until)
     for (uint16_t addr = 0; addr < until; ++addr) {
         set_DATA(buffer[addr]);
         set_ADDR(addr & 0xff);
-        set_A8((addr >> 8) & 1);
-        set_MREQ(0);
-        set_WR(0);
+        if ((addr >> 8)) set_A8(); else clear_A8();
+        clear_MREQ();
+        clear_WR();
         WAIT();
-        set_WR(1);
-        set_MREQ(1);
+        set_WR();
+        set_MREQ();
         WAIT();
     }
     
@@ -84,13 +84,13 @@ void ram_read_buffer(uint16_t until)
     
     for (uint16_t addr = 0; addr < until; ++addr) {
         set_ADDR(addr & 0xff);
-        set_A8((addr >> 8) & 1);
-        set_MREQ(0);
-        set_RD(0);
+        if ((addr >> 8)) set_A8(); else clear_A8();
+        clear_MREQ();
+        clear_RD();
         WAIT();
         buffer[addr] = get_DATA();
-        set_RD(1);
-        set_MREQ(1);
+        set_RD();
+        set_MREQ();
         WAIT();
     }
     
