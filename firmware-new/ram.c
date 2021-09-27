@@ -36,7 +36,7 @@ static void ram_bus_takeover(bool for_writing)
     if (for_writing)
         DDRC = 0xff; // data
     
-    _delay_us(20);  // TODO - is this really needed?
+    _delay_ms(20);  // TODO - is this really needed?
 }
 
 static void ram_bus_release()
@@ -63,7 +63,7 @@ void ram_write_buffer(uint16_t until)
 {
     ram_bus_takeover(true);
     
-    for (uint16_t addr = 1; addr < until; ++addr) {
+    for (uint16_t addr = 0; addr < until; ++addr) {
         set_DATA(buffer[addr]);
         set_ADDR(addr & 0xff);
         if (addr >= 0x100) set_A8(); else clear_A8();
@@ -82,7 +82,7 @@ void ram_read_buffer(uint16_t until)
 {
     ram_bus_takeover(false);
     
-    for (uint16_t addr = 1; addr < until; ++addr) {
+    for (uint16_t addr = 0; addr < until; ++addr) {
         set_ADDR(addr & 0xff);
         if (addr >= 0x100) set_A8(); else clear_A8();
         clear_MREQ();
@@ -101,7 +101,7 @@ void ram_dump(uint16_t until)
 {
     ram_read_buffer(until);
     
-    for (uint16_t i = 1; i < until; ++i)
+    for (uint16_t i = 0; i < until; ++i)
         uart_puthex(buffer[i]);
     uart_putenter();
 }
