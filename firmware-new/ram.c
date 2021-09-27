@@ -105,7 +105,7 @@ void ram_write_buffer(uint16_t until)
 
 void ram_read_buffer(uint16_t until)
 {
-    ram_bus_takeover(true);
+    ram_bus_takeover(false);
     
     for (uint16_t addr = 0; addr < until; ++addr) {
         set_ADDR(addr & 0xff);
