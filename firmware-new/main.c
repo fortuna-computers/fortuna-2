@@ -1,12 +1,12 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/pgmspace.h>
 #include <avr/sfr_defs.h>
 #include <util/delay.h>
 
 #include "ram.h"
 #include "random.h"
 #include "uart.h"
+#include "z80.h"
 
 uint8_t buffer[512] = { 0 };
 int     seed;
@@ -21,6 +21,7 @@ int main()
     check_mcucsr();
     seed = rnd_seed();
     ram_init();
+    z80_init();
 
     uart_puthex(seed);
 
