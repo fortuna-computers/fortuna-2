@@ -4,7 +4,7 @@
 
 #include <avr/io.h>
 
-extern uint8_t buffer[512];
+extern volatile uint8_t buffer[512];
 
 void ram_init()
 {
