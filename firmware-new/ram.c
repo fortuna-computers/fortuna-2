@@ -108,7 +108,7 @@ void ram_read_buffer(uint16_t until)
     ram_bus_takeover(false);
     
     for (uint16_t addr = 0; addr < until; ++addr) {
-        for (int j = 0; j < 2; ++j) {
+        for (int j = 0; j < 10; ++j) {
             PORTC = 0;
             set_ADDR(addr & 0xff);
             if (addr >= 0x100) set_A8(); else clear_A8();
