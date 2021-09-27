@@ -91,6 +91,9 @@ void ram_write_buffer(uint16_t until)
             set_MREQ();
             WAIT();
             DDRC = 0xff;
+    
+            uart_puthex(data);
+            
         } while (data != buffer[addr]);
     }
     
