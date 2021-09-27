@@ -93,6 +93,7 @@ void ram_write_buffer(uint16_t until)
             WAIT();
             DDRC = 0xff;
     
+            uart_putchar(':');
             uart_puthex(data);
             
         } while (data != buffer[addr]);
