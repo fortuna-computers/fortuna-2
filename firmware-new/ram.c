@@ -66,7 +66,7 @@ void ram_write_buffer(uint16_t until)
     for (uint16_t addr = 0; addr < until; ++addr) {
         set_DATA(buffer[addr]);
         set_ADDR(addr & 0xff);
-        if ((addr >> 8)) set_A8(); else clear_A8();
+        if (addr >= 0x100) set_A8(); else clear_A8();
         clear_MREQ();
         clear_WR();
         WAIT();
@@ -84,7 +84,7 @@ void ram_read_buffer(uint16_t until)
     
     for (uint16_t addr = 0; addr < until; ++addr) {
         set_ADDR(addr & 0xff);
-        if ((addr >> 8)) set_A8(); else clear_A8();
+        if (addr >= 0x100) set_A8(); else clear_A8();
         clear_MREQ();
         clear_RD();
         WAIT();

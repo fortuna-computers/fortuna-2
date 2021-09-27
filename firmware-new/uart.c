@@ -1,10 +1,13 @@
 #include "uart.h"
 
 #include <avr/io.h>
+#include <util/delay.h>
 #include <util/setbaud.h>
 
 void uart_init()
 {
+    _delay_ms(100);
+    
     // set speed
     UBRRH = UBRRH_VALUE;
     UBRRL = UBRRL_VALUE;
@@ -12,6 +15,8 @@ void uart_init()
     // set config
     UCSRC = (1<<URSEL) | (1<<UCSZ1) | (1<<UCSZ0);   // Async-mode 
     UCSRB = (1<<RXEN) | (1<<TXEN);     // Enable Receiver and Transmitter
+    
+    _delay_ms(100);
 }
 
 void uart_putchar(char c)

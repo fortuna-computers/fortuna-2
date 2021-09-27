@@ -29,7 +29,6 @@ int main()
 static void initialize_fortuna()
 {
     // initialize serial
-    _delay_ms(50);
     uart_init();
     uart_putstr(PSTR("\033[2J\033[H"));  // clear screen
     
