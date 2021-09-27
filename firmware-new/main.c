@@ -36,6 +36,8 @@ static void initialize_fortuna()
     // check last status
     check_mcucsr();
     seed = rnd_seed();
+    uart_puthex(seed);   // TODO - remove
+    uart_putenter();     // TODO - remove
     
     // initialize devices
     ram_init();
