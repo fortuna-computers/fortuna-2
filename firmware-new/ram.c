@@ -64,10 +64,8 @@ void ram_write_buffer(uint16_t until)
     ram_bus_takeover(true);
     
     for (uint16_t addr = 0; addr < until; ++addr) {
-        if (addr == 0)
-            set_DATA(0xaf);
-        else
-            set_DATA(buffer[addr]);
+try_again:
+        set_DATA(buffer[addr]);
         set_ADDR(addr & 0xff);
         if (addr >= 0x100) set_A8(); else clear_A8();
         clear_MREQ();
@@ -76,6 +74,19 @@ void ram_write_buffer(uint16_t until)
         set_WR();
         set_MREQ();
         WAIT();
+        
+        // verify
+        DDRC = 0x0;
+        clear_MREQ();
+        clear_RD();
+        WAIT();
+        uint8_t data = get_DATA();
+        set_RD();
+        set_MREQ();
+        WAIT();
+        DDRC = 0xff;
+        if (data != buffer[addr])
+            goto try_again;
     }
     
     ram_bus_release();
