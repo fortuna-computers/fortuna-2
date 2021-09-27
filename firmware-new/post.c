@@ -23,7 +23,7 @@ static void post_ram()
     // write data
     uint8_t my_seed = original_seed;
     for (uint16_t i = 0; i < RAM_COUNT; ++i) {
-        buffer[i] = my_seed;
+        buffer[i] = i;  // TODO - my_seed;
         my_seed = rnd_next(my_seed);
     }
     ram_write_buffer(RAM_COUNT);
@@ -40,7 +40,7 @@ static void post_ram()
     ram_read_buffer(RAM_COUNT);
     my_seed = original_seed;
     for (uint16_t i = 0; i < RAM_COUNT; ++i) {
-        if (buffer[i] != my_seed) {
+        if (buffer[i] != i /* TODO - my_seed */) {
             uart_putstr(PSTR("failed"));
             for(;;);
         }
