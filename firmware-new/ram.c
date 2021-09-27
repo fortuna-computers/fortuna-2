@@ -77,7 +77,7 @@ try_again:
         set_MREQ();
         WAIT();
         
-        // verify
+        // verify  (TODO - remove this?)
         DDRC = 0x0;
         clear_MREQ();
         clear_RD();
