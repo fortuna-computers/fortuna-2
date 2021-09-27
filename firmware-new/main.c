@@ -15,8 +15,6 @@ volatile uint8_t seed;
 static void initialize_fortuna();
 static void check_mcucsr();
 
-void initialize_fortuna();
-
 int main()
 {
     initialize_fortuna();
