@@ -83,6 +83,7 @@ void ram_write_buffer(uint16_t until)
             
             // verify  (TODO - remove this?)
             DDRC = 0x0;
+            PORTC = 0;
             clear_MREQ();
             clear_RD();
             WAIT();
