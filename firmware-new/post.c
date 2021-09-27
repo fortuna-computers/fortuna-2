@@ -20,13 +20,12 @@ static void post_ram()
     for (uint8_t i = 0; i < 8; ++i)
         uart_puthex(buffer[i]);
     uart_putenter();
+    uart_putstr(PSTR("* * *\r\n"));
     
     ram_write_buffer(8);
     
-    ram_dump(RAM_COUNT); uart_putenter();
-    ram_dump(RAM_COUNT); uart_putenter();
-    ram_dump(RAM_COUNT); uart_putenter();
-    ram_dump(RAM_COUNT); uart_putenter();
+    for (uint8_t i = 0; i < 8; ++i)
+        ram_dump(RAM_COUNT);
 }
 
 /*
