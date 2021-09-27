@@ -25,15 +25,15 @@ extern volatile uint8_t buffer[512];
 
 static void ram_bus_takeover(bool for_writing)
 {
-    DDRA = 0xff;                         // address low
-    DDRB |= (1 << PB3) | (1 << PB2);     // A8 and MREQ
-    DDRD &= ~((1 << PD6) | (1 << PD7));  // WR and RD
+    DDRA = 0xff;                      // address low
+    DDRB |= (1 << PB3) | (1 << PB2);  // A8 and MREQ
+    DDRD |= (1 << PD6) | (1 << PD7);  // WR and RD
     set_MREQ(1);
     set_WR(1);
     set_RD(1);
     
     if (for_writing)
-        DDRC = 0x0; // data
+        DDRC = 0xff; // data
     
     _delay_us(20);
 }
