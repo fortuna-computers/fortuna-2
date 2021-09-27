@@ -15,7 +15,7 @@ extern volatile uint8_t buffer[512];
 static void post_ram()
 {
     for (uint8_t i = 0; i < 8; ++i)
-        buffer[i] = seed = rnd_next(seed);
+        buffer[i] = seed + i;
     
     for (uint8_t i = 0; i < 8; ++i)
         uart_puthex(buffer[i]);
