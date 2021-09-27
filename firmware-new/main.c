@@ -9,8 +9,8 @@
 #include "z80.h"
 #include "post.h"
 
-volatile uint8_t buffer[512] = { 0 };
 volatile uint8_t seed;
+volatile uint8_t buffer[512] = { 0 };
 
 static void initialize_fortuna();
 static void check_mcucsr();
