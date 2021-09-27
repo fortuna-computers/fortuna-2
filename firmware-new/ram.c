@@ -102,5 +102,5 @@ void ram_dump(uint16_t until)
     
     for (uint16_t i = 0; i < until; ++i)
         uart_puthex(buffer[i]);
-    uart_putchar('\n');
+    uart_putenter();
 }

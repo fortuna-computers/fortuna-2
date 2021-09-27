@@ -51,3 +51,9 @@ char uart_getchar()
     while (!( UCSRA & (1<<RXC)));  // wait for empty receive buffer
     return UDR;
 }
+
+void uart_putenter()
+{
+    uart_putchar('\r');
+    uart_putchar('\n');
+}

@@ -9,6 +9,7 @@ void uart_init();
 void uart_putchar(char c);
 void uart_puthex(uint8_t v);
 void uart_putstr(PGM_P s);
+void uart_putenter();
 
 char uart_getchar();
 
