@@ -10,21 +10,21 @@
 extern volatile uint8_t seed;
 extern volatile uint8_t buffer[512];
 
-#define RAM_COUNT 8
+#define RAM_COUNT 32
 
 static void post_ram()
 {
-    for (uint8_t i = 0; i < 8; ++i)
+    for (uint8_t i = 0; i < 32; ++i)
         buffer[i] = seed + i;
     
-    for (uint8_t i = 0; i < 8; ++i)
+    for (uint8_t i = 0; i < 32; ++i)
         uart_puthex(buffer[i]);
     uart_putenter();
     uart_putstr(PSTR("* * *\r\n"));
     
-    ram_write_buffer(8);
+    ram_write_buffer(32);
     
-    for (uint8_t i = 0; i < 8; ++i)
+    for (uint8_t i = 0; i < 32; ++i)
         ram_dump(RAM_COUNT);
 }
 

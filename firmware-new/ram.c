@@ -113,8 +113,6 @@ void ram_read_buffer(uint16_t until)
         clear_MREQ();
         clear_RD();
         WAIT();
-        uart_putchar('#');
-        uart_puthex(get_DATA());
         buffer[addr] = get_DATA();
         set_RD();
         set_MREQ();
