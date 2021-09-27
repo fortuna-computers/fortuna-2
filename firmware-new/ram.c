@@ -106,7 +106,6 @@ void ram_write_buffer(uint16_t until)
 void ram_read_buffer(uint16_t until)
 {
     ram_bus_takeover(true);
-    DDRC = 0;
     
     for (uint16_t addr = 0; addr < until; ++addr) {
         set_ADDR(addr & 0xff);
@@ -114,6 +113,8 @@ void ram_read_buffer(uint16_t until)
         clear_MREQ();
         clear_RD();
         WAIT();
+        uart_putchar('#');
+        uart_puthex(get_DATA());
         buffer[addr] = get_DATA();
         set_RD();
         set_MREQ();
