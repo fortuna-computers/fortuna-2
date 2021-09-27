@@ -2,6 +2,7 @@
 // Each MCU cycle is 60ns
 
 #include "ram.h"
+#include "uart.h"
 
 #include <stdbool.h>
 #include <avr/cpufunc.h>
@@ -93,4 +94,13 @@ void ram_read_buffer(uint16_t until)
     }
     
     ram_bus_release();
+}
+
+void ram_dump(uint16_t until)
+{
+    ram_read_buffer(until);
+    
+    for (uint16_t i = 0; i < until; ++i)
+        uart_puthex(buffer[i]);
+    uart_putchar('\n');
 }

@@ -10,30 +10,36 @@
 extern volatile uint8_t seed;
 extern volatile uint8_t buffer[512];
 
+#define RAM_COUNT 8
+
 static void post_ram()
 {
     uint8_t original_seed = seed;
     
-    uart_putstr(PSTR("RAM "));
+    ram_dump(RAM_COUNT);  // TODO
+    
+    // TODO: uart_putstr(PSTR("RAM "));
     
     // write data
     uint8_t my_seed = original_seed;
-    for (uint16_t i = 0; i < 512; ++i) {
+    for (uint16_t i = 0; i < RAM_COUNT; ++i) {
         buffer[i] = my_seed;
         my_seed = rnd_next(my_seed);
     }
-    ram_write_buffer(512);
+    ram_write_buffer(RAM_COUNT);
     
     // clear buffer
     _delay_ms(50);
-    for (uint16_t i = 0; i < 512; ++i)
+    for (uint16_t i = 0; i < RAM_COUNT; ++i)
         buffer[i] = 0;
     _delay_ms(50);
     
+    ram_dump(RAM_COUNT);  // TODO
+    
     // read data
-    ram_read_buffer(512);
+    ram_read_buffer(RAM_COUNT);
     my_seed = original_seed;
-    for (uint16_t i = 0; i < 512; ++i) {
+    for (uint16_t i = 0; i < RAM_COUNT; ++i) {
         if (buffer[i] != my_seed) {
             uart_putstr(PSTR("failed"));
             for(;;);
