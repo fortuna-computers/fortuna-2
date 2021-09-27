@@ -22,7 +22,7 @@ extern volatile uint8_t buffer[512];
 #define set_ADDR(n)   PORTA = n
 #define set_DATA(n)   PORTC = n
 #define get_DATA()    PINC
-#define WAIT()        _delay_ms(10)
+#define WAIT()        _delay_ms(1)
 
 static void ram_bus_takeover(bool for_writing)
 {

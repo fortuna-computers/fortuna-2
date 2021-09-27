@@ -42,6 +42,7 @@ static void initialize_fortuna()
     // initialize devices
     ram_init();
     z80_init();    // the Z80 is now on a reset state (addr/data lines in high impedance)
+    _delay_ms(50);
 }
 
 ISR(BADISR_vect)   // catch all interrupts
