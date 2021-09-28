@@ -10,46 +10,8 @@
 extern volatile uint8_t seed;
 extern volatile uint8_t buffer[512];
 
-#define RAM_COUNT 32
+#define RAM_COUNT 512
 
-static void post_ram()
-{
-    const uint16_t addr = 0;
-    uint8_t data = seed;
-    uart_puthex(data);
-    ram_write_byte(addr, data);
-    ram_write_byte(addr+1, data+0x80);
-
-    for (int i = 0; i < 4; ++i)
-        uart_puthex(ram_read_byte(addr));
-    for (int i = 0; i < 4; ++i)
-        uart_puthex(ram_read_byte(addr + 1));
-    uart_putenter();
-
-    for (uint8_t i = 0; i < 32; ++i)
-        buffer[i] = seed + i;
-    
-    for (uint8_t i = 0; i < 32; ++i)
-        uart_puthex(buffer[i]);
-    uart_putenter();
-    uart_putstr(PSTR("* * *\r\n"));
-
-    uart_puthex(ram_read_byte(0));
-    uart_putenter();
-    
-    ram_write_buffer(32);
-    
-    uart_puthex(ram_read_byte(0));
-    uart_puthex(ram_read_byte(1));
-    uart_puthex(ram_read_byte(2));
-    uart_puthex(ram_read_byte(3));
-    uart_putenter();
-    
-    for (uint8_t i = 0; i < 8; ++i)
-        ram_dump(RAM_COUNT);
-}
-
-/*
 static void post_ram()
 {
     uint8_t original_seed = seed;
@@ -65,10 +27,8 @@ static void post_ram()
     ram_write_buffer(RAM_COUNT);
     
     // clear buffer
-    _delay_ms(50);
     for (uint16_t i = 0; i < RAM_COUNT; ++i)
         buffer[i] = 0;
-    _delay_ms(50);
     
     // read data
     ram_read_buffer(RAM_COUNT);
@@ -80,9 +40,8 @@ static void post_ram()
         }
         my_seed = rnd_next(my_seed);
     }
-    uart_putstr(PSTR("OK\n"));
+    uart_putstr(PSTR("OK\r\n"));
 }
-*/
 
 void post_run()
 {
