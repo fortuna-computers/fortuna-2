@@ -45,6 +45,7 @@ void z80_run()
     // Prescaler 1
     TCCR1B = (1 << WGM12) | (1 << CS10);
 
+    // CTC mode 4
     // https://ee-diary.blogspot.com/2021/08/arduino-ctc-mode-programming-with.html
     // https://ee-diary.blogspot.com/p/atmega32-timer1-online-calculator.html (CTC mode)
 
