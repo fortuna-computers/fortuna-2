@@ -5,6 +5,7 @@
 
 #include "random.h"
 #include "ram.h"
+#include "sdcard.h"
 #include "uart.h"
 
 extern volatile uint8_t seed;
@@ -35,11 +36,25 @@ static void post_ram()
     my_seed = original_seed;
     for (uint16_t i = 0; i < RAM_COUNT; ++i) {
         if (buffer[i] != my_seed) {
-            uart_putstr(PSTR("failed"));
+            uart_putstr(PSTR("FAIL"));
             for(;;);
         }
         my_seed = rnd_next(my_seed);
     }
+    uart_putstr(PSTR("OK\r\n"));
+}
+
+static void post_sdcard()
+{
+    uart_putstr(PSTR("SDCARD "));
+    
+    if (!sdcard_initialize()) {
+        uart_putstr(PSTR("FAIL "));
+        uart_puthex(sdcard_last_stage());
+        uart_puthex(sdcard_last_response());
+        for(;;);
+    }
+    
     uart_putstr(PSTR("OK\r\n"));
 }
 

@@ -8,6 +8,7 @@
 #include "uart.h"
 #include "z80.h"
 #include "post.h"
+#include "spi.h"
 
 volatile uint8_t seed;
 volatile uint8_t buffer[512] = { 0 };
@@ -39,6 +40,7 @@ static void initialize_fortuna()
     // initialize devices
     ram_init();
     z80_init();    // the Z80 is now on a reset state (addr/data lines in high impedance)
+    spi_init();
     _delay_ms(50);
 }
 
