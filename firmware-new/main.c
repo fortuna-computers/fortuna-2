@@ -10,7 +10,7 @@
 #include "post.h"
 #include "spi.h"
 
-#define SPEED_KHZ 40
+#define SPEED_KHZ 10
 
 volatile uint8_t seed;
 volatile uint8_t buffer[512] = { 0 };

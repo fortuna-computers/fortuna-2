@@ -37,18 +37,14 @@ void z80_run()
 {
     // clock output on OC1A (PD5)
     
-    OCR1A = 824;  // 10 kHZ
-    // OCR1A = 82;  // 100 kHZ
-    // OCR1A = 7;  // 1 MHZ
-
+    OCR1A = F_CPU / (2UL * (unsigned long) z80_speed_khz * 1000UL) - 1UL;
     TCCR1A = (1 << COM1A0);
-    // Prescaler 1
     TCCR1B = (1 << WGM12) | (1 << CS10);
 
     // CTC mode 4
+    // F_TIMER = F_CPU / (2 * PRESCALER * (1 + OCR1A))
     // https://ee-diary.blogspot.com/2021/08/arduino-ctc-mode-programming-with.html
     // https://ee-diary.blogspot.com/p/atmega32-timer1-online-calculator.html (CTC mode)
-
 }
 
 void z80_pause()
