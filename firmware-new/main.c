@@ -10,6 +10,8 @@
 #include "post.h"
 #include "spi.h"
 
+#define SPEED_KHZ 40
+
 volatile uint8_t seed;
 volatile uint8_t buffer[512] = { 0 };
 
@@ -40,7 +42,7 @@ static void initialize_fortuna()
     
     // initialize devices
     ram_init();
-    z80_init(100);    // the Z80 is now on a reset state (addr/data lines in high impedance)
+    z80_init(SPEED_KHZ);    // the Z80 is now on a reset state (addr/data lines in high impedance)
     spi_init();
     _delay_ms(50);
 }
