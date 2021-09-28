@@ -44,14 +44,26 @@ static void post_ram()
     uart_putstr(PSTR("OK\r\n"));
 }
 
+static void sdcard_fail()
+{
+    uart_putstr(PSTR("FAIL "));
+    uart_puthex(sdcard_last_stage());
+    uart_puthex(sdcard_last_response());
+    for(;;);
+}
+
 static void post_sdcard()
 {
     uart_putstr(PSTR("SDCARD "));
     
-    if (!sdcard_initialize()) {
-        uart_putstr(PSTR("FAIL "));
-        uart_puthex(sdcard_last_stage());
-        uart_puthex(sdcard_last_response());
+    if (!sdcard_initialize())
+        sdcard_fail();
+    
+    if (!sdcard_read_page(0))
+        sdcard_fail();
+    
+    if (buffer[510] != 0x55 || buffer[511] != 0xaa) {
+        uart_putstr(PSTR("NOT BOOTABLE"));
         for(;;);
     }
     
