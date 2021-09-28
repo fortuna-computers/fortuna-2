@@ -23,7 +23,6 @@ static void post_ram()
         uart_puthex(ram_read_byte(addr));
     uart_putenter();
 
-
     for (uint8_t i = 0; i < 32; ++i)
         buffer[i] = seed + i;
     
@@ -33,6 +32,11 @@ static void post_ram()
     uart_putstr(PSTR("* * *\r\n"));
     
     ram_write_buffer(32);
+    
+    uart_puthex(ram_read_byte(0));
+    uart_puthex(ram_read_byte(1));
+    uart_puthex(ram_read_byte(2));
+    uart_puthex(ram_read_byte(3));
     
     for (uint8_t i = 0; i < 8; ++i)
         ram_dump(RAM_COUNT);
