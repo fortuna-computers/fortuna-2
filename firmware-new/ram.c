@@ -88,7 +88,6 @@ void ram_write_buffer(uint16_t until)
     
         } while (data != buffer[addr]);
     }
-    uart_putenter(); // TODO
     
     ram_bus_release();
 }

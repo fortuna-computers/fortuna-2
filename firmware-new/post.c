@@ -18,9 +18,12 @@ static void post_ram()
     uint8_t data = seed;
     uart_puthex(data);
     ram_write_byte(addr, data);
+    ram_write_byte(addr+1, data+0x80);
 
-    for (int i = 0; i < 8; ++i)
+    for (int i = 0; i < 4; ++i)
         uart_puthex(ram_read_byte(addr));
+    for (int i = 0; i < 4; ++i)
+        uart_puthex(ram_read_byte(addr + 1));
     uart_putenter();
 
     for (uint8_t i = 0; i < 32; ++i)
@@ -30,6 +33,9 @@ static void post_ram()
         uart_puthex(buffer[i]);
     uart_putenter();
     uart_putstr(PSTR("* * *\r\n"));
+
+    uart_puthex(ram_read_byte(0));
+    uart_putenter();
     
     ram_write_buffer(32);
     
@@ -37,6 +43,7 @@ static void post_ram()
     uart_puthex(ram_read_byte(1));
     uart_puthex(ram_read_byte(2));
     uart_puthex(ram_read_byte(3));
+    uart_putenter();
     
     for (uint8_t i = 0; i < 8; ++i)
         ram_dump(RAM_COUNT);
