@@ -73,4 +73,5 @@ static void post_sdcard()
 void post_run()
 {
     post_ram();
+    post_sdcard();
 }

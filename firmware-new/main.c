@@ -32,10 +32,9 @@ static void initialize_fortuna()
     uart_putstr(PSTR("\033[2J\033[H"));  // clear screen
     
     // check last status
-    check_mcucsr();
+    // check_mcucsr();
     seed = rnd_seed();
-    uart_puthex(seed);   // TODO - remove
-    uart_putenter();     // TODO - remove
+    // uart_puthex(seed); uart_putenter();
     
     // initialize devices
     ram_init();
