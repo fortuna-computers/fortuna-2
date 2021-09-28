@@ -22,7 +22,7 @@ extern volatile uint8_t buffer[512];
 #define set_ADDR(n)   PORTA = (n)
 #define set_DATA(n)   PORTC = (n)
 #define get_DATA()    PINC
-#define WAIT()        _delay_ms(1)
+#define WAIT()        
 
 static void ram_bus_takeover(bool for_writing)
 {
@@ -39,8 +39,6 @@ static void ram_bus_takeover(bool for_writing)
         DDRC = 0x0;
         set_DATA(0);
     }
-    
-    _delay_ms(20);  // TODO - is this really needed?
 }
 
 static void ram_bus_release()
@@ -93,9 +91,6 @@ void ram_write_buffer(uint16_t until)
             WAIT();
             DDRC = 0xff;
     
-            uart_putchar(':');  // TODO
-            uart_puthex(data);     // TODO
-            
         } while (data != buffer[addr]);
     }
     uart_putenter(); // TODO
@@ -114,12 +109,48 @@ void ram_read_buffer(uint16_t until)
         clear_RD();
         WAIT();
         buffer[addr] = get_DATA();
-        set_RD();
         set_MREQ();
+        set_RD();
         WAIT();
     }
     
     ram_bus_release();
+}
+
+void ram_write_byte(uint16_t addr, uint8_t data)
+{
+    ram_bus_takeover(true);
+
+    set_DATA(data);
+    set_ADDR(addr & 0xff);
+    if (addr >= 0x100) set_A8(); else clear_A8();
+    clear_MREQ();
+    clear_WR();
+    WAIT();
+    set_WR();
+    set_MREQ();
+    WAIT();
+
+    ram_bus_release();
+}
+
+uint8_t ram_read_byte(uint16_t addr)
+{
+    ram_bus_takeover(false);
+    
+    set_ADDR(addr & 0xff);
+    if (addr >= 0x100) set_A8(); else clear_A8();
+    clear_MREQ();
+    clear_RD();
+    WAIT();
+    uint8_t data = get_DATA();
+    set_MREQ();
+    set_RD();
+    WAIT();
+     
+    ram_bus_release();
+
+    return data;
 }
 
 void ram_dump(uint16_t until)

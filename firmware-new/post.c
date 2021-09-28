@@ -14,6 +14,16 @@ extern volatile uint8_t buffer[512];
 
 static void post_ram()
 {
+    const uint16_t addr = 0;
+    uint8_t data = seed;
+    uart_puthex(data);
+    ram_write_byte(addr, data);
+
+    for (int i = 0; i < 8; ++i)
+        uart_puthex(ram_read_byte(addr));
+    uart_putenter();
+
+
     for (uint8_t i = 0; i < 32; ++i)
         buffer[i] = seed + i;
     
@@ -22,7 +32,6 @@ static void post_ram()
     uart_putenter();
     uart_putstr(PSTR("* * *\r\n"));
     
-    ram_write_buffer(32);
     ram_write_buffer(32);
     
     for (uint8_t i = 0; i < 8; ++i)
