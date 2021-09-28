@@ -22,6 +22,8 @@ int main()
     
     post_run();
     
+    z80_powerup();
+    
     for(;;);
 }
 
@@ -38,7 +40,7 @@ static void initialize_fortuna()
     
     // initialize devices
     ram_init();
-    z80_init();    // the Z80 is now on a reset state (addr/data lines in high impedance)
+    z80_init(100);    // the Z80 is now on a reset state (addr/data lines in high impedance)
     spi_init();
     _delay_ms(50);
 }

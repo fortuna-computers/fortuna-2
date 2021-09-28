@@ -291,7 +291,7 @@ void z80_set_speed(Z80_Speed speed)
 
 	OCR1A = (int) (ICR1 * 0.50);
 	OCR1B = (int) (ICR1 * 0.50);
-	TCNT1=0x0;
+	TCNT1 = 0x0;
 
     if (speed == T_100HZ)
         TCCR1B |= 2; // Prescale=8, Enable Timer Clock
