@@ -17,6 +17,11 @@ void z80_init(uint16_t speed_khz)
     DDRB |= (1 << PB0);     // RST
     DDRD |= (1 << PD5);     // CLK
     
+    z80_powerdown();
+}
+
+void z80_powerdown()
+{
     // reset (initialize as low)
     clear_RST();
     

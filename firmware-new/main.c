@@ -12,7 +12,6 @@
 
 #define SPEED_KHZ 10
 
-volatile uint8_t seed;
 volatile uint8_t buffer[512] = { 0 };
 
 static void initialize_fortuna();
@@ -21,8 +20,9 @@ static void check_mcucsr();
 int main()
 {
     initialize_fortuna();
-    
     post_run();
+    
+    // TODO - load EEPROM into RAM
     
     z80_powerup();
     
@@ -37,7 +37,7 @@ static void initialize_fortuna()
     
     // check last status
     // check_mcucsr();
-    seed = rnd_seed();
+    rnd_init();
     // uart_puthex(seed); uart_putenter();
     
     // initialize devices

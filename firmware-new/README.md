@@ -9,11 +9,14 @@ On initialization, Fortuna-2 will look in the SDCard for a file called BOOT.BIN 
 in RAM zeropage. Ideally, this boot file should copy itself into another memory location and
 run from there, in order to keep the zeropage free for SD Card operations.
 
+# I/O registers
+
+| Register | I/O port | Description |
+|----------|----------|-------------|
+| `TLCR`   | `0x0`    | Terminal - last char received from serial. Reading it resets the char to `0x0`. |
+| `TSO`    | `0x1`    | Terminal - serial output. Placing a char on it sends it via serial. |
+
 # I/O calls
-
-Input:
-
- - **0x1**: return the last received char from serial. Reading it resets the char
 
 Output:
 
