@@ -13,12 +13,14 @@
 extern volatile uint8_t buffer[512];
 
 #define RAM_COUNT 512
+#define Z80_EXPECTED_BYTE 0xaf
 
 const uint8_t z80_post_code[] PROGMEM = {
-    0xdb, 0x00,         // IN A, TLCR   -  load last pressed key into A
-    0x21, 0x1f, 0x00,   // LD HL, 0x1E0 -  store last pressed key in memory position 0x1F
-    0x77,               // LD (HL), A
-    0x76,               // HALT         -  halt the CPU
+    0x3e, Z80_EXPECTED_BYTE, // LD A, 0xAF
+    /* 0xdb, 0x00,              // IN A, TLCR   -  load last pressed key into A */
+    0x21, 0x1f, 0x00,        // LD HL, 0x1E0 -  store last pressed key in memory position 0x1F
+    0x77,                    // LD (HL), A
+    0x76,                    // HALT         -  halt the CPU
 };
 
 static void ok()
@@ -72,7 +74,7 @@ static void post_z80()
     ram_write_buffer(sizeof z80_post_code);
     
     // put a random character into `TLCR` (terminal last keypress)
-    uint8_t expected_byte = rnd_next();
+    uint8_t expected_byte = Z80_EXPECTED_BYTE /* rnd_next() */;
     io_set_last_char_received(expected_byte);
     
     // run Z80 code for a few milliseconds

@@ -1,0 +1,18 @@
+- Setup UART (ok)
+- RAM (ok)
+  - Setup POST (ok)
+- SPI (ok)
+- SDCard (ok)
+  - Setup POST (ok)
+- Z80
+  - Setup POST (no IORQ)
+  - IN/OUT
+  - Setup POST (IORQ)
+  - How about interrupts? (possible replace INT by WAIT flipflop to increase speed)
+- Terminal I/O from Z80
+- SDCard I/O (raw) from Z80
+- FAT support
+  - Document
+  - Implement
+- Load BOOT.BIN in initialization
+- Write BOOT.BIN
