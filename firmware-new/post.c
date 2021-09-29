@@ -85,6 +85,8 @@ static void post_z80()
         fail();
     }
     
+    z80_powerdown();
+    
     ok();
 }
 

@@ -3,6 +3,7 @@
 #include <avr/sfr_defs.h>
 #include <util/delay.h>
 
+#include "io.h"
 #include "ram.h"
 #include "random.h"
 #include "uart.h"
@@ -44,6 +45,7 @@ static void initialize_fortuna()
     ram_init();
     z80_init(SPEED_KHZ);    // the Z80 is now on a reset state (addr/data lines in high impedance)
     spi_init();
+    io_init();
     _delay_ms(50);
 }
 

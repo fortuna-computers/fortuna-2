@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+void    io_init();
+
 void    io_set_last_char_received(uint8_t chr);
 uint8_t io_last_char_received();
 

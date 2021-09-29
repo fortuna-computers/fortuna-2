@@ -2,6 +2,10 @@
 
 volatile uint8_t last_char_received = 0;
 
+void io_init()
+{
+}
+
 void io_set_last_char_received(uint8_t chr)
 {
     last_char_received = chr;
