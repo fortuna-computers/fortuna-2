@@ -37,9 +37,9 @@ void z80_run()
 {
     // clock output on OC1A (PD5)
     
-    OCR1A = F_CPU / (2UL * (unsigned long) z80_speed_khz * 1000UL) - 1UL;
-    TCCR1A = (1 << COM1A0);
-    TCCR1B = (1 << WGM12) | (1 << CS10);
+    OCR1A = F_CPU / (2UL * (unsigned long) z80_speed_khz * 1000UL) - 1UL;  // calculate speed
+    TCCR1A = (1 << COM1A0);                  // Toggle OC1A/OC1B on compare match
+    TCCR1B = (1 << WGM12) | (1 << CS10);     // CTC mode, top OCR1A, no prescaling (clk/1)
 
     // CTC mode 4
     // F_TIMER = F_CPU / (2 * PRESCALER * (1 + OCR1A))
@@ -49,12 +49,5 @@ void z80_run()
 
 void z80_pause()
 {
-    cli();
     TCCR1A = 0;
-    TCCR1B = 0;
-    ICR1 = 0;
-    OCR1A = 0;
-    OCR1B = 0;
-    TCNT1 = 0;
-    sei();
 }
