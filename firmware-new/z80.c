@@ -3,19 +3,27 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
-#define set_RST()   PORTB |= (1 << PB0)
-#define clear_RST() PORTB &= ~(1 << PB0)
-#define set_CLK()   PORTD |= (1 << PD5)
-#define clear_CLK() PORTD &= ~(1 << PD5)
+#define set_RST()      PORTB |= (1 << PB0)
+#define clear_RST()    PORTB &= ~(1 << PB0)
+#define set_CLK()      PORTD |= (1 << PD5)
+#define clear_CLK()    PORTD &= ~(1 << PD5)
+#define set_BUSREQ()   PORTB |= (1 << PB1)
+#define clear_BUSREQ() PORTB &= ~(1 << PB1)
+#define set_INT()      PORTD |= (1 << PD2)
+#define clear_INT()    PORTD &= ~(1 << PD2)
+#define get_IORQ()     (PIND & (1 << PIND3))
+#define get_BUSACK()   (PIND & (1 << PIND4))
 
 volatile uint16_t z80_speed_khz = 0;
 
 void z80_init(uint16_t speed_khz)
 {
+    // TODO - remove WAIT line!
+    
     z80_speed_khz = speed_khz;
     
-    DDRB |= (1 << PB0);     // RST
-    DDRD |= (1 << PD5);     // CLK
+    DDRB |= (1 << PB0) | (1 << PB1);     // RST, BUSREQ
+    DDRD |= (1 << PD2) | (1 << PD5);     // INT, CLK
     
     z80_powerdown();
 }
@@ -34,6 +42,9 @@ void z80_powerdown()
 
 void z80_powerup()
 {
+    set_BUSREQ();
+    set_INT();
+    
     clear_RST();
     z80_run();
 }
