@@ -34,6 +34,7 @@ void z80_powerdown()
     clear_RST();
     
     // run 50 cycles
+    TCCR1A = 0;
     for (uint8_t i = 0; i < 50; ++i) {
         set_CLK();
         clear_CLK();
@@ -45,7 +46,7 @@ void z80_powerup()
     set_BUSREQ();
     set_INT();
     
-    clear_RST();
+    set_RST();
     z80_run();
 }
 

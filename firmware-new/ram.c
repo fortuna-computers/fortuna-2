@@ -50,12 +50,14 @@ static void ram_bus_release()
     DDRD &= ~(1 << PD6);  // WR
     DDRD &= ~(1 << PD7);  // RD
     
+    /*
     set_MREQ();
     set_WR();
     set_RD();
     clear_A8();
     set_ADDR(0);
     set_DATA(0);
+    */
 }
 
 void ram_init()

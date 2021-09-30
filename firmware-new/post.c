@@ -18,9 +18,9 @@ extern volatile uint8_t buffer[512];
 const uint8_t z80_post_code[] PROGMEM = {
     0x3e, Z80_EXPECTED_BYTE, // LD A, 0xAF
     /* 0xdb, 0x00,              // IN A, TLCR   -  load last pressed key into A */
-    0x21, 0x1f, 0x00,        // LD HL, 0x1E0 -  store last pressed key in memory position 0x1F
+    0x21, 0x1f, 0x00,        // LD HL, 0x1F     -  store last pressed key in memory position 0x1F
     0x77,                    // LD (HL), A
-    0x76,                    // HALT         -  halt the CPU
+    0x18, 0xfe,              // JR self
 };
 
 static void ok()
@@ -70,8 +70,10 @@ static void post_z80()
     uart_putstr(PSTR("CPU "));
     
     // load code into Z80
+    for (uint8_t i = 0; i < 0x20; ++i)
+        buffer[i] = 0;
     memcpy_P((void*) buffer, z80_post_code, sizeof z80_post_code);
-    ram_write_buffer(sizeof z80_post_code);
+    ram_write_buffer(0x20);
     
     // put a random character into `TLCR` (terminal last keypress)
     uint8_t expected_byte = Z80_EXPECTED_BYTE /* rnd_next() */;
@@ -80,14 +82,15 @@ static void post_z80()
     // run Z80 code for a few milliseconds
     z80_powerup();
     _delay_ms(20);
+    z80_powerdown();
+
+    ram_dump(0x24);
     
     // check if the given code was put into the memory position
     ram_read_buffer(0x20);
     if (buffer[0x1f] != expected_byte) {
         fail();
     }
-    
-    z80_powerdown();
     
     ok();
 }
@@ -120,6 +123,6 @@ static void post_sdcard()
 void post_run()
 {
     post_ram();
-    post_z80();
     post_sdcard();
+    post_z80();
 }
