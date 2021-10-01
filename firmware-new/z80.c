@@ -18,8 +18,6 @@ volatile uint16_t z80_speed_khz = 0;
 
 void z80_init(uint16_t speed_khz)
 {
-    // TODO - remove WAIT line!
-    
     z80_speed_khz = speed_khz;
     
     DDRB |= (1 << PB0) | (1 << PB1);     // RST, BUSREQ
@@ -45,9 +43,7 @@ void z80_powerup()
 {
     set_BUSREQ();
     set_INT();
-    
     set_RST();
-    z80_run();
 }
 
 void z80_run()
@@ -67,4 +63,10 @@ void z80_run()
 void z80_pause()
 {
     TCCR1A = 0;
+}
+
+void z80_single_step()
+{
+    set_CLK();
+    clear_CLK();
 }

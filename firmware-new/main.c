@@ -16,7 +16,8 @@
 volatile uint8_t buffer[512] = { 0 };
 
 static void initialize_fortuna();
-static void check_mcucsr();
+
+__attribute__((unused)) static void check_mcucsr();
 
 int main()
 {
@@ -26,6 +27,7 @@ int main()
     // TODO - load EEPROM into RAM
     
     z80_powerup();
+    z80_run();
     
     for(;;);
 }
@@ -57,7 +59,7 @@ ISR(BADISR_vect)   // catch all interrupts
     for(;;);
 }
 
-static void check_mcucsr()
+__attribute__((unused)) static void check_mcucsr()
 {
     if (MCUCSR == 0)
         return;
