@@ -70,9 +70,9 @@ static void post_z80_cycle()
     z80_single_step();
     uart_puthex(PINC);
     uart_puthex(PINA);
-    if ((PIND & (1 << PIND6)))
+    if (!(PIND & (1 << PIND6)))
         uart_putchar('W');
-    if ((PIND & (1 << PIND7)))
+    if (!(PIND & (1 << PIND7)))
         uart_putchar('R');
     uart_putchar(' ');
     uart_putchar('|');
