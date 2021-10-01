@@ -40,10 +40,9 @@ static void initialize_fortuna()
     
     // check last status
     // check_mcucsr();
-    rnd_init();
-    // uart_puthex(seed); uart_putenter();
     
     // initialize devices
+    rnd_init();
     ram_init();
     z80_init(SPEED_KHZ);    // the Z80 is now on a reset state (addr/data lines in high impedance)
     spi_init();
