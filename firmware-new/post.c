@@ -85,8 +85,6 @@ static void post_z80()
     _delay_ms(20);
     z80_powerdown();
 
-    ram_dump(0x24);
-    
     // check if the given code was put into the memory position
     ram_read_buffer(0x20);
     if (buffer[0x1f] != expected_byte) {
