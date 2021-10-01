@@ -66,16 +66,18 @@ static void post_ram()
 
 static void post_z80()
 {
+    uint8_t expected_byte = rnd_next();
+    
     uart_putstr(PSTR("CPU "));
     
     // load code into Z80
     for (uint8_t i = 0; i < 0x20; ++i)
         buffer[i] = 0;
     memcpy_P((void*) buffer, z80_post_code, sizeof z80_post_code);
+    buffer[1] = expected_byte;
     ram_write_buffer(0x20);
     
     // put a random character into `TLCR` (terminal last keypress)
-    uint8_t expected_byte = Z80_EXPECTED_BYTE /* rnd_next() */;
     io_set_last_char_received(expected_byte);
     
     // run Z80 code for a few milliseconds
