@@ -93,10 +93,16 @@ static void post_z80()
     uint8_t expected_byte = Z80_EXPECTED_BYTE /* rnd_next() */;
     io_set_last_char_received(expected_byte);
     
+    uart_putenter();
     uart_puthex(DDRA);
     uart_puthex(DDRB);
     uart_puthex(DDRC);
     uart_puthex(DDRD);
+    uart_putenter();
+    uart_puthex(PINA);
+    uart_puthex(PINB);
+    uart_puthex(PINC);
+    uart_puthex(PIND);
     uart_putenter();
     
     // run Z80 code for a few milliseconds
