@@ -68,10 +68,8 @@ const uint8_t z80_post_code[] PROGMEM = {
 static void post_z80_cycle()
 {
     z80_single_step();
-    PORTC = 0;
-    uart_puthex(DDRC);
-    PORTA = 0;
-    uart_puthex(DDRA);
+    uart_puthex(PINC);
+    uart_puthex(PINA);
     if ((PIND & (1 << PIND6)))
         uart_putchar('W');
     if ((PIND & (1 << PIND7)))
@@ -93,20 +91,10 @@ static void post_z80()
     uint8_t expected_byte = Z80_EXPECTED_BYTE /* rnd_next() */;
     io_set_last_char_received(expected_byte);
     
-    uart_putenter();
-    uart_puthex(DDRA);
-    uart_puthex(DDRB);
-    uart_puthex(DDRC);
-    uart_puthex(DDRD);
-    uart_putenter();
-    uart_puthex(PINA);
-    uart_puthex(PINB);
-    uart_puthex(PINC);
-    uart_puthex(PIND);
-    uart_putenter();
-    
     // run Z80 code for a few milliseconds
     z80_powerup();
+    
+    uart_putenter();
     for (uint8_t i = 0; i < 8; ++i)  // ld a, 0xaf
         post_z80_cycle();
     uart_putstr(PSTR("----------\r\n"));
@@ -115,6 +103,8 @@ static void post_z80()
         post_z80_cycle();
     uart_putstr(PSTR("----------\r\n"));
      */
+    
+    
     /*
     z80_run();
     _delay_ms(20);
