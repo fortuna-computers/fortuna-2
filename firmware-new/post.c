@@ -68,7 +68,9 @@ const uint8_t z80_post_code[] PROGMEM = {
 static void post_z80_cycle()
 {
     z80_single_step();
+    PORTC = 0;
     uart_puthex(DDRC);
+    PORTA = 0;
     uart_puthex(DDRA);
     if ((PIND & (1 << PIND6)))
         uart_putchar('W');
@@ -95,6 +97,7 @@ static void post_z80()
     z80_powerup();
     for (uint8_t i = 0; i < 8; ++i)  // ld a, 0xaf
         post_z80_cycle();
+    uart_putstr(PSTR("----------"));
     /*
     z80_run();
     _delay_ms(20);
