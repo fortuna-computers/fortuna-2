@@ -13,14 +13,13 @@
 extern volatile uint8_t buffer[512];
 
 #define RAM_COUNT 512
-#define Z80_EXPECTED_BYTE 0xaf
 
 const uint8_t z80_post_code[] PROGMEM = {
-        0x3e, Z80_EXPECTED_BYTE, // LD A, 0xAF    (8 cycles)
-        /* 0xdb, 0x00,              // IN A, TLCR     (14 cycles) */
-        0x21, 0x1f, 0x00,        // LD HL, 0x1F   (11 cycles)
-        0x77,                    // LD (HL), A    (8 cycles)
-        0x18, 0xfe,              // JR -2         (13 cycles)
+        0x3e, 0x00,         // LD A, EXPECTED    (8 cycles)
+        /* 0xdb, 0x00,           // IN A, TLCR     (14 cycles) */
+        0x21, 0x1f, 0x00,   // LD HL, 0x1F   (11 cycles)
+        0x77,               // LD (HL), A    (8 cycles)
+        0x18, 0xfe,         // JR -2         (13 cycles)
 };
 
 static void ok()
