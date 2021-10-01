@@ -103,6 +103,12 @@ static void post_z80()
     for (uint8_t i = 0; i < 11; ++i)  // ld hl, 0x1f
         post_z80_cycle();
     uart_putenter();
+    for (uint8_t i = 0; i < 8; ++i)  // ld (hl), a
+        post_z80_cycle();
+    uart_putenter();
+    for (uint8_t i = 0; i < 13; ++i)  // jr -2
+        post_z80_cycle();
+    uart_putenter();
     
     
     /*
