@@ -15,6 +15,14 @@ extern volatile uint8_t buffer[512];
 #define RAM_COUNT 512
 #define Z80_EXPECTED_BYTE 0xaf
 
+const uint8_t z80_post_code[] PROGMEM = {
+        0x3e, Z80_EXPECTED_BYTE, // LD A, 0xAF    (8 cycles)
+        /* 0xdb, 0x00,              // IN A, TLCR     (14 cycles) */
+        0x21, 0x1f, 0x00,        // LD HL, 0x1F   (11 cycles)
+        0x77,                    // LD (HL), A    (8 cycles)
+        0x18, 0xfe,              // JR -2         (13 cycles)
+};
+
 static void ok()
 {
     uart_putstr(PSTR("OK\r\n"));
@@ -57,28 +65,6 @@ static void post_ram()
     ok();
 }
 
-const uint8_t z80_post_code[] PROGMEM = {
-        0x3e, Z80_EXPECTED_BYTE, // LD A, 0xAF    (8 cycles)
-        /* 0xdb, 0x00,              // IN A, TLCR     (14 cycles) */
-        0x21, 0x1f, 0x00,        // LD HL, 0x1F   (11 cycles)
-        0x77,                    // LD (HL), A    (8 cycles)
-        0x18, 0xfe,              // JR -2         (13 cycles)
-};
-
-static void post_z80_cycle()
-{
-    z80_single_step();
-    uart_puthex(PINC);
-    uart_puthex(PINA);
-    if (!(PIND & (1 << PIND6)))
-        uart_putchar('W');
-    if (!(PIND & (1 << PIND7)))
-        uart_putchar('R');
-    uart_putchar(' ');
-    uart_putchar('|');
-    uart_putchar(' ');
-}
-
 static void post_z80()
 {
     uart_putstr(PSTR("CPU "));
@@ -95,26 +81,8 @@ static void post_z80()
     
     // run Z80 code for a few milliseconds
     z80_powerup();
-    
-    uart_putenter();
-    for (uint8_t i = 0; i < 8; ++i)  // ld a, 0xaf
-        post_z80_cycle();
-    uart_putenter();
-    for (uint8_t i = 0; i < 11; ++i)  // ld hl, 0x1f
-        post_z80_cycle();
-    uart_putenter();
-    for (uint8_t i = 0; i < 8; ++i)  // ld (hl), a
-        post_z80_cycle();
-    uart_putenter();
-    for (uint8_t i = 0; i < 13; ++i)  // jr -2
-        post_z80_cycle();
-    uart_putenter();
-    
-    
-    /*
     z80_run();
     _delay_ms(20);
-    */
     z80_powerdown();
 
     ram_dump(0x24);
