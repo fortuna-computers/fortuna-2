@@ -22,5 +22,5 @@ uint8_t rnd_next()
 
 uint8_t rnd_next_from(uint8_t current)
 {
-    return (uint8_t) (((uint32_t) next) * 89 + 207);
+    return (uint8_t) (((uint32_t) current) * 89 + 207);
 }
