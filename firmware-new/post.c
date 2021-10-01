@@ -97,7 +97,10 @@ static void post_z80()
     z80_powerup();
     for (uint8_t i = 0; i < 8; ++i)  // ld a, 0xaf
         post_z80_cycle();
-    uart_putstr(PSTR("----------"));
+    uart_putstr(PSTR("----------\r\n"));
+    for (uint8_t i = 0; i < 11; ++i)  // ld hl, 0x1f
+        post_z80_cycle();
+    uart_putstr(PSTR("----------\r\n"));
     /*
     z80_run();
     _delay_ms(20);
