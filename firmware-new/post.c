@@ -74,7 +74,9 @@ static void post_z80_cycle()
         uart_putchar('W');
     if ((PIND & (1 << PIND7)))
         uart_putchar('R');
-    uart_putenter();
+    uart_putchar(' ');
+    uart_putchar('|');
+    uart_putchar(' ');
 }
 
 static void post_z80()
@@ -97,12 +99,10 @@ static void post_z80()
     uart_putenter();
     for (uint8_t i = 0; i < 8; ++i)  // ld a, 0xaf
         post_z80_cycle();
-    uart_putstr(PSTR("----------\r\n"));
-    /*
+    uart_putenter();
     for (uint8_t i = 0; i < 11; ++i)  // ld hl, 0x1f
         post_z80_cycle();
-    uart_putstr(PSTR("----------\r\n"));
-     */
+    uart_putenter();
     
     
     /*
